@@ -11,12 +11,12 @@
 		</developer>
 	</developers>
 
-	<groupId>bbcdabao.componentsbrz</groupId>
+	<groupId>bbcdabao.pingmonitor</groupId>
 	<artifactId>common</artifactId>
-    <version>${project.version}</version>
+	<version>${project.version}</version>
 	<packaging>pom</packaging>
 
-	<description>the componentsbrz common part</description>
+	<description>the ping monitor common pom</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -26,20 +26,8 @@
 	</parent>
 
 	<modules>
-		<!-- A springboot component used in the controller layer to call
-		interface functions to control the call flow and avoid being called too
-		frequently. -->
-		<module>flowcontrolbrz</module>
-		<!-- A springboot component used to naturally transfer messages between
-		threads and support delayed processing of messages, etc. -->
-		<module>messagebrz</module>
-		<!-- A springboot component for esay to used websocket. -->
-		<module>websocketbrz</module>
-		<!-- A chatroom test. -->
-		<module>chatroom</module>
-		<!-- A web application with front and back ends for remote login, which
-		uses the websocketbrz component -->
-		<module>terminalhub</module>
+		<module>pingrobot</module>
+		<module>pingmanager</module>
 	</modules>
 
 	<properties>
