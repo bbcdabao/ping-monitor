@@ -131,3 +131,20 @@ public class Template {
         this.fields = fields;
     }
 }
+
+
+my-spi-project
+├── api
+│   └── pom.xml         // SPI 接口的定义
+├── implementation1
+│   ├── src
+│   └── pom.xml         // 第一个实现
+├── implementation2
+│   ├── src
+│   └── pom.xml         // 第二个实现
+└── main
+    ├── src
+    └── pom.xml         // 主应用程序
+
+
+https://chatgpt.com/share/671b12d6-1298-8003-b7ed-919f9b28b110
