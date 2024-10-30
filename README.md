@@ -1,9 +1,9 @@
 # ping-monitor
 
 zookeeper数据结构，以下是在一个命名空间下
-
-拨测机器人路径 {  
-	param-templates路径 {  
+```
+拨测机器人路径 {
+	param-templates路径 {
 		com.xxx.sss.CtestParam = vaule 是参数模版 不同版本包名必然不同比如CtestParam1
 		com.xxx.sss.Cssk = vaule 是参数模版 不同版本包名必然不同比如CtestParam1
 		com.xxx.sss.Cmm = vaule 是参数模版 不同版本包名必然不同比如CtestParam1
@@ -66,7 +66,7 @@ zookeeper数据结构，以下是在一个命名空间下
 	}
 }
 
-
+```
 重点
 (1) 拨测 的 参数  例如 com.xxx.sss.CtestParam  包名，绑定插件 和 一些列动作
 (2) com.xxx.sss.CtestParam 对应每个字段，作为模版存储 key  和  描述参数类型，开发一个注解支持注解CtestParam
