@@ -2,8 +2,8 @@
 
 zookeeper数据结构，以下是在一个命名空间下
 
-拨测机器人路径 {
-	param-templates路径 {
+拨测机器人路径 {  
+	param-templates路径 {  
 		com.xxx.sss.CtestParam = vaule 是参数模版 不同版本包名必然不同比如CtestParam1
 		com.xxx.sss.Cssk = vaule 是参数模版 不同版本包名必然不同比如CtestParam1
 		com.xxx.sss.Cmm = vaule 是参数模版 不同版本包名必然不同比如CtestParam1
