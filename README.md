@@ -1,5 +1,21 @@
 # ping-monitor
 
+# 拨测系统思路文字描述：
+
+- (1) 拨测机器人：采用SPI技术实现插件，每个拨测插件的唯一名字用java包名代替  
+例如，下面是3个拨测插件唯一名字:  
+```
+plugs {
+	com.xxx.sss.PingCallTest,
+	com.xxx.sss.HttpCallTest,
+	com.xxx.sss.XXXXCallTest
+}
+```
+
+
+
+
+
 zookeeper数据结构，以下是在一个命名空间下
 ```
 拨测机器人路径 {
