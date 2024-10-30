@@ -71,3 +71,22 @@ plugs {
 		}
 	}
 }
+
+```
+
+- 模块设计，如下结构  
+```
+ping-monitor
+├── pingrobotapi        // 支持拨测机器人开发
+│   ├── src 
+│   └── pom.xml         
+├── pingcommon          // 公用部分代码
+│   ├── src
+│   └── pom.xml
+├── pingmanager         // 拨测后台服务，内置zookeeper便于开发测试
+│   ├── src
+│   └── pom.xml
+└── pingrobot           // 拨测机器人实现
+    ├── src
+    └── pom.xml
+```
