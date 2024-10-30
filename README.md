@@ -90,3 +90,51 @@ ping-monitor
     ├── src
     └── pom.xml
 ```
+
+- 模块伪代码，拨测参数模版 /robot/param-templates 下面  
+```
+public class TemplateField {
+    private String key;       // 属性的 key
+    private String type;      // 属性的类型（如 String, Integer 等）
+
+    // Constructor, Getters and Setters
+    public TemplateField(String key, String type) {
+        this.key = key;
+        this.type = type;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+}
+
+
+public class Template {
+    private List<TemplateField> fields;
+
+    // Constructor, Getters and Setters
+    public Template(List<TemplateField> fields) {
+        this.fields = fields;
+    }
+
+    public List<TemplateField> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<TemplateField> fields) {
+        this.fields = fields;
+    }
+}
+```
