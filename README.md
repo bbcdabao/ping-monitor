@@ -11,7 +11,7 @@ plugs {
 	com.xxx.sss.XXXXCallTest
 }
 ```
-
+当拨测机器人启动后，会先注册拨测插件模版，然后注册自己  
 
 
 
