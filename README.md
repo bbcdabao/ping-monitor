@@ -36,17 +36,17 @@ plugs {
 					com.xxx.sss.HttpCallTest
 				}
 			}
-		}
-		/strategy (拨测策略) {
-			狂轰同时拨测
-			选主一个拨测
-		}
-		/job-tasks (拨测任务列表) {
-			/task-01 {
-				拨测结果
+			/strategy (拨测策略) {
+				狂轰同时拨测
+				选主一个拨测
 			}
-			/task-02 {
-				拨测结果
+			/job-tasks (拨测任务列表) {
+				/task-01 {
+					拨测结果
+				}
+				/task-02 {
+					拨测结果
+				}
 			}
 		}
 	}
