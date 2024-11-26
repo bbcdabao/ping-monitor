@@ -28,9 +28,6 @@ plugs {
 			/ip@procid (机器人实例名字 __临时节点__，ip地址 + 进程ID 组合) {
 			}
 			/ip@procid (机器人实例名字 __临时节点__，ip地址 + 进程ID 组合) {
-				plugs (支持的插件) {
-					com.xxx.sss.HttpCallTest
-				}
 			}
 			/strategy (拨测策略) {
 				狂轰同时拨测
