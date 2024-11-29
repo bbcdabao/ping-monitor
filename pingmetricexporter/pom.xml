@@ -14,7 +14,7 @@
   <artifactId>ping-metric-exporter</artifactId>
   <packaging>jar</packaging>
 
-  <description>ping robot man</description>
+  <description>ping exporter</description>
 
   <parent>
     <groupId>bbcdabao.pingmonitor</groupId>
