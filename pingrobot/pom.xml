@@ -1,1 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
+  <developers>
+    <developer>
+      <name>Minghui Bao</name>
+      <email>baobao.minghui@gmail.com</email>
+    </developer>
+  </developers>
+
+  <groupId>bbcdabao.pingmonitor.pingrobot</groupId>
+  <artifactId>ping-robot</artifactId>
+  <version>${project.version}</version>
+  <packaging>pom</packaging>
+
+  <description>the ping pingrobot</description>
+
+  <parent>
+    <groupId>bbcdabao.pingmonitor</groupId>
+    <artifactId>ping-monitor</artifactId>
+    <version>${project.version}</version>
+  </parent>
+
+  <modules>
+    <module>pingrebotapi</module>
+    <module>pingrebotman</module>
+  </modules>
+</project>
