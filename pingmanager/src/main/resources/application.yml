@@ -15,8 +15,3 @@
 
 server:
   port: 9090
-
-spring:
-  web:
-    resources:
-      add-mappings: true
