@@ -14,7 +14,7 @@
   <artifactId>ping-manager</artifactId>
   <packaging>jar</packaging>
 
-  <description>ping robot man</description>
+  <description>ping manager</description>
 
   <parent>
     <groupId>bbcdabao.pingmonitor</groupId>
