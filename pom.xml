@@ -12,7 +12,7 @@
   </developers>
 
   <groupId>bbcdabao.pingmonitor</groupId>
-  <artifactId>common</artifactId>
+  <artifactId>ping-monitor</artifactId>
   <version>${project.version}</version>
   <packaging>pom</packaging>
 
@@ -26,8 +26,8 @@
   </parent>
 
   <modules>
-    <module>pingrobot</module>
-    <module>pingmanager</module>
+    <module>ping-common</module>
+    <module>ping-manager</module>
   </modules>
 
   <properties>
