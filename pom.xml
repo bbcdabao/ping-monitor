@@ -28,6 +28,9 @@
   <modules>
     <module>ping-common</module>
     <module>ping-manager</module>
+    <module>ping-manager-web</module>
+    <module>ping-metric-exporter</module>
+    <module>ping-robot</module>
   </modules>
 
   <properties>

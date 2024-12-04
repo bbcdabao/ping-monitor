@@ -11,14 +11,14 @@
     </developer>
   </developers>
 
-  <artifactId>ping-robot-api</artifactId>
+  <artifactId>ping-manager-web</artifactId>
   <packaging>jar</packaging>
 
-  <description>ping robot api</description>
+  <description>ping manager</description>
 
   <parent>
-    <groupId>bbcdabao.pingmonitor.pingrobot</groupId>
-    <artifactId>ping-robot</artifactId>
+    <groupId>bbcdabao.pingmonitor</groupId>
+    <artifactId>ping-monitor</artifactId>
     <version>${project.version}</version>
   </parent>
 

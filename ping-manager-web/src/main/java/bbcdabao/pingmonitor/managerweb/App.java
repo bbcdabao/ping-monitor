@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.metricexporter;
+package bbcdabao.pingmonitor.managerweb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

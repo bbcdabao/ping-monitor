@@ -11,19 +11,20 @@
     </developer>
   </developers>
 
-  <artifactId>ping-robot</artifactId>
-  <version>${project.version}</version>
-  <packaging>pom</packaging>
+  <artifactId>ping-robot-api</artifactId>
+  <packaging>jar</packaging>
 
-  <description>the ping pingrobot</description>
+  <description>ping robot api</description>
 
   <parent>
     <groupId>bbcdabao.pingmonitor</groupId>
-    <artifactId>ping-monitor</artifactId>
+    <artifactId>ping-robot</artifactId>
     <version>${project.version}</version>
   </parent>
 
-  <modules>
-    <module>ping-robot-api</module>
-  </modules>
+  <properties>
+  </properties>
+
+  <dependencies>
+  </dependencies>
 </project>
