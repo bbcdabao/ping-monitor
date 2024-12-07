@@ -25,5 +25,6 @@
 
   <modules>
     <module>ping-robot-api</module>
+    <module>ping-robot-man</module>
   </modules>
 </project>

@@ -39,14 +39,31 @@
     <javax.validation-api>2.0.1.Final</javax.validation-api>
     <httpclient.version>4.5.13</httpclient.version>
     <lombok.version>1.18.22</lombok.version>
+    <zookeeper.server>3.8.0</zookeeper.server>
+    <zookeeper.curator>5.5.0</zookeeper.curator>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>${httpclient.version}</version>
+        <groupId>org.apache.zookeeper</groupId>
+        <artifactId>zookeeper</artifactId>
+        <version>${zookeeper.server}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-framework</artifactId>
+        <version>${zookeeper.curator}</version>
+      </dependency>
+      <dependency>
+        <groupId>bbcdabao.pingmonitor</groupId>
+        <artifactId>ping-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>bbcdabao.pingmonitor</groupId>
+        <artifactId>ping-robot-api</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -63,13 +80,8 @@
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-      <version>${javax.validation-api}</version>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
     </dependency>
   </dependencies>
 

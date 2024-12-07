@@ -17,7 +17,7 @@
   <description>ping robot man</description>
 
   <parent>
-    <groupId>bbcdabao.pingmonitor.pingrobot</groupId>
+    <groupId>bbcdabao.pingmonitor</groupId>
     <artifactId>ping-robot</artifactId>
     <version>${project.version}</version>
   </parent>
@@ -26,5 +26,9 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>bbcdabao.pingmonitor</groupId>
+      <artifactId>ping-robot-api</artifactId>
+    </dependency>
   </dependencies>
 </project>
