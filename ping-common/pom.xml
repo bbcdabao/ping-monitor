@@ -22,9 +22,6 @@
     <version>${project.version}</version>
   </parent>
 
-  <properties>
-  </properties>
-
   <dependencies>
   </dependencies>
 </project>
