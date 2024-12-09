@@ -65,6 +65,17 @@ plugs {
 	}
 }
 
+/tasks {
+  /task-01 {
+    plugin = com.xxx.sss.PingCallTest
+    config = { "ip": "127.0.0.1", "port": 3251 }
+  }
+  /task-02 {
+    plugin = com.xxx.sss.HttpCallTest
+    config = { "url": "https://baidu.com" }
+  }
+}
+
 ```
 
 - 代码模块设计，如下结构  
