@@ -56,6 +56,16 @@
         <version>${zookeeper.curator}</version>
       </dependency>
       <dependency>
+         <groupId>org.apache.curator</groupId>
+         <artifactId>curator-client</artifactId>
+         <version>${zookeeper.curator}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.curator</groupId>
+         <artifactId>curator-recipes</artifactId>
+         <version>${zookeeper.curator}</version>
+      </dependency>
+      <dependency>
         <groupId>bbcdabao.pingmonitor</groupId>
         <artifactId>ping-common</artifactId>
         <version>${project.version}</version>
