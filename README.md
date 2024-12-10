@@ -91,6 +91,10 @@ ping-monitor
 │   ├── src
 │   └── pom.xml
 │ 
+├── pingmanager-web     // 拨测后台服务，API网关
+│   ├── src
+│   └── pom.xml
+│ 
 ├── pingmanager-ui       // 拨测后台服务，内置zookeeper便于开发测试
 │   ├── src
 │   └── package.json
