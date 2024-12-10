@@ -83,33 +83,33 @@ plugs {
 ping-monitor
 │ 
 │    
-├── pingcommon          // 公用部分代码
+├── ping-common         // 公用部分代码
 │   ├── src
 │   └── pom.xml
 │ 
-├── pingmanager         // 拨测后台服务，内置zookeeper便于开发测试
+├── ping-manager        // 拨测后台服务，内置zookeeper便于开发测试
 │   ├── src
 │   └── pom.xml
 │ 
-├── pingmanager-web     // 拨测后台服务，API网关
+├── ping-manager-web    // 拨测后台服务，API网关
 │   ├── src
 │   └── pom.xml
 │ 
-├── pingmanager-ui       // 拨测后台服务，内置zookeeper便于开发测试
+├── ping-manager-ui     // 拨测后台服务，内置zookeeper便于开发测试
 │   ├── src
 │   └── package.json
 │ 
-├── pingmetricexporter  // 拨测结果监控感知，导出到Pro米修斯
+├── ping-metric-exporter// 拨测结果监控感知，导出到Pro米修斯
 │   ├── src
 │   └── pom.xml
 │
-└── pingrobot           // 拨测机器人软件开发包
+└── ping-robot          // 拨测机器人软件开发包
     │ 
-    ├── pingrobotapi    // 支持机器人组开发件
+    ├── ping-robot-api  // 支持机器人组开发件
     │   ├── src 
     │   └── pom.xml
     │ 
-    ├── pingrobotman    // 拨测机器人实现
+    ├── ping-robot-man  // 拨测机器人实现
     │   ├── src 
     │   └── pom.xml
     │ 
