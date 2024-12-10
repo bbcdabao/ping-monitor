@@ -46,34 +46,14 @@ plugs {
 }
 
 /tasks (拨测任务配置) {
-	/task-01 (任务名称) {
-		com.xxx.sss.PingCallTest {
-			ip {
-				127.0.0.1
-			}
-			prot {
-				3251
-			}
-		}
+	/task-01  (任务名称) {
+		plugin = com.xxx.sss.PingCallTest
+		config = { "ip": "127.0.0.1", "port": 3251 }
 	}
-	/task-01 (任务名称) {
-		om.xxx.sss.HttpCallTest {
-			url {
-				https://baidu.com
-			}
-		}
+	/task-02  (任务名称) {
+		plugin = com.xxx.sss.HttpCallTest
+		config = { "url": "https://baidu.com" }
 	}
-}
-
-/tasks {
-  /task-01 {
-    plugin = com.xxx.sss.PingCallTest
-    config = { "ip": "127.0.0.1", "port": 3251 }
-  }
-  /task-02 {
-    plugin = com.xxx.sss.HttpCallTest
-    config = { "url": "https://baidu.com" }
-  }
 }
 
 ```
