@@ -98,6 +98,8 @@ public class ZookeeperRelatedCfg {
         props.setProperty("syncEnabled", zkServersCfg.getSyncEnabled());
         props.setProperty("autopurge.snapRetainCount", zkServersCfg.getAutopurge().getSnapRetainCount());
         props.setProperty("autopurge.purgeInterval", zkServersCfg.getAutopurge().getPurgeInterval());
+        props.setProperty("snapShotCompressionEnabled", "false");
+        props.setProperty("admin.enableServer", "false");
         List<String> servers = zkServersCfg.getServers();
         if (CollectionUtils.isEmpty(servers)) {
             return props;
