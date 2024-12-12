@@ -20,18 +20,23 @@ package bbcdabao.pingmonitor.manager.config;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
+import org.apache.zookeeper.server.quorum.QuorumPeerMain;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
+import lombok.Data;
 
 /**
  * Zookeeper related configuration
@@ -39,53 +44,126 @@ import org.springframework.util.StringUtils;
 @Configuration
 public class ZookeeperRelatedCfg {
 
-	@Value("${zk-server.mode:NONE}")
-	private String zkServerMode;
-
-	@Value("${zk-config.path:}")
-	private String zkConfigPath;
+    /**
+     * Zookeeper inner config define
+     */
+    @Component
+    @ConfigurationProperties(prefix = "zk-server")
+    @Data
+    private static class ZkServersCfg {
+        private String zkConfigPath = "";
+        private String clientPort = "2181";
+        private String tickTime = "1000";
+        private String dataDir = "";
+        private String dataLogDir = "";
+        private String maxClientCnxns = "60";
+        private String initLimit = "10";
+        private String syncLimit = "5";
+        private String globalOutstandingLimit = "1000";
+        private String preAllocSize = "1048576";
+        private String snapCount = "100000";
+        private String syncEnabled = "true";
+        private Autopurge autopurge = new Autopurge();
+        private List<String> servers;
+        @Data
+        private static class Autopurge {
+            private String snapRetainCount = "3";
+            private String purgeInterval = "24";
+        }
+    }
 
     @Autowired
-    private Environment environment;
+    private ZkServersCfg zkServersCfg;
 
-	private Properties getSingleZookeeperServerCfg() throws Exception {
+    private Properties getInnerZookeeperConfig() throws Exception {
+        String dataDir = zkServersCfg.getDataDir();
+        String dataLogDir = zkServersCfg.getDataLogDir();
+        if (ObjectUtils.isEmpty(dataDir)) {
+            dataDir = new File(System.getProperty("java.io.tmpdir"), "zookeeper").getAbsolutePath();
+        }
+        if (ObjectUtils.isEmpty(dataLogDir)) {
+            dataLogDir = dataDir;
+        }
+        Properties props = new Properties();
+        props.setProperty("clientPort", zkServersCfg.getClientPort());
+        props.setProperty("tickTime", zkServersCfg.getTickTime());
+        props.setProperty("dataDir", dataDir);
+        props.setProperty("dataLogDir", dataLogDir);
+        props.setProperty("maxClientCnxns", zkServersCfg.getMaxClientCnxns());
+        props.setProperty("initLimit", zkServersCfg.getInitLimit());
+        props.setProperty("syncLimit", zkServersCfg.getSyncLimit());
+        props.setProperty("globalOutstandingLimit", zkServersCfg.getGlobalOutstandingLimit());
+        props.setProperty("preAllocSize", zkServersCfg.getPreAllocSize());
+        props.setProperty("snapCount", zkServersCfg.getSnapCount());
+        props.setProperty("syncEnabled", zkServersCfg.getSyncEnabled());
+        props.setProperty("autopurge.snapRetainCount", zkServersCfg.getAutopurge().getSnapRetainCount());
+        props.setProperty("autopurge.purgeInterval", zkServersCfg.getAutopurge().getPurgeInterval());
+        List<String> servers = zkServersCfg.getServers();
+        if (CollectionUtils.isEmpty(servers)) {
+            return props;
+        }
+        int index = 0;
+        for (String server : servers) {
+            index++;
+            StringBuilder sb = new StringBuilder();
+            sb.append("server.");
+            sb.append(index);
+            props.setProperty(sb.toString(), server);
+        }
+        return props;
+    }
+
+	private Properties getZookeeperConfig() throws Exception {
+	    String zkConfigPath = zkServersCfg.getZkConfigPath();
+	    if (ObjectUtils.isEmpty(zkConfigPath)) {
+	        return getInnerZookeeperConfig();
+	    }
 		Properties props = new Properties();
-		if (!StringUtils.isEmpty(zkConfigPath)) {
-			InputStream is = ZookeeperRelatedCfg.class.getResourceAsStream(zkConfigPath);
-			props.load(is);
-			return props;
+
+		try (InputStream is = ZookeeperRelatedCfg.class.getResourceAsStream(zkConfigPath);) {
+		    props.load(is);
 		}
-		props.setProperty("tickTime", environment.getProperty("tickTime", "2000"));
-		props.setProperty("dataDir", environment.getProperty("dataDir", 
-				new File(System.getProperty("java.io.tmpdir"), "zookeeper").getAbsolutePath()));
-		props.setProperty("clientPort", environment.getProperty("clientPort", "2181"));
-		props.setProperty("initLimit", environment.getProperty("initLimit", "10"));
-		props.setProperty("syncLimit", environment.getProperty("syncLimit", "5"));
-		props.setProperty("admin.enableServer", "true");
-		props.setProperty("admin.serverPort", "8181");
-		props.setProperty("admin.commandURL", "/commands");
-		
-		
-		
+
 		return props;
 	}
 
     @Bean
-    @ConditionalOnProperty(prefix = "zk-server", name= "mode", havingValue = "SINGLE", matchIfMissing = false)
-    ZooKeeperServerMain getSingleZookeeperServer() throws Exception {
+    @ConditionalOnProperty(prefix = "zk-server", name= "mode", havingValue = "single", matchIfMissing = false)
+    QuorumPeerConfig getSingleQuorumPeerConfig() throws Exception {
         QuorumPeerConfig quorumConfig = new QuorumPeerConfig();
-        quorumConfig.parseProperties(getSingleZookeeperServerCfg());
+        quorumConfig.parseProperties(getZookeeperConfig());
  
-        ZooKeeperServerMain zkServer = new ZooKeeperServerMain();
-        ServerConfig config = new ServerConfig();
-        config.readFrom(quorumConfig);
-        zkServer.runFromConfig(config);
-    	return zkServer;
+        Thread zookeeperThread = new Thread(() -> {
+            try {
+                ZooKeeperServerMain zkServer = new ZooKeeperServerMain();
+                ServerConfig config = new ServerConfig();
+                config.readFrom(quorumConfig);
+                zkServer.runFromConfig(config);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        zookeeperThread.setName("zookeeper-single-server-thread");
+        zookeeperThread.start();
+
+    	return quorumConfig;
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "zk-server", name= "mode", havingValue = "CLUSTER", matchIfMissing = false)
-    ZooKeeperServerMain getClusterZookeeperServer() throws Exception {
-    	throw new Exception("not support zk-server.mode=CLUSTER");
+    @ConditionalOnProperty(prefix = "zk-server", name= "mode", havingValue = "cluster", matchIfMissing = false)
+    QuorumPeerConfig getClusterleQuorumPeerConfig() throws Exception {
+        QuorumPeerConfig quorumConfig = new QuorumPeerConfig();
+        quorumConfig.parseProperties(getZookeeperConfig());
+        Thread zookeeperThread = new Thread(() -> {
+            try {
+                QuorumPeerMain zkServer = new QuorumPeerMain();
+                zkServer.runFromConfig(quorumConfig);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        zookeeperThread.setName("zookeeper-single-server-thread");
+        zookeeperThread.start();
+        return quorumConfig;
     }
 }
