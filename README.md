@@ -143,3 +143,12 @@ public class Template {
     }
 }
 ```
+流水线
+
+      - name: Install Prettier globally
+        run: npm install -g prettier
+
+      - name: Apply formatting tools
+        run: |
+          prettier --write "**/*.{js,jsx,ts,tsx,json,css,scss,html,md}"
+          find . -name "*.java" | xargs java -jar google-java-format.jar --replace
