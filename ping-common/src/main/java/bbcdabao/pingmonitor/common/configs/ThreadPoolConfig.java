@@ -46,7 +46,7 @@ public class ThreadPoolConfig {
 
     private Integer keepAliveSeconds;
 
-    private String threadNamePrefix;
+    private String threadNamePrefix = "ping-monitor-thread";
 
     /**
      * Thread pool
@@ -78,7 +78,7 @@ public class ThreadPoolConfig {
                             try {
                                 rClost.close();
                             } catch (Exception e) {
-                                logger.info("wscThreadPoolExecutor RejectedExecutionHandler error:{}", e.getMessage());
+                                logger.info("ping-monitor-thread RejectedExecutionHandler error:{}", e.getMessage());
                             }
                         }
                     }
