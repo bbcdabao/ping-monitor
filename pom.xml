@@ -37,10 +37,6 @@
     <project.version>1.0.0</project.version>
     <java.version>17</java.version>
     <javax.validation-api>2.0.1.Final</javax.validation-api>
-    <httpclient.version>4.5.13</httpclient.version>
-    <lombok.version>1.18.22</lombok.version>
-    <zookeeper.server>3.8.0</zookeeper.server>
-    <zookeeper.curator>5.5.0</zookeeper.curator>
   </properties>
 
   <dependencyManagement>
@@ -48,22 +44,22 @@
       <dependency>
         <groupId>org.apache.zookeeper</groupId>
         <artifactId>zookeeper</artifactId>
-        <version>${zookeeper.server}</version>
+        <version>3.8.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.curator</groupId>
         <artifactId>curator-framework</artifactId>
-        <version>${zookeeper.curator}</version>
+        <version>5.5.0</version>
       </dependency>
       <dependency>
          <groupId>org.apache.curator</groupId>
          <artifactId>curator-client</artifactId>
-         <version>${zookeeper.curator}</version>
+         <version>5.5.0</version>
       </dependency>
       <dependency>
          <groupId>org.apache.curator</groupId>
          <artifactId>curator-recipes</artifactId>
-         <version>${zookeeper.curator}</version>
+         <version>5.5.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
@@ -92,7 +88,6 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
