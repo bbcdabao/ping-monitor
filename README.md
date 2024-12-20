@@ -34,12 +34,8 @@ plugs {
 				选主一个拨测,可用于需要高可用稳定拨测场景，会顺序拨测作业列表
 			}
 			/job-tasks (拨测任务列表) {
-				/task-01 {
-					拨测结果
-				}
-				/task-02 {
-					拨测结果
-				}
+				/task-01
+				/task-02
 			}
 		}
 	}
@@ -49,10 +45,16 @@ plugs {
 	/task-01  (任务名称) {
 		plugin = com.xxx.sss.PingCallTest
 		config = { "ip": "127.0.0.1", "port": 3251 }
+		ping-result(拨测结果) {
+			/rebot-xxx {300ms}
+		}
 	}
 	/task-02  (任务名称) {
 		plugin = com.xxx.sss.HttpCallTest
 		config = { "url": "https://baidu.com" }
+		ping-result(拨测结果) {
+			/rebot-xxx {300ms}
+		}
 	}
 }
 
