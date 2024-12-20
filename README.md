@@ -24,7 +24,7 @@ plugs {
 		com.xxx.sss.XXXXCallTest = vaule 是参数模版
 	}
 	/register (机器人注册路径) {
-		/rebot-xxx (机器人名字) {
+		/rebot-xxx (机器人名字,里面多个实例都是一组的) {
 			/ip@procid (机器人实例名字 __临时节点__，ip地址 + 进程ID 组合) {
 			}
 			/ip@procid (机器人实例名字 __临时节点__，ip地址 + 进程ID 组合) {
