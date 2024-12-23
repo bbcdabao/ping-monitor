@@ -145,6 +145,9 @@ public class Template {
     }
 }
 ```
+https://chatgpt.com/share/6768b8f7-35f8-8003-89b0-10e4a36f09e2
+
+
 流水线
 
       - name: Install Prettier globally
