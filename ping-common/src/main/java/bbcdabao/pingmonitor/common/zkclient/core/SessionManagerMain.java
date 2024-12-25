@@ -35,26 +35,18 @@ public class SessionManagerMain {
         executorService.execute(pathManager);
     }
 
-    private class PathSession {
-        private CuratorCache curatorCache;
-        private List<HandlerSend> listSends;
-    }
 
-    private class HandlerSend {
-        protected final AtomicBoolean running = new AtomicBoolean(true);
-        protected final LinkedBlockingQueue<IEvent> eventsQueue = new LinkedBlockingQueue<>(eventQueueSize);
-    }
     
     private class HandlerNode implements Runnable, IEventSender {
         private final WeakReference<BaseEventHandler> weakhandler;
-        private final LinkedBlockingQueue<IEvent> eventsQueue = new LinkedBlockingQueue<>(eventQueueSize);
+        private final LinkedBlockingQueue<IEvent> eventsQueue = new LinkedBlockingQueue<>(qeCapacity\);
 
         private HandlerNode(WeakReference<BaseEventHandler> weakhandler) {
             this.weakhandler = weakhandler;
         }
 
         public void runStep()  throws Exception {
-            IEvent event = eventsQueue.poll(poolTimeOut, TimeUnit.MILLISECONDS);
+            IEvent event = eventsQueue.poll(scanCycle, TimeUnit.MILLISECONDS);
             BaseEventHandler handler = weakhandler.get();
             if (null == handler) {
                 throw new StopException();
