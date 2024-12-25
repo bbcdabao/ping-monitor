@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package bbcdabao.pingmonitor.common.zkclient.core;
 
 import java.lang.ref.WeakReference;
@@ -10,15 +28,27 @@ import java.util.function.Consumer;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bbcdabao.pingmonitor.common.zkclient.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.zkclient.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.zkclient.event.DeletedEvent;
 import bbcdabao.pingmonitor.common.zkclient.event.IEvent;
 
+/**
+ * To share monitoring wapper
+ */
 public class PathManager implements Runnable {
-    private final CuratorFramework client;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PathManager.class);
+
+    private final CuratorFramework client;
+    private final long paybackcycle;
+
+    /**
+     * To share monitoring
+     */
     private class PathNode {
         private final LinkedList<WeakReference<IEventSender>> queueEvent = new LinkedList<>();
         private final CuratorCache curatorCache;
@@ -26,6 +56,11 @@ public class PathManager implements Runnable {
         private PathNode(CuratorCache curatorCache, String path) {
             this.curatorCache = curatorCache;
             this.path = path;
+        }
+        private void sendEvent(final IEvent event) {
+            checks((sender) -> {
+                sender.send(event);
+            });
         }
         private synchronized void addSender(WeakReference<IEventSender> weakSender) {
             queueEvent.add(weakSender);
@@ -58,41 +93,37 @@ public class PathManager implements Runnable {
         }
     }
 
-
-    private PathNode getPathNode(String path) {
-        CuratorCache curatorCache = CuratorCache.build(client, path);
-        curatorCache.start();
-        PathNode pathNode = new PathNode(curatorCache, path);
-        CuratorCacheListener listener  = CuratorCacheListener.builder().forAll((type, oldData, newData) -> {
-            switch (type) {
-            case NODE_CREATED:
-                pathNode.checks((sender) -> {
-                    sender.send(new CreatedEvent(newData));
-                });
-                break;
-            case NODE_CHANGED:
-                pathNode.checks((sender) -> {
-                    sender.send(new ChangedEvent(oldData, newData));
-                });
-                break;
-            case NODE_DELETED:
-                pathNode.checks((sender) -> {
-                    sender.send(new DeletedEvent(oldData));
-                });
-                break;
-            }
-        }).build();
-        curatorCache.listenable().addListener(listener);
-        return pathNode;
-    }
-
+    /**
+     * Add to send
+     */
     private Map<String, PathNode> pathNodeMap = new HashMap<>(1000);
     private synchronized void getPathNode(String path, WeakReference<IEventSender> weakSender) {
         PathNode pathNode = pathNodeMap.computeIfAbsent(path, (k) -> {
-            return getPathNode(path);
+            CuratorCache curatorCache = CuratorCache.build(client, path);
+            curatorCache.start();
+            final PathNode pathNodeNew = new PathNode(curatorCache, path);
+            CuratorCacheListener listener  = CuratorCacheListener.builder().forAll((type, oldData, newData) -> {
+                IEvent event = null;
+                switch (type) {
+                case NODE_CREATED:
+                    event = new CreatedEvent(newData);
+                    break;
+                case NODE_CHANGED:
+                    event = new ChangedEvent(oldData, newData);
+                    break;
+                case NODE_DELETED:
+                    event = new DeletedEvent(oldData);
+                default:
+                    return;
+                }
+                pathNodeNew.sendEvent(event);
+            }).build();
+            curatorCache.listenable().addListener(listener);
+            return pathNodeNew;
         });
         pathNode.addSender(weakSender);
     }
+
     /**
      * Periodic scheduling of garbage removal
      */
@@ -101,16 +132,20 @@ public class PathManager implements Runnable {
         while (iterator.hasNext()) {
             Map.Entry<String, PathNode> entry = iterator.next();
             PathNode pathNode = entry.getValue();
-            if (!pathNode.checks(null)) {
-                continue;
-            }
-            iterator.remove();
-            try (pathNode.curatorCache) {
-            } catch (Exception e) {   
+            if (pathNode.checks(null)) {
+                iterator.remove();
+                try (pathNode.curatorCache) {
+                    LOGGER.info("PathManager.pathNode:{} delete!", pathNode.path);
+                } catch (Exception e) {
+                    LOGGER.info("PathManager.pathNode:{} delete! Exception:{}", pathNode.path, e.getMessage());
+                }
             }
         }
     }
 
+    /**
+     * Sender interface for send zookeeper event
+     */
     public static interface IEventSender {
         void send(IEvent event);
     }
@@ -120,17 +155,23 @@ public class PathManager implements Runnable {
         getPathNode(path, weakSender);
     }
 
-    public PathManager(CuratorFramework client) {
+    public PathManager(CuratorFramework client, long paybackcycle) {
         this.client = client;
+        this.paybackcycle = paybackcycle;
     }
 
     @Override
     public void run() {
         while(true) {
-            deleteNodes();
             try {
-                Thread.sleep(10000);
-            } catch(Exception e) {
+                Thread.sleep(paybackcycle);
+            } catch(InterruptedException e) {
+                LOGGER.info("PathManager.run sleep InterruptedException");
+            }
+            try {
+                deleteNodes();
+            } catch (Exception e) {
+                LOGGER.info("PathManager.run deleteNodes Exception:{}", e.getMessage());
             }
         }
     }
