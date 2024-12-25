@@ -44,7 +44,7 @@ public class PathManager implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(PathManager.class);
 
     private final CuratorFramework client;
-    private final long paybackcycle;
+    private final long scanCycle;
 
     /**
      * To share monitoring
@@ -155,16 +155,16 @@ public class PathManager implements Runnable {
         getPathNode(path, weakSender);
     }
 
-    public PathManager(CuratorFramework client, long paybackcycle) {
+    public PathManager(CuratorFramework client, long scanCycle) {
         this.client = client;
-        this.paybackcycle = paybackcycle;
+        this.scanCycle = scanCycle;
     }
 
     @Override
     public void run() {
         while(true) {
             try {
-                Thread.sleep(paybackcycle);
+                Thread.sleep(scanCycle);
             } catch(InterruptedException e) {
                 LOGGER.info("PathManager.run sleep InterruptedException");
             }
