@@ -26,4 +26,8 @@ import lombok.Data;
 public class ChangedEvent implements IEvent {
     private ChildData oldData;
     private ChildData data;
+    public ChangedEvent(ChildData oldData, ChildData data) {
+    	this.oldData = oldData;
+    	this.data = data;
+    }
 }

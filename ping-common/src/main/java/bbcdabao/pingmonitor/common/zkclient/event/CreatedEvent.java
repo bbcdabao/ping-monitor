@@ -25,4 +25,7 @@ import lombok.Data;
 @Data
 public class CreatedEvent implements IEvent {
     private ChildData data;
+    public CreatedEvent(ChildData data) {
+    	this.data = data;
+    }
 }

@@ -25,4 +25,7 @@ import lombok.Data;
 @Data
 public class DeletedEvent implements IEvent {
     private ChildData data;
+    public DeletedEvent(ChildData data) {
+    	this.data = data;
+    }
 }
