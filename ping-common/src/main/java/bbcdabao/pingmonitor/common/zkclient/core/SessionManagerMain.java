@@ -21,8 +21,12 @@ package bbcdabao.pingmonitor.common.zkclient.core;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
@@ -47,7 +51,6 @@ public class SessionManagerMain implements IEventHandlerRegister {
 
     private final ExecutorService executorService;
 
-    private final CuratorFramework client;
     private final PathManager pathManager;
 
     private final int qeCapacity;
@@ -56,12 +59,10 @@ public class SessionManagerMain implements IEventHandlerRegister {
     private SessionManagerMain(
             ExecutorService executorService,
             CuratorFramework client,
-            long paybackcycle,
             int qeCapacity,
             long scanCycle) {
         this.executorService = executorService;
-        this.client = client;
-        this.pathManager = new PathManager(client, paybackcycle);
+        this.pathManager = new PathManager(client, scanCycle);
         this.qeCapacity = qeCapacity;
         this.scanCycle = scanCycle;
         executorService.execute(pathManager);
@@ -140,6 +141,77 @@ public class SessionManagerMain implements IEventHandlerRegister {
             }
             delHandlerNode(code);
         } 
+    }
+
+    /**
+     * To build SessionManagerMain
+     * @param path Listen path
+     * @param handler Session handler
+     */
+    public static class Builder {
+        /*
+         * Thread pool set
+         */
+        private int corePoolSize = 16;
+        private int maxPoolSize = 80;
+        private int queueCapacity = 100;
+        private int keepAliveSeconds = 60;
+        private String threadNamePrefix = "zk-session-thread";
+        
+        private int qeCapacity = 1000;
+        private long scanCycle = 30000;
+
+        private final CuratorFramework zkclient;
+
+        public Builder(CuratorFramework zkclient) {
+            this.zkclient = zkclient;
+        }
+
+        public Builder setCorePoolSize(int corePoolSize) {
+            this.corePoolSize = corePoolSize;
+            return this;
+        }
+        public Builder setMaxPoolSize(int maxPoolSize) {
+            this.maxPoolSize = maxPoolSize;
+            return this;
+        }
+        public Builder setQueueCapacity(int queueCapacity) {
+            this.queueCapacity = queueCapacity;
+            return this;
+        }
+        public Builder setKeepAliveSeconds(int keepAliveSeconds) {
+            this.keepAliveSeconds = keepAliveSeconds;
+            return this;
+        }
+        public Builder setThreadNamePrefix(String threadNamePrefix) {
+            this.threadNamePrefix = threadNamePrefix;
+            return this;
+        }
+        public IEventHandlerRegister build() {
+            ExecutorService executor = new ThreadPoolExecutor(
+                    corePoolSize,
+                    maxPoolSize,
+                    keepAliveSeconds,
+                    TimeUnit.SECONDS,
+                    new ArrayBlockingQueue<>(queueCapacity),
+                    new ThreadFactory() {
+                        private int count = 0;
+                        @Override
+                        public Thread newThread(Runnable r) {
+                            Thread thread = new Thread(r, threadNamePrefix + "-" + count);
+                            count++;
+                            return thread;
+                        }
+                    },
+                    new RejectedExecutionHandler() {
+                        @Override
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            LOGGER.info("{}:RejectedExecutionHandler", threadNamePrefix);
+                        }
+                    }
+                );
+            return new SessionManagerMain(executor, zkclient, qeCapacity, scanCycle);
+        }
     }
 
     /**
