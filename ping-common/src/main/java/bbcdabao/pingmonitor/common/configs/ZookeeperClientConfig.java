@@ -44,11 +44,11 @@ public class ZookeeperClientConfig {
                 public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
                     try {
                         sleeper.sleepFor(2000, null);
+                        return true;
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         return false;
                     }
-                    return true;
                 }
             });
         curatorFramework.start();
