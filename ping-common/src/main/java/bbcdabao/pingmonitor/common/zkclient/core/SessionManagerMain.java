@@ -144,6 +144,24 @@ public class SessionManagerMain implements IEventHandlerRegister {
     }
 
     /**
+     * For out side call
+     * @param path Listen path
+     * @param handler Session handler
+     */
+    @Override
+    public void registerEventHandler(String path, BaseEventHandler handler) {
+        if (ObjectUtils.isEmpty(path)) {
+            return;
+        }
+        if (null == handler) {
+            return;
+        }
+        HandlerNode handlerNode = getHandlerNode(handler);
+        executorService.execute(handlerNode);
+        pathManager.addPathListener(path, handlerNode);
+    }
+
+    /**
      * To build SessionManagerMain
      * @param path Listen path
      * @param handler Session handler
@@ -213,22 +231,7 @@ public class SessionManagerMain implements IEventHandlerRegister {
             return new SessionManagerMain(executor, zkclient, qeCapacity, scanCycle);
         }
     }
-
-    /**
-     * For out side call
-     * @param path Listen path
-     * @param handler Session handler
-     */
-    @Override
-    public void registerEventHandler(String path, BaseEventHandler handler) {
-        if (ObjectUtils.isEmpty(path)) {
-            return;
-        }
-        if (null == handler) {
-            return;
-        }
-        HandlerNode handlerNode = getHandlerNode(handler);
-        executorService.execute(handlerNode);
-        pathManager.addPathListener(path, handlerNode);
+    public static Builder builder(CuratorFramework zkclient) {
+        return new Builder(zkclient);
     }
 }
