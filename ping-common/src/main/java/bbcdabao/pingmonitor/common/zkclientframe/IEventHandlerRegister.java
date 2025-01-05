@@ -1,4 +1,4 @@
-package bbcdabao.pingmonitor.common.zkclient;
+package bbcdabao.pingmonitor.common.zkclientframe;
 
 /**
  * For register BaseEventHandler

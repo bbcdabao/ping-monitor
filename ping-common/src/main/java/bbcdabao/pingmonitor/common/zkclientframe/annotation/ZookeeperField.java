@@ -16,16 +16,14 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.zkclient.event;
+package bbcdabao.pingmonitor.common.zkclientframe.annotation;
 
-import org.apache.curator.framework.recipes.cache.ChildData;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import lombok.Data;
-
-@Data
-public class CreatedEvent implements IEvent {
-    private ChildData data;
-    public CreatedEvent(ChildData data) {
-    	this.data = data;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ZookeeperField {
 }

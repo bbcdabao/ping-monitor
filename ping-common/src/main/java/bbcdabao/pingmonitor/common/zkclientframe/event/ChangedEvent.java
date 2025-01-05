@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.zkclient.event;
+package bbcdabao.pingmonitor.common.zkclientframe.event;
 
 import org.apache.curator.framework.recipes.cache.ChildData;
 

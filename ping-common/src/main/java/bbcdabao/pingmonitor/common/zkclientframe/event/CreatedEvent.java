@@ -16,16 +16,16 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.zkclient.event;
+package bbcdabao.pingmonitor.common.zkclientframe.event;
 
 import org.apache.curator.framework.recipes.cache.ChildData;
 
 import lombok.Data;
 
 @Data
-public class DeletedEvent implements IEvent {
+public class CreatedEvent implements IEvent {
     private ChildData data;
-    public DeletedEvent(ChildData data) {
+    public CreatedEvent(ChildData data) {
     	this.data = data;
     }
 }

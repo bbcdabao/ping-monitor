@@ -16,7 +16,27 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.zkclient.event;
+package bbcdabao.pingmonitor.common.zkclientframe;
 
-public interface IEvent {
+import java.util.concurrent.atomic.AtomicLong;
+
+import bbcdabao.pingmonitor.common.zkclientframe.event.ChangedEvent;
+import bbcdabao.pingmonitor.common.zkclientframe.event.CreatedEvent;
+import bbcdabao.pingmonitor.common.zkclientframe.event.DeletedEvent;
+
+/**
+ * Zookeeper monitoring processing, used for shared monitoring
+ */
+public abstract class BaseEventHandler {
+    private static AtomicLong CODE_INDEX = new AtomicLong(0);
+    private final long code = CODE_INDEX.incrementAndGet();
+    public long getCode() {
+        return code;
+    }
+    public void onEvent(CreatedEvent data) throws Exception {
+    }
+    public void onEvent(ChangedEvent data) throws Exception {
+    }
+    public void onEvent(DeletedEvent data) throws Exception {
+    }
 }
