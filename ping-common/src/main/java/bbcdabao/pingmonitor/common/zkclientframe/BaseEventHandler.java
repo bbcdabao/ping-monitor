@@ -28,11 +28,33 @@ import bbcdabao.pingmonitor.common.zkclientframe.event.DeletedEvent;
  * Zookeeper monitoring processing, used for shared monitoring
  */
 public abstract class BaseEventHandler {
+
+    /**
+     * Monitoring interface
+     */
+    public static interface IRegister {
+        void reg(String patch, BaseEventHandler handler);
+    }
+
+    /**
+     * Used in unique identification systems
+     */
     private static AtomicLong CODE_INDEX = new AtomicLong(0);
     private final long code = CODE_INDEX.incrementAndGet();
     public long getCode() {
         return code;
     }
+
+    /**
+     * Call to start monitoring the path.
+     * You can call it multiple times to monitor unreachable paths.
+     * @param patch
+     * @param register
+     */
+    public void start(String patch, IRegister register) {
+        register.reg(patch, this);
+    }
+
     public void onEvent(CreatedEvent data) throws Exception {
     }
     public void onEvent(ChangedEvent data) throws Exception {
