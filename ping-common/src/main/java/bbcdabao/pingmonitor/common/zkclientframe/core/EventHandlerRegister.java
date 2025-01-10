@@ -207,27 +207,29 @@ public class EventHandlerRegister implements IRegister {
         }
         public IRegister build() {
             ExecutorService executor = new ThreadPoolExecutor(
-                    corePoolSize,
-                    maxPoolSize,
-                    keepAliveSeconds,
-                    TimeUnit.SECONDS,
-                    new ArrayBlockingQueue<>(queueCapacity),
-                    new ThreadFactory() {
-                        private int count = 0;
-                        @Override
-                        public Thread newThread(Runnable r) {
-                            Thread thread = new Thread(r, threadNamePrefix + "-" + count);
-                            count++;
-                            return thread;
-                        }
-                    },
-                    new RejectedExecutionHandler() {
-                        @Override
-                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                            LOGGER.info("{}:RejectedExecutionHandler", threadNamePrefix);
-                        }
+                corePoolSize,
+                maxPoolSize,
+                keepAliveSeconds,
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(queueCapacity),
+                new ThreadFactory() {
+                    private int count = 0;
+
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r, threadNamePrefix + "-" + count);
+                        count++;
+                        return thread;
                     }
-                );
+                },
+                new RejectedExecutionHandler() {
+                    @Override
+                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                        LOGGER.info("{}: RejectedExecutionHandler", threadNamePrefix);
+                    }
+                }
+            );
+
             return new EventHandlerRegister(executor, zkclient, qeCapacity, scanCycle);
         }
     }
