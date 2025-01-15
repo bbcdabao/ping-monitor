@@ -47,19 +47,23 @@ public class CuratorFrameworkInstance {
         if (CONFIG_PARAM == null) {
             throw new IllegalStateException("Config must be set before initializing CuratorFramework.");
         }
+
+        RetryPolicy retryPolicy = new RetryPolicy() {
+            @Override
+            public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
+                try {
+                    sleeper.sleepFor(2000, null);
+                    return true;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return false;
+                }
+            }
+        };
+
         CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(CONFIG_PARAM.getConnectString(),
-                new RetryPolicy() {
-                    @Override
-                    public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
-                        try {
-                            sleeper.sleepFor(2000, null);
-                            return true;
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            return false;
-                        }
-                    }
-                });
+                retryPolicy);
+
         curatorFramework.start();
         return curatorFramework;
     }
