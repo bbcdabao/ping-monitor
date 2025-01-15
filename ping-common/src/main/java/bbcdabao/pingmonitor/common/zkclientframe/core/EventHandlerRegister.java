@@ -56,10 +56,7 @@ public class EventHandlerRegister implements IRegister {
     private final int qeCapacity;
     private final long scanCycle;
 
-    private EventHandlerRegister(
-            ExecutorService executorService,
-            CuratorFramework client,
-            int qeCapacity,
+    private EventHandlerRegister(ExecutorService executorService, CuratorFramework client, int qeCapacity,
             long scanCycle) {
         this.executorService = executorService;
         this.pathManager = new PathManager(client, scanCycle);
@@ -69,13 +66,14 @@ public class EventHandlerRegister implements IRegister {
     }
 
     /**
-     * For exit 
+     * For exit
      */
     private static class StopException extends Exception {
         private static final long serialVersionUID = 1L;
     }
 
     private Map<Long, HandlerNode> handlerNodeMap = new HashMap<>(1000);
+
     private synchronized HandlerNode getHandlerNode(BaseEventHandler handler) {
         long code = handler.getCode();
         HandlerNode handlerNode = handlerNodeMap.computeIfAbsent(code, (k) -> {
@@ -83,6 +81,7 @@ public class EventHandlerRegister implements IRegister {
         });
         return handlerNode;
     }
+
     private synchronized void delHandlerNode(long code) {
         handlerNodeMap.remove(code);
     }
@@ -100,22 +99,20 @@ public class EventHandlerRegister implements IRegister {
             this.code = handler.getCode();
         }
 
-        public void runStep()  throws Exception {
+        public void runStep() throws Exception {
             IEvent event = eventsQueue.poll(scanCycle, TimeUnit.MILLISECONDS);
             BaseEventHandler handler = weakhandler.get();
             if (null == handler) {
                 throw new StopException();
             }
             if (event instanceof CreatedEvent) {
-                CreatedEvent eventIndex = (CreatedEvent)event;
+                CreatedEvent eventIndex = (CreatedEvent) event;
                 handler.onEvent(eventIndex);
-            }
-            else if (event instanceof ChangedEvent) {
-                ChangedEvent eventIndex = (ChangedEvent)event;
+            } else if (event instanceof ChangedEvent) {
+                ChangedEvent eventIndex = (ChangedEvent) event;
                 handler.onEvent(eventIndex);
-            }
-            else if (event instanceof DeletedEvent) {
-                DeletedEvent eventIndex = (DeletedEvent)event;
+            } else if (event instanceof DeletedEvent) {
+                DeletedEvent eventIndex = (DeletedEvent) event;
                 handler.onEvent(eventIndex);
             }
         }
@@ -140,12 +137,13 @@ public class EventHandlerRegister implements IRegister {
                 }
             }
             delHandlerNode(code);
-        } 
+        }
     }
 
     /**
      * For out side call
-     * @param path Listen path
+     * 
+     * @param path    Listen path
      * @param handler Session handler
      */
     @Override
@@ -163,7 +161,8 @@ public class EventHandlerRegister implements IRegister {
 
     /**
      * To build SessionManagerMain
-     * @param path Listen path
+     * 
+     * @param path    Listen path
      * @param handler Session handler
      */
     public static class Builder {
@@ -175,65 +174,58 @@ public class EventHandlerRegister implements IRegister {
         private int queueCapacity = 100;
         private int keepAliveSeconds = 60;
         private String threadNamePrefix = "zk-session-thread";
-        
+
         private int qeCapacity = 1000;
         private long scanCycle = 30000;
-
-        private final CuratorFramework zkclient;
-
-        public Builder(CuratorFramework zkclient) {
-            this.zkclient = zkclient;
-        }
 
         public Builder setCorePoolSize(int corePoolSize) {
             this.corePoolSize = corePoolSize;
             return this;
         }
+
         public Builder setMaxPoolSize(int maxPoolSize) {
             this.maxPoolSize = maxPoolSize;
             return this;
         }
+
         public Builder setQueueCapacity(int queueCapacity) {
             this.queueCapacity = queueCapacity;
             return this;
         }
+
         public Builder setKeepAliveSeconds(int keepAliveSeconds) {
             this.keepAliveSeconds = keepAliveSeconds;
             return this;
         }
+
         public Builder setThreadNamePrefix(String threadNamePrefix) {
             this.threadNamePrefix = threadNamePrefix;
             return this;
         }
+
         public IRegister build() {
-            ExecutorService executor = new ThreadPoolExecutor(
-                corePoolSize,
-                maxPoolSize,
-                keepAliveSeconds,
-                TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(queueCapacity),
-                new ThreadFactory() {
-                    private int count = 0;
+            ExecutorService executor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveSeconds,
+                    TimeUnit.SECONDS, new ArrayBlockingQueue<>(queueCapacity), new ThreadFactory() {
+                        private int count = 0;
 
-                    @Override
-                    public Thread newThread(Runnable r) {
-                        Thread thread = new Thread(r, threadNamePrefix + "-" + count);
-                        count++;
-                        return thread;
-                    }
-                },
-                new RejectedExecutionHandler() {
-                    @Override
-                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                        LOGGER.info("{}: RejectedExecutionHandler", threadNamePrefix);
-                    }
-                }
-            );
+                        @Override
+                        public Thread newThread(Runnable r) {
+                            Thread thread = new Thread(r, threadNamePrefix + "-" + count);
+                            count++;
+                            return thread;
+                        }
+                    }, new RejectedExecutionHandler() {
+                        @Override
+                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                            LOGGER.info("{}: RejectedExecutionHandler", threadNamePrefix);
+                        }
+                    });
 
-            return new EventHandlerRegister(executor, zkclient, qeCapacity, scanCycle);
+            return new EventHandlerRegister(executor, CuratorFrameworkInstance.getInstance(), qeCapacity, scanCycle);
         }
     }
-    public static Builder builder(CuratorFramework zkclient) {
-        return new Builder(zkclient);
+
+    public static Builder builder() {
+        return new Builder();
     }
 }
