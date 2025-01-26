@@ -35,19 +35,24 @@ public class CuratorFrameworkInstance {
         private String connectString;
     }
 
-    private static volatile Config CONFIG_PARAM = null;
-
-    public static void setConfig(Config config) {
-        CONFIG_PARAM = config;
+    @FunctionalInterface
+    public interface ConfigProvider {
+        Config getConfig();
     }
+
+    public static void setConfigProvider(ConfigProvider configProvider) {
+        CONFIG_PROVIDER = configProvider;
+    }
+
+    private static ConfigProvider CONFIG_PROVIDER = () -> {
+        Config config = new Config();
+        config.setConnectString("127.0.0.1:2181");
+        return config;
+    };
 
     private static volatile CuratorFramework CURATOR_FRAMEWORK = null;
 
     private static CuratorFramework createCuratorFramework() {
-        if (CONFIG_PARAM == null) {
-            throw new IllegalStateException("Config must be set before initializing CuratorFramework.");
-        }
-
         RetryPolicy retryPolicy = new RetryPolicy() {
             @Override
             public boolean allowRetry(int retryCount, long elapsedTimeMs, RetrySleeper sleeper) {
@@ -60,10 +65,8 @@ public class CuratorFrameworkInstance {
                 }
             }
         };
-
-        CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(CONFIG_PARAM.getConnectString(),
-                retryPolicy);
-
+        Config config = CONFIG_PROVIDER.getConfig();
+        CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(config.getConnectString(), retryPolicy);
         curatorFramework.start();
         return curatorFramework;
     }
@@ -74,22 +77,26 @@ public class CuratorFrameworkInstance {
         }));
     }
 
-    private static void close() {
+    private static synchronized void close() {
         if (CURATOR_FRAMEWORK != null) {
             CURATOR_FRAMEWORK.close();
+            CURATOR_FRAMEWORK = null;
             System.out.println("CuratorFramework closed.");
         }
     }
 
-    public static CuratorFramework getInstance() {
+    private static synchronized void initInstance() {
         if (CURATOR_FRAMEWORK == null) {
-            synchronized (CuratorFrameworkInstance.class) {
-                if (CURATOR_FRAMEWORK == null) {
-                    CURATOR_FRAMEWORK = createCuratorFramework();
-                    registerShutdownHook();
-                }
-            }
+            CURATOR_FRAMEWORK = createCuratorFramework();
+            registerShutdownHook();
         }
+    }
+
+    public static CuratorFramework getInstance() {
+        if (CURATOR_FRAMEWORK != null) {
+            return CURATOR_FRAMEWORK;
+        }
+        initInstance();
         return CURATOR_FRAMEWORK;
     }
 }
