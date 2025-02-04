@@ -29,6 +29,12 @@ import lombok.Data;
  * CuratorFramework Manager
  */
 public class CuratorFrameworkInstance {
+    private CuratorFrameworkInstance() {
+    }
+
+    private static class Holder {
+        private static final CuratorFramework INSTANCE = createCuratorFramework();
+    }
 
     @Data
     public static class Config {
@@ -50,8 +56,6 @@ public class CuratorFrameworkInstance {
         return config;
     };
 
-    private static volatile CuratorFramework CURATOR_FRAMEWORK = null;
-
     private static CuratorFramework createCuratorFramework() {
         RetryPolicy retryPolicy = new RetryPolicy() {
             @Override
@@ -68,6 +72,7 @@ public class CuratorFrameworkInstance {
         Config config = CONFIG_PROVIDER.getConfig();
         CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(config.getConnectString(), retryPolicy);
         curatorFramework.start();
+        registerShutdownHook();
         return curatorFramework;
     }
 
@@ -78,25 +83,11 @@ public class CuratorFrameworkInstance {
     }
 
     private static synchronized void close() {
-        if (CURATOR_FRAMEWORK != null) {
-            CURATOR_FRAMEWORK.close();
-            CURATOR_FRAMEWORK = null;
-            System.out.println("CuratorFramework closed.");
-        }
-    }
-
-    private static synchronized void initInstance() {
-        if (CURATOR_FRAMEWORK == null) {
-            CURATOR_FRAMEWORK = createCuratorFramework();
-            registerShutdownHook();
-        }
+        Holder.INSTANCE.close();
+        System.out.println("CuratorFramework closed.");
     }
 
     public static CuratorFramework getInstance() {
-        if (CURATOR_FRAMEWORK != null) {
-            return CURATOR_FRAMEWORK;
-        }
-        initInstance();
-        return CURATOR_FRAMEWORK;
+        return Holder.INSTANCE;
     }
 }
