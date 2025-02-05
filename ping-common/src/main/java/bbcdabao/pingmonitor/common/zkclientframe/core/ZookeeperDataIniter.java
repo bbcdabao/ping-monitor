@@ -19,11 +19,12 @@
 package bbcdabao.pingmonitor.common.zkclientframe.core;
 
 public class ZookeeperDataIniter {
-    private ZookeeperDataIniter() {
-    }
 
     private static class Holder {
         private static final ZookeeperDataIniter INSTANCE = new ZookeeperDataIniter();
+    }
+
+    private ZookeeperDataIniter() {
     }
 
     /**
