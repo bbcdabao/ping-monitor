@@ -181,4 +181,5 @@ public class ZookeeperDataConver {
         return param -> Integer.valueOf(new String(param));
     }
 }
-    
+
+zookeeper  上的数据，往往需要多个模块共同使用，因此一些上zookeeper的类都需要写在common模块里面
