@@ -29,11 +29,12 @@ import lombok.Data;
  * CuratorFramework Manager
  */
 public class CuratorFrameworkInstance {
-    private CuratorFrameworkInstance() {
-    }
 
     private static class Holder {
         private static final CuratorFramework INSTANCE = createCuratorFramework();
+    }
+
+    private CuratorFrameworkInstance() {
     }
 
     @Data
