@@ -157,3 +157,28 @@ https://chatgpt.com/share/6768b8f7-35f8-8003-89b0-10e4a36f09e2
         run: |
           prettier --write "**/*.{js,jsx,ts,tsx,json,css,scss,html,md}"
           find . -name "*.java" | xargs java -jar google-java-format.jar --replace
+
+
+public class ZookeeperDataConver {
+
+    @FunctionalInterface
+    public static interface IConvertToByte<T> {
+        byte[] getData(T param);
+    }
+
+    @FunctionalInterface
+    public static interface IConvertFromByte<T> {
+        T getValue(byte[] param);
+    }
+
+    // 返回转换为 byte[] 的 IConvertToByte
+    public IConvertToByte<Integer> getConvertToByteForInteger() {
+        return param -> Integer.toString(param).getBytes();
+    }
+
+    // 返回从 byte[] 转换为 Integer 的 IConvertFromByte
+    public IConvertFromByte<Integer> getConvertFromByteForInteger() {
+        return param -> Integer.valueOf(new String(param));
+    }
+}
+    
