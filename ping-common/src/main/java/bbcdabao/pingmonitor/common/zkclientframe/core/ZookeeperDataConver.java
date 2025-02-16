@@ -1,14 +1,10 @@
 package bbcdabao.pingmonitor.common.zkclientframe.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-
-import bbcdabao.pingmonitor.common.zkdataobj.Template;
-import bbcdabao.pingmonitor.common.zkdataobj.TemplateField;
+import java.util.Properties;
 
 /**
  * Zookeeper data conver utils
@@ -72,42 +68,27 @@ public class ZookeeperDataConver {
         };
     }
 
-    public IConvertToByte<Template> getConvertToByteForTemplate() {
-        JSONObject json = new JSONObject();
+    public IConvertToByte<Properties> getConvertToByteForProperties() {
         return param -> {
-            param.getFields().forEach(templateField -> {
-                try {
-                    json.put(templateField.getKey(), templateField.getType());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            });
-            return json.toString().getBytes(StandardCharsets.UTF_8);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try {
+                param.store(baos, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return baos.toByteArray();
         };
     }
 
-    public IConvertFromByte<Template> getConvertFromByteForTemplate() {
+    public IConvertFromByte<Properties> getConvertFromByteForProperties() {
         return param -> {
-            Template template = new Template();
+            Properties properties = new Properties();
             try {
-                JSONObject json = new JSONObject(new String(param, StandardCharsets.UTF_8));
-                Iterator<String> keys = json.keys();
-                Collection<TemplateField> fields = template.getFields();
-                while (keys.hasNext()) {
-                    String key = keys.next();
-                    Object value = json.get(key);
-                    if (value instanceof String) {
-                        TemplateField templateField = new TemplateField();
-                        templateField.setKey(key);
-                        templateField.setType((String) value);
-                        fields.add(templateField);
-                    }
-                }
-
-            } catch (JSONException e) {
+                properties.load(new ByteArrayInputStream(param));
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            return template;
+            return properties;
         };
     }
 }

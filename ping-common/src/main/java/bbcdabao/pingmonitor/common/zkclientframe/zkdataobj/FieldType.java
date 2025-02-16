@@ -16,33 +16,18 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.zkclientframe.annotation;
+package bbcdabao.pingmonitor.common.zkclientframe.zkdataobj;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+public enum FieldType {
+    INT("INT"), LONG("LONG"), STRING("STRING");
 
-/**
- * Used for annotation, fields that need to be turned into property
- * configurations and saved as property configuration "Properties". Use this
- * annotation to propose properties and compile them into "Properties" one by
- * one, which can then be synchronized to ZK and saved.
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ZookeeperField {
-    /**
-     * Chinese des
-     * 
-     * @return
-     */
-    String descriptionCn() default "";
+    private String info;
 
-    /**
-     * Englis des
-     * 
-     * @return
-     */
-    String descriptionEn() default "";
+    private FieldType(String info) {
+        this.info = info;
+    }
+
+    public String getInfo() {
+        return info;
+    }
 }
