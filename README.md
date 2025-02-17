@@ -18,10 +18,10 @@ plugs {
 	拨测周期
 }
 /robot (拨测机器人路径) {
-	/param-templates (拨测参数模版，注意 key是拨测插件名 value是模版描述) {
-		com.xxx.sss.PingCallTest = vaule 是参数模版
-		com.xxx.sss.HttpCallTest = vaule 是参数模版
-		com.xxx.sss.XXXXCallTest = vaule 是参数模版
+	/param-templates (拨测参数模版，注意 key是拨测插件名 value是模版描述 ) {
+		com.xxx.sss.PingCallTest(采用Properties保存) = {字段名=JSON字符串描述该字段 主要包含 类型  中文描述  英文描述 ...}
+		com.xxx.sss.HttpCallTest(采用Properties保存) = {字段名=JSON字符串描述该字段 主要包含 类型  中文描述  英文描述 ...}
+		com.xxx.sss.XXXXCallTest(采用Properties保存) = {字段名=JSON字符串描述该字段 主要包含 类型  中文描述  英文描述 ...}
 	}
 	/register (机器人注册路径) {
 		/rebot-xxx (机器人名字,里面多个实例都是一组的) {
@@ -44,14 +44,14 @@ plugs {
 /tasks (拨测任务配置) {
 	/task-01  (任务名称) {
 		plugin = com.xxx.sss.PingCallTest
-		config = { "ip": "127.0.0.1", "port": 3251 }
+		config(采用Properties保存) = { ip=127.0.0.1, port=3251 }
 		ping-result(拨测结果) {
 			/rebot-xxx {300ms}
 		}
 	}
 	/task-02  (任务名称) {
 		plugin = com.xxx.sss.HttpCallTest
-		config = { "url": "https://baidu.com" }
+		config(采用Properties保存) = { url=https://baidu.com }
 		ping-result(拨测结果) {
 			/rebot-xxx {300ms}
 		}
@@ -98,51 +98,5 @@ ping-monitor
     └── pom.xml
 ```
 
-- 模块伪代码，拨测参数模版 /robot/param-templates 下面  
-```
-public class TemplateField {
-    private String key;       // 属性的 key
-    private String type;      // 属性的类型（如 String, Integer 等）
 
-    // Constructor, Getters and Setters
-    public TemplateField(String key, String type) {
-        this.key = key;
-        this.type = type;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-}
-
-
-public class Template {
-    private List<TemplateField> fields;
-
-    // Constructor, Getters and Setters
-    public Template(List<TemplateField> fields) {
-        this.fields = fields;
-    }
-
-    public List<TemplateField> getFields() {
-        return fields;
-    }
-
-    public void setFields(List<TemplateField> fields) {
-        this.fields = fields;
-    }
-}
-```
 https://chatgpt.com/share/6768b8f7-35f8-8003-89b0-10e4a36f09e2
