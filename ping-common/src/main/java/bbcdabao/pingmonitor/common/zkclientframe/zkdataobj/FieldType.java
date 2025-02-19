@@ -18,8 +18,28 @@
 
 package bbcdabao.pingmonitor.common.zkclientframe.zkdataobj;
 
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Only support java type int \ long \ String \ boolean
+ */
 public enum FieldType {
-    INT("INT"), LONG("LONG"), STRING("STRING");
+    INT("INT"), LONG("LONG"), STRING("STRING"), BOOLEAN("BOOLEAN");
+
+    private static final Map<Class<?>, FieldType> TYPEMAP = new HashMap<>();
+    static {
+        TYPEMAP.put(int.class, FieldType.INT);
+        TYPEMAP.put(Integer.class, FieldType.INT);
+        TYPEMAP.put(long.class, FieldType.LONG);
+        TYPEMAP.put(Long.class, FieldType.LONG);
+        TYPEMAP.put(boolean.class, FieldType.BOOLEAN);
+        TYPEMAP.put(Boolean.class, FieldType.BOOLEAN);
+        TYPEMAP.put(String.class, FieldType.STRING);
+    }
+    public static FieldType getType(Class<?> clazz) {
+        return TYPEMAP.get(clazz);
+    }
 
     private String info;
 
