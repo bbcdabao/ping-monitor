@@ -68,6 +68,26 @@ public class ZookeeperDataConver {
         };
     }
 
+    /**
+     * true -> 1, false -> 0
+     * @return
+     */
+    public IConvertToByte<Boolean> getConvertToByteForBoolean() {
+        return param -> {
+            return new byte[]{(byte) (param ? 1 : 0)};
+        };
+    }
+
+    /**
+     * 1 -> true, 0 -> false
+     * @return
+     */
+    public IConvertFromByte<Boolean> getConvertFromByteForBoolean() {
+        return param -> {
+            return param[0] == 1;
+        };
+    }
+
     public IConvertToByte<Properties> getConvertToByteForProperties() {
         return param -> {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
