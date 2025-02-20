@@ -100,3 +100,14 @@ ping-monitor
 
 
 https://chatgpt.com/share/6768b8f7-35f8-8003-89b0-10e4a36f09e2
+
+
+    Map<Class<?>, Consumer<?>> eventHandlers = new HashMap<>();
+    {
+    eventHandlers.put(CreatedEvent.class, (Consumer<CreatedEvent>) (event) -> {
+        
+    });
+    eventHandlers.put(ChangedEvent.class, (Consumer<ChangedEvent>) BaseEventHandler::onEvent);
+    eventHandlers.put(DeletedEvent.class, (Consumer<DeletedEvent>) BaseEventHandler::onEvent);
+    }
+    /**
