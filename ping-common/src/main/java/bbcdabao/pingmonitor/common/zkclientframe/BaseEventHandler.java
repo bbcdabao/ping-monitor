@@ -20,6 +20,7 @@ package bbcdabao.pingmonitor.common.zkclientframe;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import bbcdabao.pingmonitor.common.zkclientframe.core.EventHandlerRegister;
 import bbcdabao.pingmonitor.common.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.zkclientframe.event.DeletedEvent;
@@ -51,8 +52,8 @@ public abstract class BaseEventHandler {
      * @param patch
      * @param register
      */
-    public void start(String patch, IRegister register) {
-        register.reg(patch, this);
+    public void start(String patch) {
+        EventHandlerRegister.getInstance().reg(patch, this);
     }
 
     public void onEvent(CreatedEvent data) throws Exception {
