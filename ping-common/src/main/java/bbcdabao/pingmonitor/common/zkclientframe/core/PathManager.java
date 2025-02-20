@@ -23,11 +23,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+import org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +40,27 @@ import bbcdabao.pingmonitor.common.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.common.zkclientframe.event.IEvent;
 
 /**
- * To share monitoring wapper
+ * To share monitoring wapper, just used by EventHandlerRegister
  */
-public class PathManager implements Runnable {
+class PathManager implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathManager.class);
 
     private final CuratorFramework client;
     private final long scanCycle;
+
+    private static final Map<Type, BiFunction<ChildData, ChildData, IEvent>> EVENT_GETTER = new HashMap<>(3);
+    static {
+        EVENT_GETTER.put(Type.NODE_CREATED, (oldData, newData) -> {
+            return new CreatedEvent(newData);
+        });
+        EVENT_GETTER.put(Type.NODE_CHANGED, (oldData, newData) -> {
+            return new ChangedEvent(oldData, newData);
+        });
+        EVENT_GETTER.put(Type.NODE_DELETED, (oldData, newData) -> {
+            return new DeletedEvent(oldData);
+        });
+    }
 
     /**
      * To share monitoring
@@ -103,20 +119,11 @@ public class PathManager implements Runnable {
             curatorCache.start();
             final PathNode pathNodeNew = new PathNode(curatorCache, path);
             CuratorCacheListener listener  = CuratorCacheListener.builder().forAll((type, oldData, newData) -> {
-                IEvent event = null;
-                switch (type) {
-                case NODE_CREATED:
-                    event = new CreatedEvent(newData);
-                    break;
-                case NODE_CHANGED:
-                    event = new ChangedEvent(oldData, newData);
-                    break;
-                case NODE_DELETED:
-                    event = new DeletedEvent(oldData);
-                default:
+                BiFunction<ChildData, ChildData, IEvent> trevent = EVENT_GETTER.get(type);
+                if (null == trevent) {
                     return;
                 }
-                pathNodeNew.sendEvent(event);
+                pathNodeNew.sendEvent(trevent.apply(oldData, newData));
             }).build();
             curatorCache.listenable().addListener(listener);
             return pathNodeNew;
