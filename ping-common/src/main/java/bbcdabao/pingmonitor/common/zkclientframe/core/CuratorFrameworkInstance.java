@@ -51,7 +51,7 @@ public class CuratorFrameworkInstance {
         CONFIG_PROVIDER = configProvider;
     }
 
-    private static ConfigProvider CONFIG_PROVIDER = () -> {
+    private static volatile ConfigProvider CONFIG_PROVIDER = () -> {
         Config config = new Config();
         config.setConnectString("127.0.0.1:2181");
         return config;
