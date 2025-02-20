@@ -47,6 +47,23 @@ import bbcdabao.pingmonitor.common.zkclientframe.event.IEvent;
  */
 public class EventHandlerRegister implements IRegister {
 
+    private static class Holder {
+        private static final IRegister INSTANCE = CONFIG_PROVIDER.getDefaultBuilder().build();
+    }
+
+    @FunctionalInterface
+    public interface ConfigProvider {
+        Builder getDefaultBuilder();
+    }
+
+    public static void setConfigProvider(ConfigProvider configProvider) {
+        CONFIG_PROVIDER = configProvider;
+    }
+
+    private static volatile ConfigProvider CONFIG_PROVIDER = () -> {
+        return EventHandlerRegister.builder();
+    };
+
     private static final Logger LOGGER = LoggerFactory.getLogger(EventHandlerRegister.class);
 
     private final ExecutorService executorService;
@@ -220,12 +237,23 @@ public class EventHandlerRegister implements IRegister {
                             LOGGER.info("{}: RejectedExecutionHandler", threadNamePrefix);
                         }
                     });
-
             return new EventHandlerRegister(executor, CuratorFrameworkInstance.getInstance(), qeCapacity, scanCycle);
         }
     }
 
+    /**
+     * Return builder
+     * @return
+     */
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * Return singnle instance
+     * @return
+     */
+    public static IRegister getInstance() {
+        return Holder.INSTANCE;
     }
 }
