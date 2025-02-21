@@ -19,16 +19,56 @@
 package bbcdabao.pingmonitor.common.zkclientframe.core;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import bbcdabao.pingmonitor.common.zkclientframe.annotation.ZookeeperField;
-import bbcdabao.pingmonitor.common.zkclientframe.zkdataobj.FieldType;
-import bbcdabao.pingmonitor.common.zkclientframe.zkdataobj.TemplateField;
+import lombok.Data;
 
 /**
  * Extraction field that used ZookeeperField labeled.
  */
 public class ZookeeperFieldExtraction {
+
+    /**
+     * Only support java type
+     * int \ long \ String \ boolean
+     */
+    public static enum FieldType {
+        INT("INT"), LONG("LONG"), STRING("STRING"), BOOLEAN("BOOLEAN");
+
+        private static final Map<Class<?>, FieldType> TYPEMAP = new HashMap<>();
+        static {
+            TYPEMAP.put(int.class, FieldType.INT);
+            TYPEMAP.put(Integer.class, FieldType.INT);
+            TYPEMAP.put(long.class, FieldType.LONG);
+            TYPEMAP.put(Long.class, FieldType.LONG);
+            TYPEMAP.put(boolean.class, FieldType.BOOLEAN);
+            TYPEMAP.put(Boolean.class, FieldType.BOOLEAN);
+            TYPEMAP.put(String.class, FieldType.STRING);
+        }
+        public static FieldType getType(Class<?> clazz) {
+            return TYPEMAP.get(clazz);
+        }
+
+        private String info;
+
+        private FieldType(String info) {
+            this.info = info;
+        }
+
+        public String getInfo() {
+            return info;
+        }
+    }
+
+    @Data
+    public static class TemplateField {
+        private String desCn;
+        private String desEn;
+        private FieldType type;
+    }
 
     private static class Holder {
         private static final ZookeeperFieldExtraction INSTANCE = new ZookeeperFieldExtraction();
