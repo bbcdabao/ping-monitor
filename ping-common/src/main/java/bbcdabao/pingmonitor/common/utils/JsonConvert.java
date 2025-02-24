@@ -21,6 +21,18 @@ package bbcdabao.pingmonitor.common.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonConvert {
+
+    private static class Holder {
+        private static final JsonConvert INSTANCE = new JsonConvert();
+    }
+
+    public static JsonConvert getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private JsonConvert() {
+    }
+
     private final ThreadLocal<ObjectMapper> threadLocalObjectMapper = 
             ThreadLocal.withInitial(ObjectMapper::new);
 
