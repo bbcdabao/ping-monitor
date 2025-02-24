@@ -19,6 +19,7 @@
 package bbcdabao.pingmonitor.common.zkclientframe.core;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -172,7 +173,8 @@ public class EventHandlerRegister implements IRegister {
             return;
         }
         /**
-         * When optimization is needed in the future, add judgment and attention events to monitor.
+         * When optimization is needed in the future, add judgment and attention events
+         * to monitor.
          */
         try {
             Method methodCreatedEvent = handler.getClass().getMethod("onEvent", CreatedEvent.class);
@@ -261,6 +263,7 @@ public class EventHandlerRegister implements IRegister {
 
     /**
      * Return builder
+     * 
      * @return
      */
     public static Builder builder() {
@@ -269,6 +272,7 @@ public class EventHandlerRegister implements IRegister {
 
     /**
      * Return singnle instance
+     * 
      * @return
      */
     public static IRegister getInstance() {

@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.zkclientframe.core;
+package bbcdabao.pingmonitor.common.utils;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import bbcdabao.pingmonitor.common.utils.JsonConvert;
 import lombok.Data;
 
 /**
@@ -37,9 +36,9 @@ public class ExtractionField {
 
     /**
      * Used for annotation, fields that need to be turned into property
-     * configurations and saved as property configuration "Properties".
-     * Use this annotation to propose properties and compile them into
-     * "Properties" one by one, which can then be synchronized to ZK and saved.
+     * configurations and saved as property configuration "Properties". Use this
+     * annotation to propose properties and compile them into "Properties" one by
+     * one, which can then be synchronized to ZK and saved.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
@@ -67,14 +66,19 @@ public class ExtractionField {
 
         private static final Map<Class<?>, FieldType> TYPEMAP = new HashMap<>();
         static {
+
             TYPEMAP.put(int.class, FieldType.INT);
             TYPEMAP.put(Integer.class, FieldType.INT);
+
             TYPEMAP.put(long.class, FieldType.LONG);
             TYPEMAP.put(Long.class, FieldType.LONG);
+
             TYPEMAP.put(boolean.class, FieldType.BOOLEAN);
             TYPEMAP.put(Boolean.class, FieldType.BOOLEAN);
+
             TYPEMAP.put(String.class, FieldType.STRING);
         }
+
         public static FieldType getType(Class<?> clazz) {
             return TYPEMAP.get(clazz);
         }
@@ -109,17 +113,17 @@ public class ExtractionField {
     }
 
     /**
-     * Get the fields to a Properties type from obj
-     * that used the ZookeeperField marked
+     * Get the fields to a Properties type from obj that used the ZookeeperField
+     * marked
+     * 
      * @param obj
      * @return
      */
-    public String extractionObjectTemplate(Object obj) {
-        String jsonTemplate = "";
-        if (null == obj) {
-            return jsonTemplate;
-        }
+    public Map<String, TemplateField> extractionTemplateMapFromObject(Object obj) {
         Map<String, TemplateField> templateMap = new HashMap<>(10);
+        if (null == obj) {
+            return templateMap;
+        }
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
             ExtractionFieldMark extractionFieldMark = field.getAnnotation(ExtractionFieldMark.class);
@@ -135,21 +139,6 @@ public class ExtractionField {
             templateField.setDesEn(extractionFieldMark.descriptionEn());
             templateField.setType(fieldType);
             templateMap.put(field.getName(), templateField);
-        }
-        try {
-            jsonTemplate = JsonConvert.getInstance().toJson(templateMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return jsonTemplate;
-    }
-
-    public Map<String, TemplateField> getTemplateMapFromJson(String jsonTemplate) {
-        Map<String, TemplateField> templateMap = null;
-        try {
-            templateMap = JsonConvert.getInstance().fromJson(jsonTemplate, Map.class);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return templateMap;
     }
@@ -171,7 +160,17 @@ public class ExtractionField {
             if (null == fieldType) {
                 continue;
             }
-            // pro.get(field.getName()); 从pro 获取配置
+            Object value = pro.get(field.getName());
+            if (!(value instanceof String)) {
+                continue;
+            }
+            String strValue = (String) value;
+            field.setAccessible(true);
+            try {
+                field.set(obj, 100);
+            } catch (Exception e) {
+
+            }
         }
     }
 }
