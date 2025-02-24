@@ -82,10 +82,7 @@ public class ByteDataConver {
 
     public IConvertFromByte<String> getConvertFromByteForString() {
         return param -> {
-            return new String(param,public class ByteDataConver {
-
-}
- StandardCharsets.UTF_8);
+            return new String(param, StandardCharsets.UTF_8);
         };
     }
 
