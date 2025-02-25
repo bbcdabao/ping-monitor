@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.utils;
+package bbcdabao.pingmonitor.common.dataconver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,16 +28,6 @@ import java.util.Properties;
  * Zookeeper data conver utils
  */
 public class ByteDataConver {
-
-    @FunctionalInterface
-    public static interface IConvertToByte<T> {
-        byte[] getData(T param);
-    }
-
-    @FunctionalInterface
-    public static interface IConvertFromByte<T> {
-        T getValue(byte[] param);
-    }
 
     private static class Holder {
         private static final ByteDataConver INSTANCE = new ByteDataConver();
@@ -88,16 +78,18 @@ public class ByteDataConver {
 
     /**
      * true -> 1, false -> 0
+     * 
      * @return
      */
     public IConvertToByte<Boolean> getConvertToByteForBoolean() {
         return param -> {
-            return new byte[]{(byte) (param ? 1 : 0)};
+            return new byte[] { (byte) (param ? 1 : 0) };
         };
     }
 
     /**
      * 1 -> true, 0 -> false
+     * 
      * @return
      */
     public IConvertFromByte<Boolean> getConvertFromByteForBoolean() {

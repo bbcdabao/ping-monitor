@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.utils;
+package bbcdabao.pingmonitor.common.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,14 +33,13 @@ public class JsonConvert {
     private JsonConvert() {
     }
 
-    private final ThreadLocal<ObjectMapper> threadLocalObjectMapper = 
-            ThreadLocal.withInitial(ObjectMapper::new);
+    private final ThreadLocal<ObjectMapper> threadLocalObjectMapper = ThreadLocal.withInitial(ObjectMapper::new);
 
     public <T> T fromJson(String json, Class<T> valueType) throws Exception {
         return threadLocalObjectMapper.get().readValue(json, valueType);
     }
 
-    public String toJson(Object object) throws Exception {
+    public String tobeJson(Object object) throws Exception {
         return threadLocalObjectMapper.get().writeValueAsString(object);
     }
 }

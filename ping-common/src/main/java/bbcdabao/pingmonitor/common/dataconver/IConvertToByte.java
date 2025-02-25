@@ -16,33 +16,9 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.zkclientframe.annotation;
+package bbcdabao.pingmonitor.common.dataconver;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * Used for annotation, fields that need to be turned into property
- * configurations and saved as property configuration "Properties". Use this
- * annotation to propose properties and compile them into "Properties" one by
- * one, which can then be synchronized to ZK and saved.
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ZookeeperField {
-    /**
-     * Chinese des
-     * 
-     * @return
-     */
-    String descriptionCn() default "";
-
-    /**
-     * Englis des
-     * 
-     * @return
-     */
-    String descriptionEn() default "";
+@FunctionalInterface
+public interface IConvertToByte<T> {
+    byte[] getData(T param);
 }
