@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import bbcdabao.pingmonitor.common.zkclientframe.core.ZookeeperFieldExtraction.FieldType;
 import lombok.Data;
 
 /**
@@ -62,23 +63,41 @@ public class ExtractionField {
      * Only support java type
      */
     public static enum FieldType {
-        INT("INT"), LONG("LONG"), STRING("STRING"), BOOLEAN("BOOLEAN");
+        INT("INT") {
+            @Override
+            public Object getValueFromString(String value) {
+                return Integer.parseInt(value);  // 转换为 Integer
+            }
+        },
+        LONG("LONG") {
+            @Override
+            public Object getValueFromString(String value) {
+                return Long.parseLong(value);  // 转换为 Long
+            }
+        },
+        STRING("STRING") {
+            @Override
+            public Object getValueFromString(String value) {
+                return value;  // 直接返回字符串
+            }
+        },
+        BOOLEAN("BOOLEAN") {
+            @Override
+            public Object getValueFromString(String value) {
+                return Boolean.parseBoolean(value);  // 转换为 Boolean
+            }
+        };
 
         private static final Map<Class<?>, FieldType> TYPEMAP = new HashMap<>();
         static {
-
             TYPEMAP.put(int.class, FieldType.INT);
             TYPEMAP.put(Integer.class, FieldType.INT);
-
             TYPEMAP.put(long.class, FieldType.LONG);
             TYPEMAP.put(Long.class, FieldType.LONG);
-
             TYPEMAP.put(boolean.class, FieldType.BOOLEAN);
             TYPEMAP.put(Boolean.class, FieldType.BOOLEAN);
-
             TYPEMAP.put(String.class, FieldType.STRING);
         }
-
         public static FieldType getType(Class<?> clazz) {
             return TYPEMAP.get(clazz);
         }
@@ -92,6 +111,8 @@ public class ExtractionField {
         public String getInfo() {
             return info;
         }
+        
+        public abstract Object getValueFromString(String value);
     }
 
     @Data
@@ -143,7 +164,35 @@ public class ExtractionField {
         return templateMap;
     }
 
-    public void initObject(Properties pro, Object obj) {
+    public Properties extractionPropertiesFromObject(Object obj) {
+        Properties properties = new Properties();
+        if (null == obj) {
+            return properties;
+        }
+        Field[] fields = obj.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            ExtractionFieldMark extractionFieldMark = field.getAnnotation(ExtractionFieldMark.class);
+            if (null == extractionFieldMark) {
+                continue;
+            }
+            FieldType fieldType = FieldType.getType(field.getType());
+            if (null == fieldType) {
+                continue;
+            }
+            field.setAccessible(true);
+            try {
+                Object value = field.get(obj);
+                if (value != null) {
+                    properties.put(field.getName(), value.toString());
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return properties;
+    }
+
+    public void populateObjectFromProperties(Properties pro, Object obj) {
         if (null == pro) {
             return;
         }
@@ -167,7 +216,7 @@ public class ExtractionField {
             String strValue = (String) value;
             field.setAccessible(true);
             try {
-                field.set(obj, 100);
+                field.set(obj, fieldType.getValueFromString(strValue));
             } catch (Exception e) {
 
             }
