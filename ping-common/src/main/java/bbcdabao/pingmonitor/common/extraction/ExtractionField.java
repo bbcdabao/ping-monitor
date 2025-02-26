@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import bbcdabao.pingmonitor.common.extraction.annotation.ExtractionFieldMark;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Extraction field that used ZookeeperField labeled.
@@ -48,11 +49,8 @@ public class ExtractionField {
      * @param obj
      * @return
      */
-    public Map<String, TemplateField> extractionTemplateMapFromObject(Object obj) {
+    public Map<String, TemplateField> extractionTemplateMapFromObject(@NotNull Object obj) {
         Map<String, TemplateField> templateMap = new HashMap<>(10);
-        if (null == obj) {
-            return templateMap;
-        }
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
             ExtractionFieldMark extractionFieldMark = field.getAnnotation(ExtractionFieldMark.class);
@@ -72,11 +70,8 @@ public class ExtractionField {
         return templateMap;
     }
 
-    public Properties extractionPropertiesFromObject(Object obj) {
+    public Properties extractionPropertiesFromObject(@NotNull Object obj) throws IllegalAccessException {
         Properties properties = new Properties();
-        if (null == obj) {
-            return properties;
-        }
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
             ExtractionFieldMark extractionFieldMark = field.getAnnotation(ExtractionFieldMark.class);
@@ -88,25 +83,15 @@ public class ExtractionField {
                 continue;
             }
             field.setAccessible(true);
-            try {
-                Object value = field.get(obj);
-                if (value != null) {
-                    properties.put(field.getName(), value.toString());
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            Object value = field.get(obj);
+            if (value != null) {
+                properties.put(field.getName(), value.toString());
             }
         }
         return properties;
     }
 
-    public void populateObjectFromProperties(Properties pro, Object obj) {
-        if (null == pro) {
-            return;
-        }
-        if (null == obj) {
-            return;
-        }
+    public void populateObjectFromProperties(@NotNull Properties pro, @NotNull Object obj) throws IllegalAccessException {
         Field[] fields = obj.getClass().getDeclaredFields();
         for (Field field : fields) {
             ExtractionFieldMark extractionFieldMark = field.getAnnotation(ExtractionFieldMark.class);
@@ -123,11 +108,7 @@ public class ExtractionField {
             }
             String strValue = (String) value;
             field.setAccessible(true);
-            try {
-                field.set(obj, fieldType.getValueFromString(strValue));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            field.set(obj, fieldType.getValueFromString(strValue));
         }
     }
 }
