@@ -101,11 +101,6 @@ public class ByteDataConver {
     public IConvertToByte<Properties> getConvertToByteForProperties() {
         return param -> {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try {
-                param.store(baos, null);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             return baos.toByteArray();
         };
     }
