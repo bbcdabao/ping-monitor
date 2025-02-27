@@ -20,4 +20,36 @@ package bbcdabao.pingmonitor.pingrobotapi.templates;
 
 public class TemplatesManager {
 
+    private static class Holder {
+        private static final TemplatesManager INSTANCE = getTemplatesManagerInstance();
+    }
+
+    private static TemplatesManager getTemplatesManagerInstance() {
+        ClassLoader classLoader = MetaInfPropertiesReader.class.getClassLoader();
+
+        try (InputStream inputStream = classLoader.getResourceAsStream("META-INF/config.properties")) {
+            if (inputStream == null) {
+                System.out.println("配置文件未找到");
+                return;
+            }
+
+            // 创建 Properties 对象
+            Properties properties = new Properties();
+            
+            // 加载配置文件
+            properties.load(inputStream);
+            
+            // 打印配置文件中的内容
+            properties.forEach((key, value) -> System.out.println(key + "=" + value));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static TemplatesManager getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private TemplatesManager(String scanPatch) {
+    }
 }
