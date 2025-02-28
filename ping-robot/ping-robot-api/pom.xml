@@ -46,5 +46,9 @@
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-recipes</artifactId>
     </dependency>
+    <dependency>
+      <groupId>bbcdabao.pingmonitor</groupId>
+      <artifactId>ping-common</artifactId>
+    </dependency>
   </dependencies>
 </project>
