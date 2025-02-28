@@ -31,7 +31,7 @@ plugs {
 			/ip@procid (机器人实例名字 __临时节点__，ip地址 + 进程ID 组合) {
 				当前机器人插件列表
 			}
-			/job-tasks (拨测任务列表) {
+			/tasks (拨测任务列表) {
 				/task-01
 				/task-02
 			}
