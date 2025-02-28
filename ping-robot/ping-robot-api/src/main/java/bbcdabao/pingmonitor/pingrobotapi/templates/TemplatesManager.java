@@ -18,6 +18,26 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.templates;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.zookeeper.KeeperException.NodeExistsException;
+import org.reflections.Reflections;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+
+import bbcdabao.pingmonitor.common.constants.PatchConstant;
+import bbcdabao.pingmonitor.common.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.extraction.ExtractionField;
+import bbcdabao.pingmonitor.common.extraction.TemplateField;
+import bbcdabao.pingmonitor.common.json.JsonConvert;
+import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
+import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
+
 public class TemplatesManager {
 
     private static class Holder {
@@ -25,31 +45,107 @@ public class TemplatesManager {
     }
 
     private static TemplatesManager getTemplatesManagerInstance() {
-        ClassLoader classLoader = MetaInfPropertiesReader.class.getClassLoader();
+        TemplatesManager templatesManager = new TemplatesManager();
 
-        try (InputStream inputStream = classLoader.getResourceAsStream("META-INF/config.properties")) {
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream("META-INF/ping-moniter-plug-path.properties")) {
             if (inputStream == null) {
-                System.out.println("配置文件未找到");
-                return;
+                throw new Exception("ping-moniter-plug-path.properties inputStream is null!");
             }
-
-            // 创建 Properties 对象
             Properties properties = new Properties();
-            
-            // 加载配置文件
             properties.load(inputStream);
-            
-            // 打印配置文件中的内容
             properties.forEach((key, value) -> System.out.println(key + "=" + value));
+            Object getPath = properties.get("path");
+            String strPath = getPath.toString();
+            if (ObjectUtils.isEmpty(strPath)) {
+                throw new Exception("ping-moniter-plug-path.properties path config is empty");
+            }
+            Reflections reflections = new Reflections(strPath);
+            Set<Class<? extends IPingMoniterPlug>> pingMoniterPlugs = reflections.getSubTypesOf(IPingMoniterPlug.class);
+            if (CollectionUtils.isEmpty(pingMoniterPlugs)) {
+                throw new Exception("no ping moniter plug exit!");
+            }
+            for (Class<? extends IPingMoniterPlug> pingMoniterPlug : pingMoniterPlugs) {
+                String plugName = pingMoniterPlug.getName().replace('.', '_');
+                templatesManager.pingMoniterPlugMap.put(plugName, pingMoniterPlug);
+            }
+            templatesManager.init();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Error(e.getMessage());
         }
+        return templatesManager;
     }
 
     public static TemplatesManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private TemplatesManager(String scanPatch) {
+    private Map<String, Class<? extends IPingMoniterPlug>> pingMoniterPlugMap = new HashMap<>(20);
+
+    private void init() throws Exception {
+        CuratorFramework curatorFramework = CuratorFrameworkInstance.getInstance();
+        for (Map.Entry<String, Class<? extends IPingMoniterPlug>> entry : pingMoniterPlugMap.entrySet()) {
+            Class<? extends IPingMoniterPlug> plugClazz = entry.getValue();
+            IPingMoniterPlug plug = plugClazz.getConstructor().newInstance();
+            Map<String, TemplateField> plugTemplate = ExtractionField.getInstance().extractionTemplateMapFromObject(plug);
+            String strPlugTemplate = JsonConvert.getInstance().tobeJson(plugTemplate);
+            byte[] bytePlugTemplate = ByteDataConver.getInstance().getConvertToByteForString().getData(strPlugTemplate);
+            StringBuilder sb = new StringBuilder()
+                    .append(PatchConstant.ROBOT_TEMPLATES)
+                    .append("/")
+                    .append(entry.getKey());
+            String plugNamePath = sb.toString();
+            try {
+                curatorFramework
+                .create()
+                .creatingParentsIfNeeded()
+                .forPath(plugNamePath, bytePlugTemplate);
+            } catch (NodeExistsException e) {
+                curatorFramework
+                .setData()
+                .forPath(plugNamePath, bytePlugTemplate);
+            }
+        }
+    }
+
+    private TemplatesManager() {
+    }
+
+    public IPingMoniterPlug getPingMoniterPlug(String plugName) throws Exception {
+        Class<? extends IPingMoniterPlug> plugClazz = pingMoniterPlugMap.get(plugName);
+        if (null == plugClazz) {
+            throw new NoPlugFoundException(plugName);
+        }
+        return plugClazz.getConstructor().newInstance();
+    }
+
+    public IPingMoniterPlug getPingMoniterPlugUsedTaskName(String taskName) throws Exception {
+        StringBuilder sb = new StringBuilder()
+                .append(PatchConstant.TASKS)
+                .append("/")
+                .append(taskName);
+        String plugName = ByteDataConver
+                .getInstance()
+                .getConvertFromByteForString()
+                .getValue(CuratorFrameworkInstance
+                        .getInstance()
+                        .getData()
+                        .forPath(sb.toString()));
+
+        sb.append(PatchConstant.CONFIG);
+
+        Properties properties = ByteDataConver
+                .getInstance()
+                .getConvertFromByteForProperties()
+                .getValue(CuratorFrameworkInstance
+                        .getInstance()
+                        .getData()
+                        .forPath(sb.toString()));
+        
+        IPingMoniterPlug pingMoniterPlug = getPingMoniterPlug(plugName);
+        
+        ExtractionField.getInstance().populateObjectFromProperties(properties, pingMoniterPlug);
+        
+        return pingMoniterPlug;
     }
 }
