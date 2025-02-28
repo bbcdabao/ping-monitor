@@ -44,17 +44,17 @@ plugs {
 }
 
 /tasks (拨测任务配置) {
-	/task-01  (任务名称) {
-		plugin = com.xxx.sss.PingCallTest
+	/task-01  (plugin = com.xxx.sss.PingCallTest) {
+		mode (拨测调度形式，一般拨测，后续可能有高并发压测)
 		config(采用Properties保存) = { ip=127.0.0.1, port=3251 }
-		ping-result(拨测结果) {
+		ping-result(拨测结果 里面节点带有TTL) {
 			/rebot-xxx {300ms}
 		}
 	}
-	/task-02  (任务名称) {
-		plugin = com.xxx.sss.HttpCallTest
+	/task-02  (plugin = com.xxx.sss.HttpCallTest) {
+		mode (拨测调度形式，一般拨测，后续可能有高并发压测)
 		config(采用Properties保存) = { url=https://baidu.com }
-		ping-result(拨测结果) {
+		ping-result(拨测结果 里面节点带有TTL) {
 			/rebot-xxx {300ms}
 		}
 	}
