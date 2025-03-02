@@ -10,51 +10,50 @@
 	]
 ]
 ```
-- 拨测系统为分布式应用，基于zookeeper协调，zk数据结构如下  
-以下是基于一个zk命名空间下
+- The dial test system is a distributed application, based on zookeeper coordination. The zk data structure is as follows
+The following is based on a zk namespace
 ```
-/config (拨测配置) {
-	拨测周期
-}
-/robot (拨测机器人路径) {
-	/param-templates (拨测参数模版，注意 key是拨测插件名 value是模版描述 ) {
-		com.xxx.sss.PingCallTest(采用Properties保存) = {字段名=JSON字符串描述该字段 主要包含 类型  中文描述  英文描述 ...}
-		com.xxx.sss.HttpCallTest(采用Properties保存) = {字段名=JSON字符串描述该字段 主要包含 类型  中文描述  英文描述 ...}
-		com.xxx.sss.XXXXCallTest(采用Properties保存) = {字段名=JSON字符串描述该字段 主要包含 类型  中文描述  英文描述 ...}
-	}
-	/register (机器人注册路径) {
-		/rebot-xxx (机器人名字,里面多个实例都是一组的) {
-			/ip@procid (机器人实例名字 __临时节点__，ip地址 + 进程ID 组合) {
-				当前机器人插件列表
-			}
-			/ip@procid (机器人实例名字 __临时节点__，ip地址 + 进程ID 组合) {
-				当前机器人插件列表
-			}
-			/tasks (拨测任务列表) {
-				/task-01
-				/task-02
-			}
-		}
-	}
-}
+Zookeep model description:
+/[path] (value describes "example") [
+	/[subpath] (value describes "example") [
+		...
+	]
+]
 
-/tasks (拨测任务配置) {
-	/task-01  (plugin = com.xxx.sss.PingCallTest) {
-		mode (拨测调度形式，一般拨测，后续可能有高并发压测)
-		config(采用Properties保存) = { ip=127.0.0.1, port=3251 }
-		ping-result(拨测结果 里面节点带有TTL) {
-			/rebot-xxx {300ms}
-		}
+/sysconfig (JSON format system configuration "{pingcycle: 60000}")
+/robot (Robot root directory) [
+	/templates (Robot plug-in template) [
+		/com_xxx_sss_PingCallTest(JSON format template "{pingTimeout:{type:LONG,desCn:超时时间,desEn:timeout},ipaddr:192.168.10.8}")
+		/com_xxx_sss_HttpCallTest(JSON format template "{pingTimeout:{type:LONG,desCn:超时时间,desEn:timeout},url:http://test.com}")
+		/com_xxx_sss_XXXXCallTest(JSON format template "{pingTimeout:{type:LONG,desCn:超时时间,desEn:timeout},calres:http://a.com}")
+	]
+	/register (Robot registration directory) [
+		/rebot-xxx (The name of the robot group. The instances inside are temporary nodes) [
+			/UUID01 (Temporary node "ip@procid")
+			/UUID02 (Temporary node "ip@procid")
+			/UUID03 (Temporary node "ip@procid")
+			/config (Robot group configuration "{executionType:master or all}")
+			/tasks (Dial test task list, child nodes cannot be repeated) [
+				/task-01 (Scheduling concurrent configuration)
+				/task-02 (Scheduling concurrent configuration)
+			]
+		]
+	]
+]
+/tasks [
+	/task-01 (Robot plug-in template name "com_xxx_sss_PingCallTest") [
+		/config (Save using Properties "{ip=127.0.0.1, port=3251}")
+		/result (Dial test results, sub-nodes with TTL) [
+			/rebot-xxx (300ms)
+		]
 	}
-	/task-02  (plugin = com.xxx.sss.HttpCallTest) {
-		mode (拨测调度形式，一般拨测，后续可能有高并发压测)
-		config(采用Properties保存) = { url=https://baidu.com }
-		ping-result(拨测结果 里面节点带有TTL) {
+	/task-02 (Robot plug-in template name "com_xxx_sss_HttpCallTest") [
+		config (Save using Properties "{url=https://baidu.com}")
+		/result (Dial test results, sub-nodes with TTL) [
 			/rebot-xxx {300ms}
-		}
-	}
-}
-
+		]
+	]
+]
 ```
 
 - 代码模块设计，如下结构  
