@@ -56,7 +56,7 @@ Zookeep model description:
 ]
 ```
 
-- 代码模块设计，如下结构  
+- Code module design, the following structure
 ```
 ping-monitor
 │ 
