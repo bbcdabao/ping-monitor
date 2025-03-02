@@ -22,6 +22,7 @@ public class PatchConstant {
     public static final String ROBOT_REGISTERS = "/robot/registers";
     public static final String ROBOT_TEMPLATES = "/robot/templates";
     public static final String ROBOT = "/robot";
-    public static final String TASKS = "/tasks"; 
+    public static final String TASKS = "/tasks";
     public static final String CONFIG = "/config";
+    public static final String INSTANCE = "/instance";
 }

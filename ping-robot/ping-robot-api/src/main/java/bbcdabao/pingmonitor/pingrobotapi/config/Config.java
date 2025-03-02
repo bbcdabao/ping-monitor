@@ -18,5 +18,22 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.config;
 
-public class Config {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+
+import bbcdabao.pingmonitor.pingrobotapi.templates.TemplatesManager;
+import lombok.Data;
+
+@Data
+public class Config implements ApplicationRunner {
+    @Value("${robot.group-name}")
+    private String robotGroupName;
+    @Value("${robot.plugs-path:bbcdabao.pingmonitor.pingrobotman}")
+    private String plugsPath;
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        TemplatesManager.getInstance();
+    }
 }

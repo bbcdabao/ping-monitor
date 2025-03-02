@@ -38,6 +38,9 @@ import bbcdabao.pingmonitor.common.json.JsonConvert;
 import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 
+/**
+ * Template core management
+ */
 public class TemplatesManager {
 
     private static class Holder {
@@ -87,23 +90,17 @@ public class TemplatesManager {
         for (Map.Entry<String, Class<? extends IPingMoniterPlug>> entry : pingMoniterPlugMap.entrySet()) {
             Class<? extends IPingMoniterPlug> plugClazz = entry.getValue();
             IPingMoniterPlug plug = plugClazz.getConstructor().newInstance();
-            Map<String, TemplateField> plugTemplate = ExtractionField.getInstance().extractionTemplateMapFromObject(plug);
+            Map<String, TemplateField> plugTemplate = ExtractionField.getInstance()
+                    .extractionTemplateMapFromObject(plug);
             String strPlugTemplate = JsonConvert.getInstance().tobeJson(plugTemplate);
             byte[] bytePlugTemplate = ByteDataConver.getInstance().getConvertToByteForString().getData(strPlugTemplate);
-            StringBuilder sb = new StringBuilder()
-                    .append(PatchConstant.ROBOT_TEMPLATES)
-                    .append("/")
+            StringBuilder sb = new StringBuilder().append(PatchConstant.ROBOT_TEMPLATES).append("/")
                     .append(entry.getKey());
             String plugNamePath = sb.toString();
             try {
-                curatorFramework
-                .create()
-                .creatingParentsIfNeeded()
-                .forPath(plugNamePath, bytePlugTemplate);
+                curatorFramework.create().creatingParentsIfNeeded().forPath(plugNamePath, bytePlugTemplate);
             } catch (NodeExistsException e) {
-                curatorFramework
-                .setData()
-                .forPath(plugNamePath, bytePlugTemplate);
+                curatorFramework.setData().forPath(plugNamePath, bytePlugTemplate);
             }
         }
     }
@@ -120,32 +117,19 @@ public class TemplatesManager {
     }
 
     public IPingMoniterPlug getPingMoniterPlugUsedTaskName(String taskName) throws Exception {
-        StringBuilder sb = new StringBuilder()
-                .append(PatchConstant.TASKS)
-                .append("/")
-                .append(taskName);
-        String plugName = ByteDataConver
-                .getInstance()
-                .getConvertFromByteForString()
-                .getValue(CuratorFrameworkInstance
-                        .getInstance()
-                        .getData()
-                        .forPath(sb.toString()));
+        StringBuilder sb = new StringBuilder().append(PatchConstant.TASKS).append("/").append(taskName);
+        String plugName = ByteDataConver.getInstance().getConvertFromByteForString()
+                .getValue(CuratorFrameworkInstance.getInstance().getData().forPath(sb.toString()));
 
         sb.append(PatchConstant.CONFIG);
 
-        Properties properties = ByteDataConver
-                .getInstance()
-                .getConvertFromByteForProperties()
-                .getValue(CuratorFrameworkInstance
-                        .getInstance()
-                        .getData()
-                        .forPath(sb.toString()));
-        
+        Properties properties = ByteDataConver.getInstance().getConvertFromByteForProperties()
+                .getValue(CuratorFrameworkInstance.getInstance().getData().forPath(sb.toString()));
+
         IPingMoniterPlug pingMoniterPlug = getPingMoniterPlug(plugName);
-        
+
         ExtractionField.getInstance().populateObjectFromProperties(properties, pingMoniterPlug);
-        
+
         return pingMoniterPlug;
     }
 }
