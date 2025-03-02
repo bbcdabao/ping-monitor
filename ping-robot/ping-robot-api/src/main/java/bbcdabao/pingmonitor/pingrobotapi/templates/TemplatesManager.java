@@ -72,7 +72,6 @@ public class TemplatesManager {
                 String plugName = pingMoniterPlug.getName().replace('.', '_');
                 templatesManager.pingMoniterPlugMap.put(plugName, pingMoniterPlug);
             }
-            templatesManager.init();
         } catch (Exception e) {
             throw new Error(e.getMessage());
         }
@@ -106,6 +105,18 @@ public class TemplatesManager {
     }
 
     private TemplatesManager() {
+    }
+
+    public void checkPingMoniterPlug(ICheck check) {
+        for (Map.Entry<String, Class<? extends IPingMoniterPlug>> entry : pingMoniterPlugMap.entrySet()) {
+            Class<? extends IPingMoniterPlug> plugClazz = entry.getValue();
+            String plugName = entry.getKey();
+            try {
+                check.onCheck(plugName, plugClazz);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public IPingMoniterPlug getPingMoniterPlug(String plugName) throws Exception {

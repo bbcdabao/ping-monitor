@@ -18,10 +18,20 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.config;
 
+import java.util.Map;
+
+import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
+import bbcdabao.pingmonitor.common.constants.PatchConstant;
+import bbcdabao.pingmonitor.common.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.extraction.ExtractionField;
+import bbcdabao.pingmonitor.common.extraction.TemplateField;
+import bbcdabao.pingmonitor.common.json.JsonConvert;
+import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
+import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.templates.TemplatesManager;
 import lombok.Data;
 
@@ -34,6 +44,20 @@ public class Config implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        TemplatesManager.getInstance();
+        TemplatesManager.getInstance().checkPingMoniterPlug((plugName, plugClazz) -> {
+            IPingMoniterPlug plug = plugClazz.getConstructor().newInstance();
+            Map<String, TemplateField> plugTemplate = ExtractionField.getInstance()
+                    .extractionTemplateMapFromObject(plug);
+            String strPlugTemplate = JsonConvert.getInstance().tobeJson(plugTemplate);
+            byte[] bytePlugTemplate = ByteDataConver.getInstance().getConvertToByteForString().getData(strPlugTemplate);
+            StringBuilder sb = new StringBuilder().append(PatchConstant.ROBOT_TEMPLATES).append("/").append(plugName);
+            String plugNamePath = sb.toString();
+            try {
+                CuratorFrameworkInstance.getInstance().create().creatingParentsIfNeeded().forPath(plugNamePath,
+                        bytePlugTemplate);
+            } catch (NodeExistsException e) {
+                CuratorFrameworkInstance.getInstance().setData().forPath(plugNamePath, bytePlugTemplate);
+            }
+        });
     }
 }
