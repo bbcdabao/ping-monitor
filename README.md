@@ -115,33 +115,33 @@ Zookeep model description:
 ping-monitor
 │ 
 │    
-├── ping-common         // 公用部分代码
+├── ping-common         // Common part code
 │   ├── src
 │   └── pom.xml
 │ 
-├── ping-manager        // 拨测后台服务，内置zookeeper便于开发测试
+├── ping-manager        // Dial and test background services, built-in zookeeper facilitates development and testing
 │   ├── src
 │   └── pom.xml
 │ 
-├── ping-manager-web    // 拨测后台服务，API网关
+├── ping-manager-web    // Dial test background service, API gateway
 │   ├── src
 │   └── pom.xml
 │ 
-├── ping-manager-ui     // 拨测后台服务，内置zookeeper便于开发测试
+├── ping-manager-ui     // Dial and test background services, built-in zookeeper facilitates development and testing
 │   ├── src
 │   └── package.json
 │ 
-├── ping-metric-exporter// 拨测结果监控感知，导出到Pro米修斯
+├── ping-metric-exporter// Dial test results to monitor perception and export to Prometheus
 │   ├── src
 │   └── pom.xml
 │
-└── ping-robot          // 拨测机器人软件开发包
+└── ping-robot          // Dial test robot software development kit
     │ 
-    ├── ping-robot-api  // 支持机器人组开发件
+    ├── ping-robot-api  // Support robot group development components
     │   ├── src 
     │   └── pom.xml
     │ 
-    ├── ping-robot-man  // 拨测机器人实现
+    ├── ping-robot-man  // Dial test robot implementation
     │   ├── src 
     │   └── pom.xml
     │ 
