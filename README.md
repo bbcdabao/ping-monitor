@@ -21,9 +21,9 @@ The following is based on a zk namespace
 	]
 	/register (Robot registration directory) [
 		/rebot-xxx (The name of the robot group. The instances inside are temporary nodes) [
-			/UUID01 (Temporary node "ip@procid")
-			/UUID02 (Temporary node "ip@procid")
-			/UUID03 (Temporary node "ip@procid")
+			/instance/UUID01 (Temporary node "ip@procid")
+			/instance/UUID02 (Temporary node "ip@procid")
+			/instance/UUID03 (Temporary node "ip@procid")
 			/config (Robot group configuration "{executionType:master or all}")
 			/tasks (Dial test task list, child nodes cannot be repeated) [
 				/task-01 (Scheduling concurrent configuration)
@@ -69,9 +69,9 @@ The following is based on a zk namespace
 	]
 	/register (机器人注册目录) [
 		/rebot-xxx (机器人组名称,里面的实例都是临时节点) [
-			/UUID01 (临时节点 "ip@procid")
-			/UUID02 (临时节点 "ip@procid")
-			/UUID03 (临时节点 "ip@procid")
+			/instance/UUID01 (临时节点 "ip@procid")
+			/instance/UUID02 (临时节点 "ip@procid")
+			/instance/UUID03 (临时节点 "ip@procid")
 			/config (机器人组配置 "{executionType:master or all}")
 			/tasks (拨测任务列表,子节点不可重复) [
 				/task-01 (调度并发配置)
