@@ -2,14 +2,13 @@
 
 # 拨测系统思路文字描述：
 
-- 拨测机器人：采用SPI技术实现插件，每个拨测插件的唯一名字用java包名代替  
-例如，下面是3个拨测插件唯一名字:  
+- Zookeep model description:
 ```
-plugs {
-	com.xxx.sss.PingCallTest,
-	com.xxx.sss.HttpCallTest,
-	com.xxx.sss.XXXXCallTest
-}
+/[path] (value describes "example") [
+	/[subpath] (value describes "example") [
+		...
+	]
+]
 ```
 - 拨测系统为分布式应用，基于zookeeper协调，zk数据结构如下  
 以下是基于一个zk命名空间下
