@@ -1,6 +1,6 @@
 # ping-monitor
 
-# 拨测系统思路文字描述：
+# Text description of the dial test system idea / 拨测系统思路文字描述：
 
 - Zookeep model description:
 ```
