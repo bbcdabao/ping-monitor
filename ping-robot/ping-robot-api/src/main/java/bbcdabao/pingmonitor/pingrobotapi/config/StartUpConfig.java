@@ -39,6 +39,7 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "robot")
 @Data
 public class StartUpConfig implements ApplicationRunner {
+
     private String robotGroupName;
     private String plugsPath;
 
@@ -66,6 +67,7 @@ public class StartUpConfig implements ApplicationRunner {
     }
 
     private static AtomicReference<StartUpConfig> INSTANCE_REF = new AtomicReference<>();
+
     public static StartUpConfig getInstance() {
         return INSTANCE_REF.get();
     }

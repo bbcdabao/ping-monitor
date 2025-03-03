@@ -40,6 +40,7 @@ public class ZkclientframeConfig {
     }
 
     private static AtomicReference<ZkclientframeConfig> INSTANCE_REF = new AtomicReference<>();
+
     public static ZkclientframeConfig getInstance() {
         return INSTANCE_REF.get();
     }

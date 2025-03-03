@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.reflections.Reflections;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -32,10 +30,9 @@ import org.springframework.util.ObjectUtils;
 import bbcdabao.pingmonitor.common.constants.PatchConstant;
 import bbcdabao.pingmonitor.common.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.common.extraction.ExtractionField;
-import bbcdabao.pingmonitor.common.extraction.TemplateField;
-import bbcdabao.pingmonitor.common.json.JsonConvert;
 import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
+import bbcdabao.pingmonitor.pingrobotapi.config.PlugsPathConfig;
 import bbcdabao.pingmonitor.pingrobotapi.config.StartUpConfig;
 
 /**
@@ -50,16 +47,16 @@ public class TemplatesManager {
     private static TemplatesManager getTemplatesManagerInstance() {
         TemplatesManager templatesManager = new TemplatesManager();
         try {
-            StartUpConfig startUpConfig = StartUpConfig.getInstance();
-            if (null == startUpConfig) {
-                throw new Exception("startUpConfig is null!");
+            PlugsPathConfig plugsPathConfig = PlugsPathConfig.getInstance();
+            if (null == plugsPathConfig) {
+                throw new Exception("plugsPathConfig is null!");
             }
-            String plugPath = startUpConfig.getPlugsPath();
+            String plugPath = plugsPathConfig.getPlugsPath();
             if (ObjectUtils.isEmpty(plugPath)) {
                 throw new Exception("plugPath is isEmpty!");
             }
             Reflections reflections = new Reflections(StartUpConfig.getInstance().getPlugsPath());
-            
+
             Set<Class<? extends IPingMoniterPlug>> pingMoniterPlugs = reflections.getSubTypesOf(IPingMoniterPlug.class);
             if (CollectionUtils.isEmpty(pingMoniterPlugs)) {
                 throw new Exception("no ping moniter plug exit!");
@@ -79,26 +76,6 @@ public class TemplatesManager {
     }
 
     private Map<String, Class<? extends IPingMoniterPlug>> pingMoniterPlugMap = new HashMap<>(20);
-
-    private void init() throws Exception {
-        CuratorFramework curatorFramework = CuratorFrameworkInstance.getInstance();
-        for (Map.Entry<String, Class<? extends IPingMoniterPlug>> entry : pingMoniterPlugMap.entrySet()) {
-            Class<? extends IPingMoniterPlug> plugClazz = entry.getValue();
-            IPingMoniterPlug plug = plugClazz.getConstructor().newInstance();
-            Map<String, TemplateField> plugTemplate = ExtractionField.getInstance()
-                    .extractionTemplateMapFromObject(plug);
-            String strPlugTemplate = JsonConvert.getInstance().tobeJson(plugTemplate);
-            byte[] bytePlugTemplate = ByteDataConver.getInstance().getConvertToByteForString().getData(strPlugTemplate);
-            StringBuilder sb = new StringBuilder().append(PatchConstant.ROBOT_TEMPLATES).append("/")
-                    .append(entry.getKey());
-            String plugNamePath = sb.toString();
-            try {
-                curatorFramework.create().creatingParentsIfNeeded().forPath(plugNamePath, bytePlugTemplate);
-            } catch (NodeExistsException e) {
-                curatorFramework.setData().forPath(plugNamePath, bytePlugTemplate);
-            }
-        }
-    }
 
     private TemplatesManager() {
     }

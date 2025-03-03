@@ -25,8 +25,9 @@ import org.springframework.context.annotation.Bean;
  * Core configuration
  */
 public class Config {
+
     @Bean
-    @ConditionalOnProperty(prefix = "zkclientframe", name= "enable", havingValue = "true", matchIfMissing = false)
+    @ConditionalOnProperty(prefix = "zkclientframe", name = "enable", havingValue = "true", matchIfMissing = false)
     ZkclientframeConfig getZkclientframeConfig() {
         return new ZkclientframeConfig();
     }
