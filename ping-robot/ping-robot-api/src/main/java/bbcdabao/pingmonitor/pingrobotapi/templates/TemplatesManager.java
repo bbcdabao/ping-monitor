@@ -18,7 +18,6 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.templates;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,6 +36,7 @@ import bbcdabao.pingmonitor.common.extraction.TemplateField;
 import bbcdabao.pingmonitor.common.json.JsonConvert;
 import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
+import bbcdabao.pingmonitor.pingrobotapi.config.StartUpConfig;
 
 /**
  * Template core management
@@ -49,21 +49,17 @@ public class TemplatesManager {
 
     private static TemplatesManager getTemplatesManagerInstance() {
         TemplatesManager templatesManager = new TemplatesManager();
-
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream("META-INF/ping-moniter-plug-path.properties")) {
-            if (inputStream == null) {
-                throw new Exception("ping-moniter-plug-path.properties inputStream is null!");
+        try {
+            StartUpConfig startUpConfig = StartUpConfig.getInstance();
+            if (null == startUpConfig) {
+                throw new Exception("startUpConfig is null!");
             }
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            properties.forEach((key, value) -> System.out.println(key + "=" + value));
-            Object getPath = properties.get("path");
-            String strPath = getPath.toString();
-            if (ObjectUtils.isEmpty(strPath)) {
-                throw new Exception("ping-moniter-plug-path.properties path config is empty");
+            String plugPath = startUpConfig.getPlugsPath();
+            if (ObjectUtils.isEmpty(plugPath)) {
+                throw new Exception("plugPath is isEmpty!");
             }
-            Reflections reflections = new Reflections(strPath);
+            Reflections reflections = new Reflections(StartUpConfig.getInstance().getPlugsPath());
+            
             Set<Class<? extends IPingMoniterPlug>> pingMoniterPlugs = reflections.getSubTypesOf(IPingMoniterPlug.class);
             if (CollectionUtils.isEmpty(pingMoniterPlugs)) {
                 throw new Exception("no ping moniter plug exit!");
