@@ -33,7 +33,6 @@ import bbcdabao.pingmonitor.common.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.config.PlugsPathConfig;
-import bbcdabao.pingmonitor.pingrobotapi.config.StartUpConfig;
 
 /**
  * Template core management
@@ -55,7 +54,7 @@ public class TemplatesManager {
             if (ObjectUtils.isEmpty(plugPath)) {
                 throw new Exception("plugPath is isEmpty!");
             }
-            Reflections reflections = new Reflections(StartUpConfig.getInstance().getPlugsPath());
+            Reflections reflections = new Reflections(plugPath);
 
             Set<Class<? extends IPingMoniterPlug>> pingMoniterPlugs = reflections.getSubTypesOf(IPingMoniterPlug.class);
             if (CollectionUtils.isEmpty(pingMoniterPlugs)) {

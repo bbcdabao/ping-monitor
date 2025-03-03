@@ -41,7 +41,6 @@ import lombok.Data;
 public class StartUpConfig implements ApplicationRunner {
 
     private String robotGroupName;
-    private String plugsPath;
 
     private void pushTemplatesInfo() throws Exception {
         TemplatesManager.getInstance().checkPingMoniterPlug((plugName, plugClazz) -> {
