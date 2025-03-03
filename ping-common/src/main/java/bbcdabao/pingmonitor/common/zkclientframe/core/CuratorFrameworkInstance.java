@@ -23,7 +23,7 @@ import org.apache.curator.RetrySleeper;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 
-import lombok.Data;
+import bbcdabao.pingmonitor.common.config.ZkclientframeConfig;
 
 /**
  * CuratorFramework Manager
@@ -36,26 +36,6 @@ public class CuratorFrameworkInstance {
 
     private CuratorFrameworkInstance() {
     }
-
-    @Data
-    public static class Config {
-        private String connectString;
-    }
-
-    @FunctionalInterface
-    public interface ConfigProvider {
-        Config getConfig();
-    }
-
-    public static void setConfigProvider(ConfigProvider configProvider) {
-        CONFIG_PROVIDER = configProvider;
-    }
-
-    private static volatile ConfigProvider CONFIG_PROVIDER = () -> {
-        Config config = new Config();
-        config.setConnectString("127.0.0.1:2181");
-        return config;
-    };
 
     private static CuratorFramework createCuratorFramework() {
         RetryPolicy retryPolicy = new RetryPolicy() {
@@ -70,8 +50,19 @@ public class CuratorFrameworkInstance {
                 }
             }
         };
-        Config config = CONFIG_PROVIDER.getConfig();
-        CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient(config.getConnectString(), retryPolicy);
+        ZkclientframeConfig zkclientframeConfig = ZkclientframeConfig.getInstance();
+        if (null == zkclientframeConfig) {
+            System.exit(1);
+        }
+
+        CuratorFramework curatorFramework = CuratorFrameworkFactory.builder()
+                .retryPolicy(retryPolicy)
+                .namespace(zkclientframeConfig.getNameSpace())
+                .connectString(zkclientframeConfig.getConnectString())
+                .sessionTimeoutMs(zkclientframeConfig.getSessionTimeoutMs())
+                .connectionTimeoutMs(zkclientframeConfig.getConnectionTimeoutMs())
+                .build();
+
         curatorFramework.start();
         registerShutdownHook();
         return curatorFramework;
