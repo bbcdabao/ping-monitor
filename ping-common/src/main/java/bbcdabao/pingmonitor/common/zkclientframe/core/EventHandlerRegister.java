@@ -31,6 +31,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
@@ -165,12 +166,12 @@ public class EventHandlerRegister implements IRegister {
      * @param handler Session handler
      */
     @Override
-    public void reg(String path, BaseEventHandler handler) {
+    public CuratorCache reg(String path, BaseEventHandler handler) {
         if (ObjectUtils.isEmpty(path)) {
-            return;
+            return null;
         }
         if (null == handler) {
-            return;
+            return null;
         }
         /**
          * When optimization is needed in the future, add judgment and attention events
@@ -193,7 +194,7 @@ public class EventHandlerRegister implements IRegister {
         }
         HandlerNode handlerNode = getHandlerNode(handler);
         executorService.execute(handlerNode);
-        pathManager.addPathListener(path, handlerNode);
+        return pathManager.addPathListener(path, handlerNode);
     }
 
     /**
