@@ -51,49 +51,41 @@ The following is based on a zk namespace
 # 拨测系统思路文字描述：
 - Zookeep 模型说明:
 ```
-/[路径] (节点值描述 "例子") [
-	/[子路径] (节点值描述 "例子") [
-		...
-	]
-]
-```
-- 拨测系统为分布式应用，基于zookeeper协调，zk数据结构如下
-以下是基于一个zk命名空间下
-```
-/sysconfig (JSON格式系统配置 "{pingcycle: 60000}")
-/robot (机器人根目录) [
-	/templates (机器人插件模板) [
-		/com_xxx_sss_PingCallTest(JSON格式模板 "{pingTimeout:{type:LONG,desCn:超时时间,desEn:timeout},ipaddr:192.168.10.8}")
-		/com_xxx_sss_HttpCallTest(JSON格式模板 "{pingTimeout:{type:LONG,desCn:超时时间,desEn:timeout},url:http://test.com}")
-		/com_xxx_sss_XXXXCallTest(JSON格式模板 "{pingTimeout:{type:LONG,desCn:超时时间,desEn:timeout},calres:http://a.com}")
-	]
-	/register (机器人注册目录) [
-		/rebot-xxx (机器人组名称,里面的实例都是临时节点) [
-			/instance/UUID01 (临时节点 "ip@procid")
-			/instance/UUID02 (临时节点 "ip@procid")
-			/instance/UUID03 (临时节点 "ip@procid")
-			/config (机器人组配置 "{executionType:master or all}")
-			/tasks (拨测任务列表,子节点不可重复) [
-				/task-01 (调度并发配置)
-				/task-02 (调度并发配置)
-			]
-		]
-	]
-]
-/tasks [
-	/task-01 (机器人插件模板名称 "com_xxx_sss_PingCallTest") [
-		/config (采用Properties保存 "{ip=127.0.0.1, port=3251}")
-		/result (拨测结果,子结点带有TTL) [
-			/rebot-xxx (300ms)
-		]
-	}
-	/task-02 (机器人插件模板名称 "com_xxx_sss_HttpCallTest") [
-		config (采用Properties保存 "{url=https://baidu.com}")
-		/result (拨测结果,子结点带有TTL) [
-			/rebot-xxx {300ms}
-		]
-	]
-]
+/sysconfig
+  └── (JSON格式系统配置) "{pingcycle: 60000}"
+
+/robot (机器人根目录)
+  ├── /templates (机器人插件模板)
+  │   ├── /com_xxx_sss_PingCallTest 
+  │   │     └── (JSON格式模板) "{pingTimeout: {type: LONG, desCn: 超时时间, desEn: timeout}, ipaddr: 192.168.10.8}"
+  │   ├── /com_xxx_sss_HttpCallTest 
+  │   │     └── (JSON格式模板) "{pingTimeout: {type: LONG, desCn: 超时时间, desEn: timeout}, url: http://test.com}"
+  │   ├── /com_xxx_sss_XXXXCallTest 
+  │         └── (JSON格式模板) "{pingTimeout: {type: LONG, desCn: 超时时间, desEn: timeout}, calres: http://a.com}"
+  │
+  ├── /register (机器人注册目录)
+  │   ├── /rebot-xxx (机器人组名称)
+  │   │   ├── /instance (实例子节点，都是临时节点)
+  │   │   │   ├── /UUID01 ("ip@procid")
+  │   │   │   ├── /UUID02 ("ip@procid")
+  │   │   │   └── /UUID03 ("ip@procid")
+  │   │   ├── /tasks (拨测任务列表，子节点不可重复)
+  │   │   │   ├── /task-01 (调度并发配置)
+  │   │   │   └── /task-02 (调度并发配置)
+
+/tasks (任务配置)
+  ├── /task-01 (机器人插件模板: com_xxx_sss_PingCallTest)
+  │   └── /config (Properties格式) "{ip=127.0.0.1, port=3251}"
+  ├── /task-02 (机器人插件模板: com_xxx_sss_HttpCallTest)
+  │   └── /config (Properties格式) "{url=https://baidu.com}"
+
+/result (拨测结果，子结点带有TTL)
+  ├── /task-01
+  │   ├── /rebot-xxx (300ms)
+  │   └── /rebot-xxx (300ms)
+  ├── /task-02
+  │   ├── /rebot-xxx (300ms)
+  │   └── /rebot-xxx (500ms)
 ```
 
 - Code module design, the following structure
