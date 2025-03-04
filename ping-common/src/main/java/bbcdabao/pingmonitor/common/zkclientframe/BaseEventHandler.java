@@ -20,6 +20,8 @@ package bbcdabao.pingmonitor.common.zkclientframe;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.curator.framework.recipes.cache.CuratorCache;
+
 import bbcdabao.pingmonitor.common.zkclientframe.core.EventHandlerRegister;
 import bbcdabao.pingmonitor.common.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.zkclientframe.event.CreatedEvent;
@@ -34,7 +36,7 @@ public abstract class BaseEventHandler {
      * Monitoring interface
      */
     public static interface IRegister {
-        void reg(String patch, BaseEventHandler handler);
+        CuratorCache reg(String patch, BaseEventHandler handler);
     }
 
     /**
