@@ -23,4 +23,5 @@ import lombok.Data;
 @Data
 public class Sysconfig {
     private long pingcycle;
+    private long resultTtl;
 }
