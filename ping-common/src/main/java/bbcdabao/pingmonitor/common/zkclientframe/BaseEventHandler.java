@@ -54,8 +54,8 @@ public abstract class BaseEventHandler {
      * @param patch
      * @param register
      */
-    public void start(String patch) {
-        EventHandlerRegister.getInstance().reg(patch, this);
+    public CuratorCache start(String patch) {
+        return EventHandlerRegister.getInstance().reg(patch, this);
     }
 
     public void onEvent(CreatedEvent data) throws Exception {
