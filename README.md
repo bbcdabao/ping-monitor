@@ -29,7 +29,7 @@ The following is based on a zk namespace
   ├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
   │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
   ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
-  │   └── /config (Properties format) "{url=[https://baidu.com}](https://baidu.com})"
+  │   └── /config (Properties format) "{url=https://baiduaa.com}"
 
 /result (Monitoring results, child nodes have TTL)
   ├── /task-01
@@ -38,10 +38,12 @@ The following is based on a zk namespace
   ├── /task-02
   │   ├── /rebot-xxx (300ms)
   │   └── /rebot-xxx (500ms)
+
 ```
 
 # 拨测系统思路文字描述：
-- Zookeep 模型说明:
+- 拨测系统是一个分布式应用，基于zookeeper协调，zk数据结构如下
+下面是基于一个zk namespace:
 ```
 /sysconfig
   └── (JSON格式系统配置) "{pingcycle: 60000}"
@@ -69,7 +71,7 @@ The following is based on a zk namespace
   ├── /task-01 (机器人插件模板: com_xxx_sss_PingCallTest)
   │   └── /config (Properties格式) "{ip=127.0.0.1, port=3251}"
   ├── /task-02 (机器人插件模板: com_xxx_sss_HttpCallTest)
-  │   └── /config (Properties格式) "{url=https://baidu.com}"
+  │   └── /config (Properties格式) "{url=https://baiduaa.com}"
 
 /result (拨测结果，子结点带有TTL)
   ├── /task-01
