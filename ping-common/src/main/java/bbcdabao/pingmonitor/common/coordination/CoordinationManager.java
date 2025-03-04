@@ -21,10 +21,12 @@ package bbcdabao.pingmonitor.common.coordination;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
+import org.apache.zookeeper.ZooDefs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -94,6 +96,32 @@ public class CoordinationManager {
             .create()
             .creatingParentsIfNeeded()
             .withMode(mode)
+            .forPath(path, data);
+        } catch (NodeExistsException e) {
+            CuratorFrameworkInstance
+            .getInstance()
+            .setData()
+            .forPath(path, data);
+        }
+    }
+
+    private void deleteAndcreateWithTtl(String path, byte[] data) throws Exception {
+        try {
+            CuratorFrameworkInstance.getInstance().getZookeeperClient().getZooKeeper().create(
+                    path,
+                    "Some data".getBytes(),
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.EPHEMERAL,
+                    null,
+                    1000
+            );
+
+            CuratorFrameworkInstance
+            .getInstance()
+            .create()
+            .creatingParentsIfNeeded()
+            .withMode(CreateMode.EPHEMERAL)
+            .withTtl()
             .forPath(path, data);
         } catch (NodeExistsException e) {
             CuratorFrameworkInstance
@@ -211,5 +239,44 @@ public class CoordinationManager {
                 .getInstance()
                 .getConvertToByteForString()
                 .getData(instanceValue));
+    }
+
+    /**
+     * Get task config by taskName
+     * @param taskName
+     * @return
+     * @throws Exception
+     */
+    public Properties getTaskConfigByTaskName(String taskName) throws Exception {
+        StringBuilder sb = new StringBuilder()
+                .append("/tasks/")
+                .append(taskName)
+                .append("/config");
+        return ByteDataConver
+                .getInstance()
+                .getConvertFromByteForProperties()
+                .getValue(
+                        CuratorFrameworkInstance
+                        .getInstance()
+                        .getData().forPath(sb.toString()));
+    }
+
+    /**
+     * Get plug name by taskName
+     * @param taskName
+     * @return
+     * @throws Exception
+     */
+    public String getPlugNameByTaskName(String taskName) throws Exception {
+        StringBuilder sb = new StringBuilder()
+                .append("/tasks/")
+                .append(taskName);
+        return ByteDataConver
+                .getInstance()
+                .getConvertFromByteForString()
+                .getValue(
+                        CuratorFrameworkInstance
+                        .getInstance()
+                        .getData().forPath(sb.toString()));
     }
 }
