@@ -113,7 +113,7 @@ class PathManager implements Runnable {
      * Add to send
      */
     private Map<String, PathNode> pathNodeMap = new HashMap<>(1000);
-    private synchronized void getPathNode(String path, WeakReference<IEventSender> weakSender) {
+    private synchronized CuratorCache getPathNode(String path, WeakReference<IEventSender> weakSender) {
         PathNode pathNode = pathNodeMap.computeIfAbsent(path, (k) -> {
             CuratorCache curatorCache = CuratorCache.build(client, path);
             curatorCache.start();
@@ -129,6 +129,7 @@ class PathManager implements Runnable {
             return pathNodeNew;
         });
         pathNode.addSender(weakSender);
+        return pathNode.curatorCache;
     }
 
     /**
@@ -157,9 +158,9 @@ class PathManager implements Runnable {
         void send(IEvent event);
     }
 
-    public void addPathListener(String path, IEventSender sender) {
+    public CuratorCache addPathListener(String path, IEventSender sender) {
         WeakReference<IEventSender> weakSender = new WeakReference<>(sender);
-        getPathNode(path, weakSender);
+        return getPathNode(path, weakSender);
     }
 
     public PathManager(CuratorFramework client, long scanCycle) {
