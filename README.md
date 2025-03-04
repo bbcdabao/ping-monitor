@@ -88,7 +88,7 @@ The following is based on a zk namespace
   │   └── /rebot-xxx (500ms)
 ```
 
-- Code module design, the following structure
+- Code module design, the following structure (chinese:下面是代码结构设计)
 ```
 ping-monitor
 │ 
