@@ -18,6 +18,7 @@
 
 package bbcdabao.pingmonitor.common.json;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonConvert {
@@ -37,6 +38,10 @@ public class JsonConvert {
 
     public <T> T fromJson(String json, Class<T> valueType) throws Exception {
         return threadLocalObjectMapper.get().readValue(json, valueType);
+    }
+
+    public <T> T fromJson(String json, TypeReference<T> typeReference) throws Exception {
+        return threadLocalObjectMapper.get().readValue(json, typeReference);
     }
 
     public String tobeJson(Object object) throws Exception {
