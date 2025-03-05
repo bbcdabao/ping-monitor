@@ -22,11 +22,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
-import org.apache.zookeeper.ZooDefs;
+import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -105,32 +106,6 @@ public class CoordinationManager {
         }
     }
 
-    private void deleteAndcreateWithTtl(String path, byte[] data) throws Exception {
-        try {
-            CuratorFrameworkInstance.getInstance().getZookeeperClient().getZooKeeper().create(
-                    path,
-                    "Some data".getBytes(),
-                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.EPHEMERAL,
-                    null,
-                    1000
-            );
-
-            CuratorFrameworkInstance
-            .getInstance()
-            .create()
-            .creatingParentsIfNeeded()
-            .withMode(CreateMode.EPHEMERAL)
-            .withTtl()
-            .forPath(path, data);
-        } catch (NodeExistsException e) {
-            CuratorFrameworkInstance
-            .getInstance()
-            .setData()
-            .forPath(path, data);
-        }
-    }
-
     /**
      * Table of contents is as follows:
      * 
@@ -150,7 +125,6 @@ public class CoordinationManager {
                                 .getData()
                                 .forPath("/sysconfig")), Sysconfig.class);
     }
-
     public void setSysconfig(Sysconfig sysconfig) throws Exception {
         createOrSetData("/sysconfig", CreateMode.PERSISTENT,
                 ByteDataConver
@@ -177,9 +151,9 @@ public class CoordinationManager {
      */
     private static TypeReference<Map<String, TemplateField>> TYP_PLUGTEMPLATE = new TypeReference<Map<String, TemplateField>>() {};
     public Map<String, TemplateField> getPlugTemplate(String plugName) throws Exception {
-        StringBuilder sb = new StringBuilder()
+        String path = new StringBuilder()
                 .append("/robot/templates/")
-                .append(plugName);
+                .append(plugName).toString();
         return JsonConvert
                 .getInstance()
                 .fromJson(ByteDataConver
@@ -188,14 +162,13 @@ public class CoordinationManager {
                         .getValue(CuratorFrameworkInstance
                                 .getInstance()
                                 .getData()
-                                .forPath(sb.toString())), TYP_PLUGTEMPLATE);
+                                .forPath(path)), TYP_PLUGTEMPLATE);
     }
-
-    public void putPlugTemplate(String plugName, Map<String, TemplateField> plugTemplate) throws Exception {
-        StringBuilder sb = new StringBuilder()
+    public void setPlugTemplate(String plugName, Map<String, TemplateField> plugTemplate) throws Exception {
+        String path = new StringBuilder()
                 .append("/robot/templates/")
-                .append(plugName);
-        createOrSetData(sb.toString(), CreateMode.PERSISTENT,
+                .append(plugName).toString();
+        createOrSetData(path, CreateMode.PERSISTENT,
                 ByteDataConver
                 .getInstance()
                 .getConvertToByteForString()
@@ -217,11 +190,11 @@ public class CoordinationManager {
      */
     private static final String REG_UUID = UUID.randomUUID().toString();
     public void regRobotInstance(String robotGropName) throws Exception {
-        StringBuilder sb = new StringBuilder()
+        String path = new StringBuilder()
                 .append("/register/")
                 .append(robotGropName)
                 .append("/instance/")
-                .append(REG_UUID);
+                .append(REG_UUID).toString();
         String ipAddr = "none";
         try {
             InetAddress ip = InetAddress.getLocalHost();
@@ -234,7 +207,7 @@ public class CoordinationManager {
                 .append("@")
                 .append(ProcessHandle.current().pid())
                 .toString();
-        createOrSetData(sb.toString(), CreateMode.EPHEMERAL,
+        createOrSetData(path, CreateMode.EPHEMERAL,
                 ByteDataConver
                 .getInstance()
                 .getConvertToByteForString()
@@ -242,41 +215,102 @@ public class CoordinationManager {
     }
 
     /**
-     * Get task config by taskName
+     * Task config by taskName
      * @param taskName
      * @return
      * @throws Exception
      */
     public Properties getTaskConfigByTaskName(String taskName) throws Exception {
-        StringBuilder sb = new StringBuilder()
+        String path = new StringBuilder()
                 .append("/tasks/")
                 .append(taskName)
-                .append("/config");
+                .append("/config").toString();
         return ByteDataConver
                 .getInstance()
                 .getConvertFromByteForProperties()
                 .getValue(
                         CuratorFrameworkInstance
                         .getInstance()
-                        .getData().forPath(sb.toString()));
+                        .getData().forPath(path));
+    }
+    public void setTaskConfigByTaskName(String taskName, Properties properties) throws Exception {
+        String path = new StringBuilder()
+                .append("/tasks/")
+                .append(taskName)
+                .append("/config").toString();
+        createOrSetData(path, CreateMode.PERSISTENT, 
+                ByteDataConver
+                .getInstance()
+                .getConvertToByteForProperties()
+                .getData(properties));
+        
     }
 
     /**
-     * Get plug name by taskName
+     * Get plug name by taskName.
+     * Just had get can not modify.
      * @param taskName
      * @return
      * @throws Exception
      */
     public String getPlugNameByTaskName(String taskName) throws Exception {
-        StringBuilder sb = new StringBuilder()
+        String path = new StringBuilder()
                 .append("/tasks/")
-                .append(taskName);
+                .append(taskName).toString();
         return ByteDataConver
                 .getInstance()
                 .getConvertFromByteForString()
                 .getValue(
                         CuratorFrameworkInstance
                         .getInstance()
-                        .getData().forPath(sb.toString()));
+                        .getData().forPath(path));
+    }
+
+    /**
+     * Create one task
+     * @param taskName
+     * @param plugName
+     * @param properties
+     * @throws Exception
+     */
+    public void createTask(String taskName, String plugName, Properties properties) throws Exception {
+        Map<String, TemplateField> plugTemplate =  getPlugTemplate(plugName);
+        Set<String> plugFields = plugTemplate.keySet();
+        for (String plugField : plugFields) {
+            String plueFiledValue = properties.getProperty(plugField);
+            if (ObjectUtils.isEmpty(plueFiledValue)) {
+                throw new Exception(plugField + " is not config!");
+            }
+        }
+        String taskPath = new StringBuilder()
+                .append("/tasks/")
+                .append(taskName).toString();
+
+        CuratorFrameworkInstance
+        .getInstance()
+        .create()
+        .creatingParentsIfNeeded()
+        .withMode(CreateMode.PERSISTENT)
+        .forPath(taskPath, ByteDataConver
+                .getInstance()
+                .getConvertToByteForString()
+                .getData(plugName));
+        try {
+            String configPath = new StringBuilder()
+                    .append("/tasks/")
+                    .append(taskName)
+                    .append("/config").toString();
+            createOrSetData(configPath, CreateMode.PERSISTENT,
+                    ByteDataConver
+                    .getInstance()
+                    .getConvertToByteForProperties()
+                    .getData(properties));
+        } catch (Exception e) {
+            CuratorFrameworkInstance
+            .getInstance()
+            .delete()
+            .forPath(taskPath);
+            throw e;
+        }
     }
 }
