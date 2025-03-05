@@ -31,4 +31,10 @@ public class Config {
     ZkclientframeConfig getZkclientframeConfig() {
         return new ZkclientframeConfig();
     }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "executor-config", name = "enable", havingValue = "true", matchIfMissing = false)
+    ExecutorConfig getExecutorConfig() {
+        return new ExecutorConfig();
+    }
 }
