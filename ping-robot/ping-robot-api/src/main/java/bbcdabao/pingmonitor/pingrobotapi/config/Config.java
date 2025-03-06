@@ -19,15 +19,17 @@
 package bbcdabao.pingmonitor.pingrobotapi.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Core configuration
  */
+@Configuration
 public class Config {
 
     @Bean
-    PlugsPathConfig getPlugsPathConfig() {
-        return new PlugsPathConfig();
+    RobotConfig getRobotConfig() {
+        return new RobotConfig();
     }
 
     @Bean
