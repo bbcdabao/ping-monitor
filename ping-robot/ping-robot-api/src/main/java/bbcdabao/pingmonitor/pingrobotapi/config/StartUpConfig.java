@@ -18,83 +18,32 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.config;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import bbcdabao.pingmonitor.common.constants.PatchConstant;
-import bbcdabao.pingmonitor.common.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.extraction.TemplateField;
-import bbcdabao.pingmonitor.common.json.JsonConvert;
-import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
-import bbcdabao.pingmonitor.pingrobotapi.constants.RobotConstant;
 import bbcdabao.pingmonitor.pingrobotapi.templates.TemplatesManager;
-import lombok.Data;
 
-@ConfigurationProperties(prefix = "robot")
-@Data
 public class StartUpConfig implements ApplicationRunner {
 
-    private String robotGroupName;
-
-    private void pushTemplatesInfo() throws Exception {
+    private void regTemplatesInfo() throws Exception {
         TemplatesManager.getInstance().checkPingMoniterPlug((plugName, plugClazz) -> {
-            IPingMoniterPlug plug = plugClazz.getConstructor().newInstance();
-            Map<String, TemplateField> plugTemplate = ExtractionField.getInstance()
-                    .extractionTemplateMapFromObject(plug);
-            String strPlugTemplate = JsonConvert.getInstance().tobeJson(plugTemplate);
-            byte[] bytePlugTemplate = ByteDataConver.getInstance().getConvertToByteForString().getData(strPlugTemplate);
-            String plugNamePath = new StringBuilder().append(PatchConstant.ROBOT_TEMPLATES).append("/").append(plugName)
-                    .toString();
-            try {
-                CuratorFrameworkInstance.getInstance().create().creatingParentsIfNeeded().forPath(plugNamePath,
-                        bytePlugTemplate);
-            } catch (NodeExistsException e) {
-                CuratorFrameworkInstance.getInstance().setData().forPath(plugNamePath, bytePlugTemplate);
-            }
+            IPingMoniterPlug plug = TemplatesManager
+                    .getInstance().getPingMoniterPlug(plugName);
+            Map<String, TemplateField> plugTemplate = ExtractionField
+                    .getInstance().extractionTemplateMapFromObject(plug);
+            CoordinationManager.getInstance().setPlugTemplate(plugName, plugTemplate);
         });
-    }
-
-    private void regInstance() throws Exception {
-        String instancePath = new StringBuilder().append(PatchConstant.ROBOT_REGISTERS).append("/")
-                .append(robotGroupName).append("/").append(RobotConstant.ROBOT_ID).toString();
-        String ipAddr = "none";
-        try {
-            InetAddress ip = InetAddress.getLocalHost();
-            ipAddr = ip.getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        String instanceValue = new StringBuilder().append(ipAddr).append("@").append(ProcessHandle.current().pid())
-                .toString();
-        byte[] byteInstanceValue = ByteDataConver.getInstance().getConvertToByteForString().getData(instanceValue);
-
-        try {
-            CuratorFrameworkInstance.getInstance().create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
-                    .forPath(instancePath, byteInstanceValue);
-        } catch (NodeExistsException e) {
-            CuratorFrameworkInstance.getInstance().setData().forPath(instancePath, byteInstanceValue);
-        }
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        pushTemplatesInfo();
-        regInstance();
-    }
-
-    private static AtomicReference<StartUpConfig> INSTANCE_REF = new AtomicReference<>();
-
-    public static StartUpConfig getInstance() {
-        return INSTANCE_REF.get();
+        regTemplatesInfo();
+        CoordinationManager.getInstance().regRobotInstance(RobotConfig.getInstance().getRobotGroupName());
     }
 }
