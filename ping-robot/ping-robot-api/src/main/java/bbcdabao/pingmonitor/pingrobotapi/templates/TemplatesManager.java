@@ -27,12 +27,10 @@ import org.reflections.Reflections;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import bbcdabao.pingmonitor.common.constants.PatchConstant;
-import bbcdabao.pingmonitor.common.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.extraction.ExtractionField;
-import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
-import bbcdabao.pingmonitor.pingrobotapi.config.PlugsPathConfig;
+import bbcdabao.pingmonitor.pingrobotapi.config.RobotConfig;
 
 /**
  * Template core management
@@ -46,11 +44,7 @@ public class TemplatesManager {
     private static TemplatesManager getTemplatesManagerInstance() {
         TemplatesManager templatesManager = new TemplatesManager();
         try {
-            PlugsPathConfig plugsPathConfig = PlugsPathConfig.getInstance();
-            if (null == plugsPathConfig) {
-                throw new Exception("plugsPathConfig is null!");
-            }
-            String plugPath = plugsPathConfig.getPlugsPath();
+            String plugPath = RobotConfig.getInstance().getPlugsPath();
             if (ObjectUtils.isEmpty(plugPath)) {
                 throw new Exception("plugPath is isEmpty!");
             }
@@ -100,19 +94,10 @@ public class TemplatesManager {
     }
 
     public IPingMoniterPlug getPingMoniterPlugUsedTaskName(String taskName) throws Exception {
-        StringBuilder sb = new StringBuilder().append(PatchConstant.TASKS).append("/").append(taskName);
-        String plugName = ByteDataConver.getInstance().getConvertFromByteForString()
-                .getValue(CuratorFrameworkInstance.getInstance().getData().forPath(sb.toString()));
-
-        sb.append(PatchConstant.CONFIG);
-
-        Properties properties = ByteDataConver.getInstance().getConvertFromByteForProperties()
-                .getValue(CuratorFrameworkInstance.getInstance().getData().forPath(sb.toString()));
-
+        String plugName = CoordinationManager.getInstance().getPlugNameByTaskName(taskName);
+        Properties properties = CoordinationManager.getInstance().getTaskConfigByTaskName(taskName);
         IPingMoniterPlug pingMoniterPlug = getPingMoniterPlug(plugName);
-
         ExtractionField.getInstance().populateObjectFromProperties(properties, pingMoniterPlug);
-
         return pingMoniterPlug;
     }
 }
