@@ -17,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
-import bbcdabao.pingmonitor.common.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.coordination.MasterKeeperTaskManager;
-import bbcdabao.pingmonitor.common.coordination.Sysconfig;
-import bbcdabao.pingmonitor.common.zkclientframe.BaseEventHandler;
-import bbcdabao.pingmonitor.common.zkclientframe.event.ChangedEvent;
-import bbcdabao.pingmonitor.common.zkclientframe.event.CreatedEvent;
-import bbcdabao.pingmonitor.common.zkclientframe.event.DeletedEvent;
+import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
+import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.pingrobotapi.config.RobotConfig;
 
 public class TaskfireMasterService implements ApplicationRunner {

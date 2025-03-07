@@ -27,8 +27,8 @@ import org.reflections.Reflections;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import bbcdabao.pingmonitor.common.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.extraction.ExtractionField;
+import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.config.RobotConfig;
 

@@ -23,9 +23,9 @@ import java.util.Map;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
-import bbcdabao.pingmonitor.common.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.extraction.ExtractionField;
-import bbcdabao.pingmonitor.common.extraction.TemplateField;
+import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
+import bbcdabao.pingmonitor.common.domain.extraction.TemplateField;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.templates.TemplatesManager;
 
