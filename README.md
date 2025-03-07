@@ -28,8 +28,8 @@ The following is based on a zk namespace
   │   │   ├──run-info (Runing controle info)
   │   │   │   ├── /election (Robot instance election)
   │   │   │   ├── /task-fire (Task trigger)
-  │   │   │   │   ├── /task-01 (task-01)
-  │   │   │   │   ├── /task-02 (task-02)
+  │   │   │   │   ├── /task-01
+  │   │   │   │   ├── /task-02
   │   │   │   ├── /task-avge (Avg child nodes, all temporary nodes)
   │   │   │   │   ├── /UUID01 ("ip@procid")
   │   │   │   │   │   ├──/task-02
@@ -67,17 +67,28 @@ The following is based on a zk namespace
   │   ├── /com_xxx_sss_HttpCallTest 
   │   │     └── (JSON格式模板) "{pingTimeout: {type: LONG, desCn: 超时时间, desEn: timeout}, url: http://test.com}"
   │   ├── /com_xxx_sss_XXXXCallTest 
-  │         └── (JSON格式模板) "{pingTimeout: {type: LONG, desCn: 超时时间, desEn: timeout}, calres: http://a.com}"
-  │
+  │   │     └── (JSON格式模板) "{pingTimeout: {type: LONG, desCn: 超时时间, desEn: timeout}, calres: http://a.com}"
   ├── /register (机器人注册目录)
   │   ├── /rebot-xxx (机器人组名称)
-  │   │   ├── /instance (实例子节点，都是临时节点)
-  │   │   │   ├── /UUID01 ("ip@procid")
-  │   │   │   ├── /UUID02 ("ip@procid")
-  │   │   │   └── /UUID03 ("ip@procid")
-  │   │   ├── /tasks (拨测任务列表，子节点不可重复)
-  │   │   │   ├── /task-01 (调度并发配置)
-  │   │   │   └── /task-02 (调度并发配置)
+  │   │   ├──meta-info (Robot and task inf)
+  │   │   │   ├── /instance (实例子节点，都是临时节点)
+  │   │   │   │   ├── /UUID01 ("ip@procid")
+  │   │   │   │   ├── /UUID02 ("ip@procid")
+  │   │   │   │   └── /UUID03 ("ip@procid")
+  │   │   │   ├── /tasks (拨测任务列表，子节点不可重复)
+  │   │   │   │   ├── /task-01 (调度并发配置)
+  │   │   │   │   └── /task-02 (调度并发配置)
+  │   │   ├──run-info (运行调度控制信息)
+  │   │   │   ├── /election (各个实例选主)
+  │   │   │   ├── /task-fire (分派触发调度)
+  │   │   │   │   ├── /task-01
+  │   │   │   │   ├── /task-02
+  │   │   │   ├── /task-avge (各个实例平均分配策略，子节点，都是临时节点)
+  │   │   │   │   ├── /UUID01 ("ip@procid")
+  │   │   │   │   │   ├──/task-02
+  │   │   │   │   ├── /UUID02 ("ip@procid")
+  │   │   │   │   │   ├──/task-01
+  │   │   │   │   └── /UUID03 ("ip@procid")
 
 /tasks (任务配置)
   ├── /task-01 (机器人插件模板: com_xxx_sss_PingCallTest)
