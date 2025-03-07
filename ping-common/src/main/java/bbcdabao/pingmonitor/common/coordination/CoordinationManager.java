@@ -20,6 +20,7 @@ package bbcdabao.pingmonitor.common.coordination;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -37,45 +39,56 @@ import bbcdabao.pingmonitor.common.json.JsonConvert;
 import bbcdabao.pingmonitor.common.zkclientframe.core.CuratorFrameworkInstance;
 
 /**
-*
-* Distributed coordination
-* 
-* /sysconfig
-* └── (JSON format system configuration) "{pingcycle: 60000}"
-* 
-* /robot (Robot root directory)
-* ├── /templates (Robot plugin templates)
-* │   ├── /com_xxx_sss_PingCallTest
-* │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
-* │   ├── /com_xxx_sss_HttpCallTest
-* │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
-* │   ├── /com_xxx_sss_XXXXCallTest
-* │         └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
-* ├── /register (Robot registration directory)
-* │   ├── /rebot-xxx (Robot group name)
-* │   │   ├── /instance (Instance child nodes, all temporary nodes)
-* │   │   │   ├── /UUID01 ("ip@procid")
-* │   │   │   ├── /UUID02 ("ip@procid")
-* │   │   │   └── /UUID03 ("ip@procid")
-* │   │   ├── /tasks (Monitoring task list, child nodes must be unique)
-* │   │   │   ├── /task-01 (Scheduling concurrency configuration)
-* │   │   │   └── /task-02 (Scheduling concurrency configuration)
-* 
-* /tasks (Task configuration)
-* ├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
-* │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
-* ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
-* │   └── /config (Properties format) "{url=https://baiduaa.com}"
-* 
-* /result (Monitoring results, child nodes have TTL)
-* ├── /task-01
-* │   ├── /rebot-xxx (300ms)
-* │   └── /rebot-xxx (300ms)
-* ├── /task-02
-* │   ├── /rebot-xxx (300ms)
-* │   └── /rebot-xxx (500ms)
-*
-*/
+ *
+ * Distributed coordination
+ * /sysconfig
+ * └── (JSON format system configuration) "{pingcycle: 60000}"
+ * 
+ * /robot (Robot root directory)
+ * ├── /templates (Robot plugin templates)
+ * │   ├── /com_xxx_sss_PingCallTest
+ * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
+ * │   ├── /com_xxx_sss_HttpCallTest
+ * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, url: [http://test.com}](http://test.com})"
+ * │   ├── /com_xxx_sss_XXXXCallTest
+ * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: [http://a.com}](http://a.com})"
+ * ├── /register (Robot registration directory)
+ * │   ├── /rebot-xxx (Robot group name)
+ * │   │   ├──meta-info (Robot and task inf)
+ * │   │   │   ├── /instance (Instance child nodes, all temporary nodes)
+ * │   │   │   │   ├── /UUID01 ("ip@procid")
+ * │   │   │   │   ├── /UUID02 ("ip@procid")
+ * │   │   │   │   └── /UUID03 ("ip@procid")
+ * │   │   │   ├── /tasks (Monitoring task list, child nodes must be unique)
+ * │   │   │   │   ├── /task-01 (Scheduling concurrency configuration)
+ * │   │   │   │   └── /task-02 (Scheduling concurrency configuration)
+ * │   │   ├──run-info (Running control info)
+ * │   │   │   ├── /election (Robot instance election)
+ * │   │   │   ├── /task-fire (Task trigger)
+ * │   │   │   │   ├── /task-01
+ * │   │   │   │   ├── /task-02
+ * │   │   │   ├── /task-avge (Avg child nodes, all temporary nodes)
+ * │   │   │   │   ├── /UUID01 ("ip@procid")
+ * │   │   │   │   │   ├── /task-02
+ * │   │   │   │   ├── /UUID02 ("ip@procid")
+ * │   │   │   │   │   ├── /task-02
+ * │   │   │   │   └── /UUID03 ("ip@procid")
+ * 
+ * /tasks (Task configuration)
+ * ├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
+ * │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
+ * ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
+ * │   └── /config (Properties format) "{url=[https://baiduaa.com}](https://baiduaa.com})"
+ * 
+ * /result (Monitoring results, child nodes have TTL)
+ * ├── /task-01
+ * │   ├── /rebot-xxx (300ms)
+ * │   └── /rebot-xxx (300ms)
+ * ├── /task-02
+ * │   ├── /rebot-xxx (300ms)
+ * │   └── /rebot-xxx (500ms)
+ *
+ */
 
 public class CoordinationManager {
 
@@ -180,12 +193,14 @@ public class CoordinationManager {
     /**
      * Register a robot instance
      * 
+     * /robot (Robot root directory)
      * ├── /register (Robot registration directory)
      * │   ├── /rebot-xxx (Robot group name)
-     * │   │   ├── /instance (Instance child nodes, all temporary nodes)
-     * │   │   │   ├── /UUID01 ("ip@procid")
-     * │   │   │   ├── /UUID02 ("ip@procid")
-     * │   │   │   └── /UUID03 ("ip@procid")
+     * │   │   ├──meta-info (Robot and task inf)
+     * │   │   │   ├── /instance (Instance child nodes, all temporary nodes)
+     * │   │   │   │   ├── /UUID01 ("ip@procid")
+     * │   │   │   │   ├── /UUID02 ("ip@procid")
+     * │   │   │   │   └── /UUID03 ("ip@procid")
      * 
      */
     private static final String REG_UUID = UUID.randomUUID().toString();
@@ -193,7 +208,7 @@ public class CoordinationManager {
         String path = new StringBuilder()
                 .append("/register/")
                 .append(robotGropName)
-                .append("/instance/")
+                .append("/meta-info/instance/")
                 .append(REG_UUID).toString();
         String ipAddr = "none";
         try {
@@ -312,5 +327,45 @@ public class CoordinationManager {
             .forPath(taskPath);
             throw e;
         }
+    }
+
+    /**
+     * 
+     * ├── /register (Robot registration directory)
+     * │   ├── /rebot-xxx (Robot group name)
+     * │   │   ├──run-info (Running control info)
+     * │   │   │   ├── /task-fire (Task trigger)
+     * │   │   │   │   ├── /task-01
+     * │   │   │   │   ├── /task-02
+     * 
+     * @param robotGropName
+     * @throws Exception
+     */
+    public void taskFire(String robotGropName) throws Exception {
+        String path = new StringBuilder()
+                .append("/robot/register/")
+                .append(robotGropName)
+                .append("/meta-info/tasks")
+                .toString();
+        List<String> children = CuratorFrameworkInstance
+                .getInstance()
+                .getChildren()
+                .forPath(path);
+        if (CollectionUtils.isEmpty(children)) {
+            return;
+        }
+        children.forEach((child) -> {
+           try {
+               String pathfire = new StringBuilder()
+                       .append("/robot/register/")
+                       .append(robotGropName)
+                       .append("/run-info/task-fire/")
+                       .append(child)
+                       .toString();
+               createOrSetData(pathfire, CreateMode.PERSISTENT, null);
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+        });
     }
 }
