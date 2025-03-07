@@ -89,4 +89,53 @@ public class MasterKeeperTaskManager {
             }
         });
     }
+
+    public void selectMasterNotify(String path, IMasterNotify set, IMasterNotify cancel, Consumer<Exception> errorHandler) throws Exception {
+        ExecutorConfig.getInstance().execute(() -> {
+            boolean isMaster = false;
+            LeaderLatch leaderLatch = new LeaderLatch(CuratorFrameworkInstance.getInstance(), path);
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    leaderLatch.start();
+                    break;
+                } catch (Exception e) {
+                    if (null != errorHandler) {
+                        errorHandler.accept(e);
+                    } else {
+                        e.printStackTrace();
+                    }
+                    sleepStep();
+                }
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    if (leaderLatch.hasLeadership()) {
+                        if (!isMaster) {
+                            set.notify();
+                            isMaster = true; 
+                        }
+                        Thread.sleep(1000);
+                    } else {
+                        if (isMaster) {
+                            cancel.notify();
+                            isMaster = false;
+                        }
+                        leaderLatch.await(10, TimeUnit.SECONDS);
+                    }
+                } catch (Exception e) {
+                    if (null != errorHandler) {
+                        errorHandler.accept(e);
+                    } else {
+                        e.printStackTrace();
+                    }
+                    sleepStep();
+                }
+            }
+            try {
+                leaderLatch.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }
