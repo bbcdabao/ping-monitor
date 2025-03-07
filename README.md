@@ -14,7 +14,7 @@ The following is based on a zk namespace
   │   ├── /com_xxx_sss_HttpCallTest
   │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, url: http://test.com}"
   │   ├── /com_xxx_sss_XXXXCallTest
-  │         └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: http://a.com}"
+  │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: http://a.com}"
   ├── /register (Robot registration directory)
   │   ├── /rebot-xxx (Robot group name)
   │   │   ├──meta-info (Robot and task inf)
