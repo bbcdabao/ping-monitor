@@ -34,6 +34,7 @@ import org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import bbcdabao.pingmonitor.common.domain.zkclientframe.GameOver;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
@@ -66,7 +67,7 @@ class PathManager implements Runnable {
      * To share monitoring
      */
     private class PathNode {
-        private final LinkedList<WeakReference<IEventSender>> queueEvent = new LinkedList<>();
+        private final LinkedList<WeakReference<BaseEventSender>> queueEvent = new LinkedList<>();
         private final CuratorCache curatorCache;
         private final String path;
         private PathNode(CuratorCache curatorCache, String path) {
@@ -78,24 +79,29 @@ class PathManager implements Runnable {
                 sender.send(event);
             });
         }
-        private synchronized void addSender(WeakReference<IEventSender> weakSender) {
+        private synchronized void addSender(WeakReference<BaseEventSender> weakSender) {
             queueEvent.add(weakSender);
         }
-        private synchronized boolean checks(Consumer<IEventSender> consumer) {
-            Iterator<WeakReference<IEventSender>> iterator = queueEvent.iterator();
+        private synchronized boolean checks(Consumer<BaseEventSender> consumer) {
+            Iterator<WeakReference<BaseEventSender>> iterator = queueEvent.iterator();
             if (null == consumer) {
                 while (iterator.hasNext()) {
-                    WeakReference<IEventSender> weakSender = iterator.next();
-                    IEventSender sender = weakSender.get();
+                    WeakReference<BaseEventSender> weakSender = iterator.next();
+                    BaseEventSender sender = weakSender.get();
                     if (null == sender) {
+                        iterator.remove();
+                    } else if (sender.isOver()) {
                         iterator.remove();
                     }
                 }
             } else {
                 while (iterator.hasNext()) {
-                    WeakReference<IEventSender> weakSender = iterator.next();
-                    IEventSender sender = weakSender.get();
+                    WeakReference<BaseEventSender> weakSender = iterator.next();
+                    BaseEventSender sender = weakSender.get();
                     if (null == sender) {
+                        iterator.remove();
+                        continue;
+                    } else if (sender.isOver()) {
                         iterator.remove();
                         continue;
                     }
@@ -113,7 +119,7 @@ class PathManager implements Runnable {
      * Add to send
      */
     private Map<String, PathNode> pathNodeMap = new HashMap<>(1000);
-    private synchronized CuratorCache getPathNode(String path, WeakReference<IEventSender> weakSender) {
+    private synchronized CuratorCache getPathNode(String path, WeakReference<BaseEventSender> weakSender) {
         PathNode pathNode = pathNodeMap.computeIfAbsent(path, (k) -> {
             CuratorCache curatorCache = CuratorCache.build(client, path);
             curatorCache.start();
@@ -154,12 +160,12 @@ class PathManager implements Runnable {
     /**
      * Sender interface for send zookeeper event
      */
-    public static interface IEventSender {
-        void send(IEvent event);
+    public static abstract class BaseEventSender extends GameOver {
+        abstract void send(IEvent event);
     }
 
-    public CuratorCache addPathListener(String path, IEventSender sender) {
-        WeakReference<IEventSender> weakSender = new WeakReference<>(sender);
+    public CuratorCache addPathListener(String path, BaseEventSender sender) {
+        WeakReference<BaseEventSender> weakSender = new WeakReference<>(sender);
         return getPathNode(path, weakSender);
     }
 
