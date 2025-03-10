@@ -22,12 +22,8 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.curator.framework.CuratorFramework;
@@ -36,13 +32,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
+import bbcdabao.pingmonitor.common.domain.PingmonitorExecutor;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler.IRegister;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.core.PathManager.IEventSender;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.core.PathManager.BaseEventSender;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.IEvent;
+import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
+import bbcdabao.pingmonitor.common.infra.domainconfig.configs.ZkclientframeConfig;
 
 /**
  * Handle listening sessions for BaseEventHandler
@@ -50,21 +49,18 @@ import bbcdabao.pingmonitor.common.domain.zkclientframe.event.IEvent;
 public class EventHandlerRegister implements IRegister {
 
     private static class Holder {
-        private static final IRegister INSTANCE = CONFIG_PROVIDER.getDefaultBuilder().build();
+        private static final IRegister INSTANCE = getIRegister();
     }
 
-    @FunctionalInterface
-    public interface ConfigProvider {
-        Builder getDefaultBuilder();
+    private static IRegister getIRegister() {
+        ZkclientframeConfig config = SpringContextHolder.getBean(ZkclientframeConfig.class);
+        return new EventHandlerRegister(PingmonitorExecutor.getInstance(),
+                CuratorFrameworkInstance.getInstance(), config.getQeCapacity(), config.getScanCycle());
     }
 
-    public static void setConfigProvider(ConfigProvider configProvider) {
-        CONFIG_PROVIDER = configProvider;
+    public static IRegister getInstance() {
+        return Holder.INSTANCE;
     }
-
-    private static volatile ConfigProvider CONFIG_PROVIDER = () -> {
-        return EventHandlerRegister.builder();
-    };
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventHandlerRegister.class);
 
@@ -102,13 +98,17 @@ public class EventHandlerRegister implements IRegister {
     }
 
     private synchronized void delHandlerNode(long code) {
-        handlerNodeMap.remove(code);
+        HandlerNode handlerNode = handlerNodeMap.get(code);
+        if (null != handlerNode) {
+            handlerNode.gameOver();
+            handlerNodeMap.remove(code);
+        }
     }
 
     /**
      * Driver handles events and manages life cycle
      */
-    private class HandlerNode implements Runnable, IEventSender {
+    private class HandlerNode extends BaseEventSender implements Runnable {
         private final WeakReference<BaseEventHandler> weakhandler;
         private final long code;
         private final LinkedBlockingQueue<IEvent> eventsQueue = new LinkedBlockingQueue<>(qeCapacity);
@@ -122,6 +122,9 @@ public class EventHandlerRegister implements IRegister {
             IEvent event = eventsQueue.poll(scanCycle, TimeUnit.MILLISECONDS);
             BaseEventHandler handler = weakhandler.get();
             if (null == handler) {
+                throw new StopException();
+            }
+            if (handler.isOver()) {
                 throw new StopException();
             }
             if (event instanceof CreatedEvent) {
@@ -195,88 +198,5 @@ public class EventHandlerRegister implements IRegister {
         HandlerNode handlerNode = getHandlerNode(handler);
         executorService.execute(handlerNode);
         return pathManager.addPathListener(path, handlerNode);
-    }
-
-    /**
-     * To build SessionManagerMain
-     * 
-     * @param path    Listen path
-     * @param handler Session handler
-     */
-    public static class Builder {
-        /*
-         * Thread pool set
-         */
-        private int corePoolSize = 16;
-        private int maxPoolSize = 80;
-        private int queueCapacity = 100;
-        private int keepAliveSeconds = 60;
-        private String threadNamePrefix = "zk-session-thread";
-
-        private int qeCapacity = 1000;
-        private long scanCycle = 30000;
-
-        public Builder setCorePoolSize(int corePoolSize) {
-            this.corePoolSize = corePoolSize;
-            return this;
-        }
-
-        public Builder setMaxPoolSize(int maxPoolSize) {
-            this.maxPoolSize = maxPoolSize;
-            return this;
-        }
-
-        public Builder setQueueCapacity(int queueCapacity) {
-            this.queueCapacity = queueCapacity;
-            return this;
-        }
-
-        public Builder setKeepAliveSeconds(int keepAliveSeconds) {
-            this.keepAliveSeconds = keepAliveSeconds;
-            return this;
-        }
-
-        public Builder setThreadNamePrefix(String threadNamePrefix) {
-            this.threadNamePrefix = threadNamePrefix;
-            return this;
-        }
-
-        public IRegister build() {
-            ExecutorService executor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveSeconds,
-                    TimeUnit.SECONDS, new ArrayBlockingQueue<>(queueCapacity), new ThreadFactory() {
-                        private int count = 0;
-
-                        @Override
-                        public Thread newThread(Runnable r) {
-                            Thread thread = new Thread(r, threadNamePrefix + "-" + count);
-                            count++;
-                            return thread;
-                        }
-                    }, new RejectedExecutionHandler() {
-                        @Override
-                        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                            LOGGER.info("{}: RejectedExecutionHandler", threadNamePrefix);
-                        }
-                    });
-            return new EventHandlerRegister(executor, CuratorFrameworkInstance.getInstance(), qeCapacity, scanCycle);
-        }
-    }
-
-    /**
-     * Return builder
-     * 
-     * @return
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
-     * Return singnle instance
-     * 
-     * @return
-     */
-    public static IRegister getInstance() {
-        return Holder.INSTANCE;
     }
 }
