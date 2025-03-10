@@ -16,24 +16,16 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.config;
+package bbcdabao.pingmonitor.pingrobotapi.app.services;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
 
-/**
- * Core configuration
- */
-@Configuration
-public class Config {
-
-    @Bean
-    RobotConfig getRobotConfig() {
-        return new RobotConfig();
+public interface IRegSysconfig {
+    /**
+     * Notify change
+     */
+    public static interface INotify {
+        void onChange(Sysconfig config) throws Exception;
     }
-
-    @Bean
-    StartUpConfig getStartUpConfig() {
-        return new StartUpConfig();
-    }
+    void regNotify(INotify notify);
 }

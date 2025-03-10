@@ -16,13 +16,10 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.config;
-
-import java.util.concurrent.atomic.AtomicReference;
+package bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Data;
 
 @ConfigurationProperties(prefix = "robot")
@@ -30,15 +27,4 @@ import lombok.Data;
 public class RobotConfig {
     private String plugsPath = "bbcdabao.pingmonitor.pingrobotman";
     private String robotGroupName;
-
-    @PostConstruct
-    public void init() {
-        INSTANCE_REF.set(this);
-    }
-
-    private static AtomicReference<RobotConfig> INSTANCE_REF = new AtomicReference<>();
-
-    public static RobotConfig getInstance() {
-        return INSTANCE_REF.get();
-    }
 }

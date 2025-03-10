@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.config;
+package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 
 import java.util.Map;
 
@@ -26,13 +26,16 @@ import org.springframework.boot.ApplicationRunner;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.domain.extraction.TemplateField;
+import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
-import bbcdabao.pingmonitor.pingrobotapi.templates.TemplatesManager;
+import bbcdabao.pingmonitor.pingrobotapi.domain.templates.TemplatesManager;
+import bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs.RobotConfig;
 
-public class StartUpConfig implements ApplicationRunner {
-
+public class StartUpService implements ApplicationRunner {
     private void regTemplatesInfo() throws Exception {
-        TemplatesManager.getInstance().checkPingMoniterPlug((plugName, plugClazz) -> {
+        TemplatesManager
+        .getInstance()
+        .checkPingMoniterPlug((plugName, plugClazz) -> {
             IPingMoniterPlug plug = TemplatesManager
                     .getInstance().getPingMoniterPlug(plugName);
             Map<String, TemplateField> plugTemplate = ExtractionField
@@ -40,10 +43,13 @@ public class StartUpConfig implements ApplicationRunner {
             CoordinationManager.getInstance().setPlugTemplate(plugName, plugTemplate);
         });
     }
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
         regTemplatesInfo();
-        CoordinationManager.getInstance().regRobotInstance(RobotConfig.getInstance().getRobotGroupName());
+        CoordinationManager
+        .getInstance()
+        .regRobotInstance(SpringContextHolder
+                .getBean(RobotConfig.class)
+                .getRobotGroupName());
     }
 }

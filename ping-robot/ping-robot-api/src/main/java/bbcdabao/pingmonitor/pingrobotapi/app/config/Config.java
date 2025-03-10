@@ -16,11 +16,22 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.templates;
+package bbcdabao.pingmonitor.pingrobotapi.app.config;
 
-import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@FunctionalInterface
-public interface ICheck {
-    void onCheck(String plugName, Class<? extends IPingMoniterPlug> plugClazz) throws Exception;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.RegSysconfigNotify;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.StartUpService;
+
+@Configuration
+public class Config {
+    @Bean
+    StartUpService getStartUpService() {
+        return new StartUpService();
+    }
+    @Bean
+    RegSysconfigNotify getRegSysconfigNotify() {
+        return new RegSysconfigNotify();
+    }
 }

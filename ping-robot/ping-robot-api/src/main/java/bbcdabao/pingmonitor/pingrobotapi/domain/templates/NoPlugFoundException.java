@@ -16,10 +16,11 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.constants;
+package bbcdabao.pingmonitor.pingrobotapi.domain.templates;
 
-import java.util.UUID;
-
-public class RobotConstant {
-    public static final String ROBOT_ID = UUID.randomUUID().toString();
+public class NoPlugFoundException extends Exception {
+    private static final long serialVersionUID = 1L;
+    public NoPlugFoundException(String plugName) {
+        super(plugName);
+    }
 }

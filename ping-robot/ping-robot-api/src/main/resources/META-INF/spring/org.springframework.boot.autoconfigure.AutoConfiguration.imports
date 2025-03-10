@@ -1,1 +1,2 @@
-bbcdabao.pingmonitor.pingrobotapi.config.Config
+bbcdabao.pingmonitor.pingrobotapi.app.config.Config
+bbcdabao.pingmonitor.pingrobotapi.infra.config.Config

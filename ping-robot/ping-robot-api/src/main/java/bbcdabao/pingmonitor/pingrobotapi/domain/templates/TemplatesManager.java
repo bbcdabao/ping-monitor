@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.templates;
+package bbcdabao.pingmonitor.pingrobotapi.domain.templates;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,8 +29,9 @@ import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
+import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
-import bbcdabao.pingmonitor.pingrobotapi.config.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs.RobotConfig;
 
 /**
  * Template core management
@@ -44,7 +45,8 @@ public class TemplatesManager {
     private static TemplatesManager getTemplatesManagerInstance() {
         TemplatesManager templatesManager = new TemplatesManager();
         try {
-            String plugPath = RobotConfig.getInstance().getPlugsPath();
+            String plugPath = SpringContextHolder
+                    .getBean(RobotConfig.class).getPlugsPath();
             if (ObjectUtils.isEmpty(plugPath)) {
                 throw new Exception("plugPath is isEmpty!");
             }

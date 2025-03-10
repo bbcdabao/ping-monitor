@@ -16,11 +16,11 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.templates;
+package bbcdabao.pingmonitor.pingrobotapi.domain.templates;
 
-public class NoPlugFoundException extends Exception {
-    private static final long serialVersionUID = 1L;
-    public NoPlugFoundException(String plugName) {
-        super(plugName);
-    }
+import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
+
+@FunctionalInterface
+public interface ICheck {
+    void onCheck(String plugName, Class<? extends IPingMoniterPlug> plugClazz) throws Exception;
 }

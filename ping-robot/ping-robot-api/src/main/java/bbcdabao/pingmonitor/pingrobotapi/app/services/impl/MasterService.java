@@ -1,4 +1,4 @@
-package bbcdabao.pingmonitor.pingrobotapi.business.master.services;
+package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -20,13 +20,13 @@ import org.springframework.boot.ApplicationRunner;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
-import bbcdabao.pingmonitor.pingrobotapi.config.RobotConfig;
+import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig.INotify;
+import bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs.RobotConfig;
+import jakarta.annotation.PostConstruct;
 
-public class TaskfireMasterService implements ApplicationRunner {
+public class MasterService implements ApplicationRunner, INotify {
     public class TaskMaster implements Job {
         @Override
         public void execute(JobExecutionContext context)
@@ -34,37 +34,26 @@ public class TaskfireMasterService implements ApplicationRunner {
             try {
                 CoordinationManager
                 .getInstance()
-                .taskFire(RobotConfig.getInstance().getRobotGroupName());
+                .taskFire(robotGroupName);
             } catch (Exception e) {
                 throw new JobExecutionException(e.getMessage());
             }
         }
     }
-    public class MonitorSysConfig extends BaseEventHandler {
-        public MonitorSysConfig() {
-            this.start("/sysconfig");
-        }
-        @Override
-        public void onEvent(CreatedEvent data) throws Exception {
-            sysconfigRef.set(CoordinationManager.getInstance().getSysconfig());
-        }
-        @Override
-        public void onEvent(ChangedEvent data) throws Exception {
-            sysconfigRef.set(CoordinationManager.getInstance().getSysconfig());
-            updateJobCron(sysconfigRef.get().getCron());
-        }
-        @Override
-        public void onEvent(DeletedEvent data) throws Exception {
-            sysconfigRef.set(null);
-        }
-    }
+
     private AtomicReference<Sysconfig> sysconfigRef = new AtomicReference<>();
-    private MonitorSysConfig monitorSysConfig = null;
+    private String robotGroupName = null;
     private JobKey jobKey = new JobKey("taskFire", "robot");
     private TriggerKey triggerKey = new TriggerKey("taskFire" + "Trigger", "robot");
+
     @Autowired
     private Scheduler scheduler;
-    public void updateJobCron(String cronExpression) throws Exception {
+
+    @Autowired
+    private IRegSysconfig regSysconfigNotify;
+
+    private synchronized void updateJobCron() throws Exception {
+        String cronExpression = sysconfigRef.get().getCron();
         if (!scheduler.checkExists(jobKey)) {
             return;
         }
@@ -75,7 +64,8 @@ public class TaskfireMasterService implements ApplicationRunner {
                 .build();
         scheduler.rescheduleJob(triggerKey, newTrigger);
     }
-    public void createJobCron(String cronExpression) throws Exception {
+    private synchronized void createJobCron() throws Exception {
+        String cronExpression = sysconfigRef.get().getCron();
         JobDetail jobDetail = JobBuilder.newJob(TaskMaster.class)
                 .withIdentity(jobKey)
                 .storeDurably()
@@ -87,39 +77,38 @@ public class TaskfireMasterService implements ApplicationRunner {
                 .build();
         scheduler.scheduleJob(jobDetail, trigger);
     }
-    public void deleteJobCron() throws Exception {
+    private synchronized void deleteJobCron() throws Exception {
         if (!scheduler.checkExists(jobKey)) {
             return;
         }
         scheduler.deleteJob(jobKey);
     }
+
+    @PostConstruct
+    public void init() {
+        regSysconfigNotify.regNotify(this);
+    }
+
+    @Override
+    public void onChange(Sysconfig config) throws Exception {
+        sysconfigRef.set(config);
+        updateJobCron();
+    }
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        robotGroupName = SpringContextHolder.getBean(RobotConfig.class).getRobotGroupName();
         String patch = new StringBuilder()
                 .append("/robot/register/")
-                .append(RobotConfig.getInstance().getRobotGroupName())
+                .append(robotGroupName)
                 .append("/run-info/election")
                 .toString();
         MasterKeeperTaskManager.getInstance().selectMasterNotify(patch,
                 () -> {
-                    if (null != monitorSysConfig) {
-                        monitorSysConfig = new MonitorSysConfig();
-                    }
-                    Sysconfig sysconfig = sysconfigRef.get();
-                    if (null == sysconfig) {
-                        throw new Exception("no get Sysconfig!");
-                    }
-                    try {
-                        createJobCron(sysconfig.getCron());
-                    } catch (Exception e) {
-                    }
+                    createJobCron();
                 },
                 () -> {
-                    monitorSysConfig = null;
-                    try {
-                        deleteJobCron();
-                    } catch (Exception e) {
-                    }
+                    deleteJobCron();
                 }, null);
     }
 }
