@@ -30,7 +30,7 @@ import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
 /**
  * Zookeeper monitoring processing, used for shared monitoring
  */
-public abstract class BaseEventHandler {
+public abstract class BaseEventHandler extends GameOver {
 
     /**
      * Monitoring interface
