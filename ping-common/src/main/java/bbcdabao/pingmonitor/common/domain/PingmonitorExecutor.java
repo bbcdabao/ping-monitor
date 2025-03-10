@@ -18,7 +18,16 @@
 
 package bbcdabao.pingmonitor.common.domain;
 
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
 import bbcdabao.pingmonitor.common.infra.domainconfig.configs.PingmonitorExecutorConfig;
@@ -26,23 +35,35 @@ import bbcdabao.pingmonitor.common.infra.domainconfig.configs.PingmonitorExecuto
 public class PingmonitorExecutor {
 
     private static class Holder {
-        private static final ThreadPoolTaskExecutor INSTANCE = getThreadPoolTaskExecutor();
+        private static final ExecutorService INSTANCE = getExecutorService();
     }
 
-    private static ThreadPoolTaskExecutor getThreadPoolTaskExecutor() {
+    private static ExecutorService getExecutorService() {
         PingmonitorExecutorConfig config = SpringContextHolder.getBean(PingmonitorExecutorConfig.class);
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(config.getCorePoolSize());
-        executor.setMaxPoolSize(config.getMaxPoolSize());
-        executor.setQueueCapacity(config.getQueueCapacity());
-        executor.setKeepAliveSeconds(config.getKeepAliveSeconds());
-        executor.setThreadNamePrefix(config.getThreadNamePrefix());
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.initialize();
+        ExecutorService executor = new ThreadPoolExecutor(
+                config.getCorePoolSize(),
+                config.getMaxPoolSize(),
+                config.getKeepAliveSeconds(),
+                TimeUnit.SECONDS, new ArrayBlockingQueue<>(config.getQueueCapacity()), new ThreadFactory() {
+                    private AtomicInteger count = new AtomicInteger(0);
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r, config.getThreadNamePrefix() + "-" + count.getAndIncrement());
+ 
+                        return thread;
+                    }
+                }, new RejectedExecutionHandler() {
+                    @Override
+                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                        LOGGER.info("{}: RejectedExecutionHandler", config.getThreadNamePrefix());
+                    }
+                });
         return executor;
     }
 
-    public static ThreadPoolTaskExecutor getInstance() {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PingmonitorExecutor.class);
+
+    public static ExecutorService getInstance() {
         return Holder.INSTANCE;
     }
 }
