@@ -27,6 +27,8 @@ import lombok.Data;
 public class ZkclientframeConfig {
     private String connectString = "127.0.0.1:2181";
     private String nameSpace = "default";
+    private final int qeCapacity = 1000;
+    private final long scanCycle = 1000;
     private int sessionTimeoutMs = 60000;
     private int connectionTimeoutMs = 15000;
 }
