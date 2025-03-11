@@ -150,3 +150,12 @@ ping-monitor
         scheduler.setThreadNamePrefix(SCHEDULER_PREFIX);
         return scheduler;
     }
+
+    public class NotInternetCondition implements Condition {
+	private static final String INTERNET = "internet";
+    @Override
+    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        String configValue = context.getEnvironment().getProperty("heartbeat.profiles.active");
+        return !INTERNET.equals(configValue);
+    }
+}
