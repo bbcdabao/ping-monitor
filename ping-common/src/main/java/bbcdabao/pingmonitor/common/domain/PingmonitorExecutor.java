@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
-import bbcdabao.pingmonitor.common.infra.domainconfig.configs.PingmonitorExecutorConfig;
+import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
+import bbcdabao.pingmonitor.common.infra.configs.PingmonitorExecutorConfig;
 
 public class PingmonitorExecutor {
 

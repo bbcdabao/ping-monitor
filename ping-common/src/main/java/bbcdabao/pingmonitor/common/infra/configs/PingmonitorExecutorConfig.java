@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.infra.domainconfig.configs;
+package bbcdabao.pingmonitor.common.infra.configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -20,10 +20,10 @@ import org.springframework.boot.ApplicationRunner;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
-import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
+import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig.INotify;
-import bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.infra.configs.RobotConfig;
 import jakarta.annotation.PostConstruct;
 
 public class MasterService implements ApplicationRunner, INotify {

@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.infra.domainconfig;
+package bbcdabao.pingmonitor.common.infra;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

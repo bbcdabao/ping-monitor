@@ -29,9 +29,9 @@ import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
-import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
+import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
-import bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.infra.configs.RobotConfig;
 
 /**
  * Template core management

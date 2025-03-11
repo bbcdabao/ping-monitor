@@ -16,15 +16,13 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.infra.config;
+package bbcdabao.pingmonitor.common.infra.configs;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
-import bbcdabao.pingmonitor.common.infra.domainconfig.configs.PingmonitorExecutorConfig;
-import bbcdabao.pingmonitor.common.infra.domainconfig.configs.ZkclientframeConfig;
+import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
 
 @Configuration
 public class Config {

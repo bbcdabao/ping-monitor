@@ -26,10 +26,10 @@ import org.springframework.boot.ApplicationRunner;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.domain.extraction.TemplateField;
-import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
+import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.domain.templates.TemplatesManager;
-import bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.infra.configs.RobotConfig;
 
 public class StartUpService implements ApplicationRunner {
     private void regTemplatesInfo() throws Exception {

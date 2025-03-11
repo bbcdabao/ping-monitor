@@ -1,9 +1,7 @@
-package bbcdabao.pingmonitor.pingrobotapi.infra.config;
+package bbcdabao.pingmonitor.pingrobotapi.infra.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import bbcdabao.pingmonitor.pingrobotapi.infra.domainconfig.configs.RobotConfig;
 
 @Configuration
 public class Config {

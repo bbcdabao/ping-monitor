@@ -40,8 +40,8 @@ import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.IEvent;
-import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
-import bbcdabao.pingmonitor.common.infra.domainconfig.configs.ZkclientframeConfig;
+import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
+import bbcdabao.pingmonitor.common.infra.configs.ZkclientframeConfig;
 
 /**
  * Handle listening sessions for BaseEventHandler

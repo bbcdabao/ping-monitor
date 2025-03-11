@@ -23,8 +23,8 @@ import org.apache.curator.RetrySleeper;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 
-import bbcdabao.pingmonitor.common.infra.domainconfig.SpringContextHolder;
-import bbcdabao.pingmonitor.common.infra.domainconfig.configs.ZkclientframeConfig;
+import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
+import bbcdabao.pingmonitor.common.infra.configs.ZkclientframeConfig;
 
 /**
  * CuratorFramework Manager
