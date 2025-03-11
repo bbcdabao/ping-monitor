@@ -142,3 +142,11 @@ ping-monitor
     │ 
     └── pom.xml
 ```
+
+    @Bean("timeJobTaskScheduler")
+    TaskScheduler timeJobTaskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(schedulerPoolSize);
+        scheduler.setThreadNamePrefix(SCHEDULER_PREFIX);
+        return scheduler;
+    }
