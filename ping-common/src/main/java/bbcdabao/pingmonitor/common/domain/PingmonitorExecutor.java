@@ -29,17 +29,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
-import bbcdabao.pingmonitor.common.infra.configs.PingmonitorExecutorConfig;
-
 public class PingmonitorExecutor {
 
     private static class Holder {
         private static final ExecutorService INSTANCE = getExecutorService();
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PingmonitorExecutor.class);
+
     private static ExecutorService getExecutorService() {
-        PingmonitorExecutorConfig config = SpringContextHolder.getBean(PingmonitorExecutorConfig.class);
+        PingmonitorExecutorConfig config = FactoryBase
+                .getFactory().getBean(PingmonitorExecutorConfig.class);
         ExecutorService executor = new ThreadPoolExecutor(
                 config.getCorePoolSize(),
                 config.getMaxPoolSize(),
@@ -48,9 +48,7 @@ public class PingmonitorExecutor {
                     private AtomicInteger count = new AtomicInteger(0);
                     @Override
                     public Thread newThread(Runnable r) {
-                        Thread thread = new Thread(r, config.getThreadNamePrefix() + "-" + count.getAndIncrement());
- 
-                        return thread;
+                        return new Thread(r, config.getThreadNamePrefix() + "-" + count.getAndIncrement());
                     }
                 }, new RejectedExecutionHandler() {
                     @Override
@@ -60,8 +58,6 @@ public class PingmonitorExecutor {
                 });
         return executor;
     }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PingmonitorExecutor.class);
 
     public static ExecutorService getInstance() {
         return Holder.INSTANCE;

@@ -16,13 +16,10 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.infra.configs;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package bbcdabao.pingmonitor.pingrobotapi.domain;
 
 import lombok.Data;
 
-@ConfigurationProperties(prefix = "robot")
 @Data
 public class RobotConfig {
     private String plugsPath = "bbcdabao.pingmonitor.pingrobotman";

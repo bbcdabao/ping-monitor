@@ -19,25 +19,33 @@
 package bbcdabao.pingmonitor.common.infra.configs;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
+import bbcdabao.pingmonitor.common.domain.FactoryBase;
+import bbcdabao.pingmonitor.common.domain.PingmonitorExecutorConfig;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.ZkclientframeConfig;
+import bbcdabao.pingmonitor.common.infra.SpringFactoryImpl;
 
 @Configuration
 public class Config {
     @Bean
     @ConditionalOnProperty(prefix = "executor-config", name = "enable", havingValue = "true", matchIfMissing = false)
+    @ConfigurationProperties(prefix = "executor-config")
     PingmonitorExecutorConfig getPingmonitorExecutorConfig() {
         return new PingmonitorExecutorConfig();
     }
     @Bean
     @ConditionalOnProperty(prefix = "zkclientframe", name = "enable", havingValue = "true", matchIfMissing = false)
+    @ConfigurationProperties(prefix = "zkclientframe")
     ZkclientframeConfig getZkclientframeConfig() {
         return new ZkclientframeConfig();
     }
     @Bean
-    SpringContextHolder getSpringContextHolder() {
-        return new SpringContextHolder();
+    SpringFactoryImpl getSpringFactoryImpl() {
+        SpringFactoryImpl springFactoryImpl = new SpringFactoryImpl();
+        FactoryBase.setInstance(springFactoryImpl);
+        return springFactoryImpl;
     }
 }

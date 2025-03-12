@@ -16,18 +16,16 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.infra.configs;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package bbcdabao.pingmonitor.common.domain.zkclientframe;
 
 import lombok.Data;
 
-@ConfigurationProperties(prefix = "executor-config")
 @Data
-public class PingmonitorExecutorConfig {
-    private int corePoolSize = 100;
-    private int maxPoolSize = 500;
-    private int queueCapacity = 1000;
-    private int keepAliveSeconds = 30;
-    private String threadNamePrefix = "monitor-";
+public class ZkclientframeConfig {
+    private String connectString = "127.0.0.1:2181";
+    private String nameSpace = "default";
+    private final int qeCapacity = 1000;
+    private final long scanCycle = 1000;
+    private int sessionTimeoutMs = 60000;
+    private int connectionTimeoutMs = 15000;
 }

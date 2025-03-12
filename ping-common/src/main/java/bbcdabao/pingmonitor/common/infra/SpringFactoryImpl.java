@@ -21,23 +21,16 @@ package bbcdabao.pingmonitor.common.infra;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-public class SpringContextHolder implements ApplicationContextAware {
+import bbcdabao.pingmonitor.common.domain.FactoryBase;
+
+public class SpringFactoryImpl extends FactoryBase implements ApplicationContextAware {
     private static ApplicationContext context;
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         context = applicationContext;
     }
-    public static <T> T getBean(Class<T> clazz) {
+    @Override
+    public <T> T getBean(Class<T> clazz) {
         return context.getBean(clazz);
-    }
-    public static Object getBean(String beanName) {
-        return context.getBean(beanName);
-    }
-    public static <T> T getBean(String beanName, Class<T> clazz) {
-        Object bean = context.getBean(beanName);
-        if (!clazz.isInstance(bean)) {
-            throw new IllegalArgumentException("Bean '" + beanName + "' is not of type " + clazz.getName());
-        }
-        return clazz.cast(bean);
     }
 }

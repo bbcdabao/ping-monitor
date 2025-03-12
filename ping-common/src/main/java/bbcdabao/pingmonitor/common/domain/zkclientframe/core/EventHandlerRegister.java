@@ -32,16 +32,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
+import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.PingmonitorExecutor;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler.IRegister;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.ZkclientframeConfig;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.core.PathManager.BaseEventSender;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.IEvent;
-import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
-import bbcdabao.pingmonitor.common.infra.configs.ZkclientframeConfig;
 
 /**
  * Handle listening sessions for BaseEventHandler
@@ -53,7 +53,8 @@ public class EventHandlerRegister implements IRegister {
     }
 
     private static IRegister getIRegister() {
-        ZkclientframeConfig config = SpringContextHolder.getBean(ZkclientframeConfig.class);
+        ZkclientframeConfig config = FactoryBase
+                .getFactory().getBean(ZkclientframeConfig.class);
         return new EventHandlerRegister(PingmonitorExecutor.getInstance(),
                 CuratorFrameworkInstance.getInstance(), config.getQeCapacity(), config.getScanCycle());
     }

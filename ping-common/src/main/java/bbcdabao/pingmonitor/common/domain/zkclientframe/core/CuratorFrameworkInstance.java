@@ -23,8 +23,9 @@ import org.apache.curator.RetrySleeper;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 
-import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
-import bbcdabao.pingmonitor.common.infra.configs.ZkclientframeConfig;
+import bbcdabao.pingmonitor.common.domain.FactoryBase;
+import bbcdabao.pingmonitor.common.domain.zkclientframe.ZkclientframeConfig;
+
 
 /**
  * CuratorFramework Manager
@@ -51,7 +52,8 @@ public class CuratorFrameworkInstance {
                 }
             }
         };
-        ZkclientframeConfig zkclientframeConfig = SpringContextHolder.getBean(ZkclientframeConfig.class);
+        ZkclientframeConfig zkclientframeConfig = FactoryBase
+                .getFactory().getBean(ZkclientframeConfig.class);
         if (null == zkclientframeConfig) {
             System.exit(1);
         }

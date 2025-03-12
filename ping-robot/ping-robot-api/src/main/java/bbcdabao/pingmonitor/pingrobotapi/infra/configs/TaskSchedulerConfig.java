@@ -16,22 +16,22 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.app.config;
+package bbcdabao.pingmonitor.pingrobotapi.infra.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.RegSysconfigNotify;
-import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.StartUpService;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
-public class Config {
-    @Bean
-    StartUpService getStartUpService() {
-        return new StartUpService();
-    }
-    @Bean
-    RegSysconfigNotify getRegSysconfigNotify() {
-        return new RegSysconfigNotify();
+public class TaskSchedulerConfig {
+    private int schedulerPoolSize = 10;
+    private String threadPrefix = "robot-scheduler";
+    @Bean("timeJobTaskScheduler")
+    TaskScheduler timeJobTaskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(schedulerPoolSize);
+        scheduler.setThreadNamePrefix(threadPrefix);
+        return scheduler;
     }
 }

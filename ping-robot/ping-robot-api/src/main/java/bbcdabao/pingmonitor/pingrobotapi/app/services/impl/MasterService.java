@@ -17,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
+import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
-import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig.INotify;
-import bbcdabao.pingmonitor.pingrobotapi.infra.configs.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
 import jakarta.annotation.PostConstruct;
 
 public class MasterService implements ApplicationRunner, INotify {
@@ -97,7 +97,9 @@ public class MasterService implements ApplicationRunner, INotify {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        robotGroupName = SpringContextHolder.getBean(RobotConfig.class).getRobotGroupName();
+        robotGroupName = FactoryBase
+                .getFactory()
+                .getBean(RobotConfig.class).getRobotGroupName();
         String patch = new StringBuilder()
                 .append("/robot/register/")
                 .append(robotGroupName)

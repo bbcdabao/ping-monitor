@@ -27,11 +27,11 @@ import org.reflections.Reflections;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
+import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
-import bbcdabao.pingmonitor.common.infra.SpringContextHolder;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
-import bbcdabao.pingmonitor.pingrobotapi.infra.configs.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
 
 /**
  * Template core management
@@ -45,7 +45,8 @@ public class TemplatesManager {
     private static TemplatesManager getTemplatesManagerInstance() {
         TemplatesManager templatesManager = new TemplatesManager();
         try {
-            String plugPath = SpringContextHolder
+            String plugPath = FactoryBase
+                    .getFactory()
                     .getBean(RobotConfig.class).getPlugsPath();
             if (ObjectUtils.isEmpty(plugPath)) {
                 throw new Exception("plugPath is isEmpty!");

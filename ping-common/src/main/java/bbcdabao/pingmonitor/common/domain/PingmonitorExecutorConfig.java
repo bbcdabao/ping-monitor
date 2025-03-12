@@ -18,25 +18,13 @@
 
 package bbcdabao.pingmonitor.common.domain;
 
-import java.util.concurrent.atomic.AtomicReference;
+import lombok.Data;
 
-/**
- * Global object factory
- */
-public abstract class FactoryBase {
-    private static AtomicReference<FactoryBase> INSTANCE = new AtomicReference<>();
-    public static void setInstance(FactoryBase factory) {
-        if (!INSTANCE.compareAndSet(null, factory)) {
-            throw new IllegalStateException("FactoryBase allready set!");
-        }
-    }
-    public static FactoryBase getFactory() {
-        FactoryBase factory = INSTANCE.get();
-        if (factory == null) {
-            throw new IllegalStateException("FactoryBase not set!");
-        }
-        return factory;
-    }
-
-    public abstract <T> T getBean(Class<T> clazz);
+@Data
+public class PingmonitorExecutorConfig {
+    private int corePoolSize = 100;
+    private int maxPoolSize = 500;
+    private int queueCapacity = 1000;
+    private int keepAliveSeconds = 30;
+    private String threadNamePrefix = "monitor-";
 }

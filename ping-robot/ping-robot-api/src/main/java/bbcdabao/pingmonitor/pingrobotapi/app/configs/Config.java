@@ -16,27 +16,22 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.domain;
+package bbcdabao.pingmonitor.pingrobotapi.app.configs;
 
-import java.util.concurrent.atomic.AtomicReference;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * Global object factory
- */
-public abstract class FactoryBase {
-    private static AtomicReference<FactoryBase> INSTANCE = new AtomicReference<>();
-    public static void setInstance(FactoryBase factory) {
-        if (!INSTANCE.compareAndSet(null, factory)) {
-            throw new IllegalStateException("FactoryBase allready set!");
-        }
+import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.RegSysconfigNotify;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.StartUpService;
+
+@Configuration
+public class Config {
+    @Bean
+    StartUpService getStartUpService() {
+        return new StartUpService();
     }
-    public static FactoryBase getFactory() {
-        FactoryBase factory = INSTANCE.get();
-        if (factory == null) {
-            throw new IllegalStateException("FactoryBase not set!");
-        }
-        return factory;
+    @Bean
+    RegSysconfigNotify getRegSysconfigNotify() {
+        return new RegSysconfigNotify();
     }
-
-    public abstract <T> T getBean(Class<T> clazz);
 }

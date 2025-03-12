@@ -16,19 +16,14 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.infra.configs;
+package bbcdabao.pingmonitor.pingrobotman;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import lombok.Data;
-
-@ConfigurationProperties(prefix = "zkclientframe")
-@Data
-public class ZkclientframeConfig {
-    private String connectString = "127.0.0.1:2181";
-    private String nameSpace = "default";
-    private final int qeCapacity = 1000;
-    private final long scanCycle = 1000;
-    private int sessionTimeoutMs = 60000;
-    private int connectionTimeoutMs = 15000;
+@SpringBootApplication
+public class App {
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
+    }
 }
