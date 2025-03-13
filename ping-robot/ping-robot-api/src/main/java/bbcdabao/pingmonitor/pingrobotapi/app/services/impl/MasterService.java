@@ -1,103 +1,61 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.quartz.CronScheduleBuilder;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
 import bbcdabao.pingmonitor.common.domain.FactoryBase;
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
-import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig;
-import bbcdabao.pingmonitor.pingrobotapi.app.services.IRegSysconfig.INotify;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfig;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfigNotify;
 import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
 import jakarta.annotation.PostConstruct;
 
-public class MasterService implements ApplicationRunner, INotify {
-    public class TaskMaster implements Job {
-        @Override
-        public void execute(JobExecutionContext context)
-                throws JobExecutionException {
-            try {
-                CoordinationManager
-                .getInstance()
-                .taskFire(robotGroupName);
-            } catch (Exception e) {
-                throw new JobExecutionException(e.getMessage());
-            }
-        }
-    }
-
-    private AtomicReference<Sysconfig> sysconfigRef = new AtomicReference<>();
-    private String robotGroupName = null;
-    private JobKey jobKey = new JobKey("taskFire", "robot");
-    private TriggerKey triggerKey = new TriggerKey("taskFire" + "Trigger", "robot");
+public class MasterService extends TimeWorkerBase implements ApplicationRunner, ISysconfigNotify {
 
     @Autowired
-    private Scheduler scheduler;
+    private ISysconfig regSysconfigNotify;
 
-    @Autowired
-    private IRegSysconfig regSysconfigNotify;
+    private AtomicBoolean isMaster = new AtomicBoolean(false);
 
-    private synchronized void updateJobCron() throws Exception {
-        String cronExpression = sysconfigRef.get().getCron();
-        if (!scheduler.checkExists(jobKey)) {
-            return;
-        }
-        Trigger newTrigger = TriggerBuilder.newTrigger()
-                .withIdentity(triggerKey)
-                .forJob(jobKey)
-                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
-                .build();
-        scheduler.rescheduleJob(triggerKey, newTrigger);
-    }
-    private synchronized void createJobCron() throws Exception {
-        String cronExpression = sysconfigRef.get().getCron();
-        JobDetail jobDetail = JobBuilder.newJob(TaskMaster.class)
-                .withIdentity(jobKey)
-                .storeDurably()
-                .build();
-        Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity(triggerKey)
-                .forJob(jobDetail)
-                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
-                .build();
-        scheduler.scheduleJob(jobDetail, trigger);
-    }
-    private synchronized void deleteJobCron() throws Exception {
-        if (!scheduler.checkExists(jobKey)) {
-            return;
-        }
-        scheduler.deleteJob(jobKey);
+    private void doExecute() throws Exception {
+        
     }
 
     @PostConstruct
     public void init() {
-        regSysconfigNotify.regNotify(this);
+        regSysconfigNotify.reg(this);
     }
 
     @Override
     public void onChange(Sysconfig config) throws Exception {
-        sysconfigRef.set(config);
-        updateJobCron();
+        beginCron(config.getCron());
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        robotGroupName = FactoryBase
+        String robotGroupName = FactoryBase
                 .getFactory()
                 .getBean(RobotConfig.class).getRobotGroupName();
         String patch = new StringBuilder()
@@ -107,10 +65,17 @@ public class MasterService implements ApplicationRunner, INotify {
                 .toString();
         MasterKeeperTaskManager.getInstance().selectMasterNotify(patch,
                 () -> {
-                    createJobCron();
+                    isMaster.set(true);
                 },
                 () -> {
-                    deleteJobCron();
+                    isMaster.set(false);
                 }, null);
+    }
+
+    @Override
+    public void onExecute() throws Exception {
+        if (isMaster.get()) {
+            doExecute();
+        }
     }
 }
