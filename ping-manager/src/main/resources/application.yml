@@ -21,3 +21,9 @@ zk-server:
 
 zkclientframe:
   enable: true
+  name-space: baominghui
+
+sysconfig:
+  cron: 0/10 * * * * ?
+  time-out-ms: 10000
+  overwrite: true
