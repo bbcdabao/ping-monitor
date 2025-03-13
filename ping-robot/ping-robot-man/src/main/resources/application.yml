@@ -15,3 +15,7 @@
 
 zkclientframe:
   enable: true
+  nameSpace: mmm
+
+executor-config:
+  enable: true
