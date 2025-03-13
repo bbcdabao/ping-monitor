@@ -23,5 +23,5 @@ import lombok.Data;
 @Data
 public class RobotConfig {
     private String plugsPath = "bbcdabao.pingmonitor.pingrobotman.plugs";
-    private String robotGroupName;
+    private String robotGroupName = "robot-group";
 }
