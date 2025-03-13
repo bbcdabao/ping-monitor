@@ -64,4 +64,6 @@ public abstract class BaseEventHandler extends GameOver {
     }
     public void onEvent(DeletedEvent data) throws Exception {
     }
+    public void onIdl() throws Exception {
+    }
 }
