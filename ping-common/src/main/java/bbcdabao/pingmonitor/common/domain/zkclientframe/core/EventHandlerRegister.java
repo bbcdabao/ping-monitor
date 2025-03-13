@@ -137,6 +137,8 @@ public class EventHandlerRegister implements IRegister {
             } else if (event instanceof DeletedEvent) {
                 DeletedEvent eventIndex = (DeletedEvent) event;
                 handler.onEvent(eventIndex);
+            } else {
+                handler.onIdl();
             }
         }
 
