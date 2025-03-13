@@ -23,4 +23,6 @@ import lombok.Data;
 @Data
 public class Sysconfig {
     private String cron;
+    private int timeOutMs;
+    private boolean isOverwrite = false;
 }
