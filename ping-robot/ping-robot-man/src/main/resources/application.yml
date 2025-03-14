@@ -19,3 +19,6 @@ zkclientframe:
 
 executor-config:
   enable: true
+
+robot:
+  robot-group-name: myrobot
