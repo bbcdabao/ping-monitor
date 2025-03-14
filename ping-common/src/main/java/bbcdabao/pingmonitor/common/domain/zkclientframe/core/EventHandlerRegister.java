@@ -202,4 +202,36 @@ public class EventHandlerRegister implements IRegister {
         executorService.execute(handlerNode);
         return pathManager.addPathListener(path, handlerNode);
     }
+
+    @Override
+    public void regAndBlokingRun(String path, BaseEventHandler handler) {
+        if (ObjectUtils.isEmpty(path)) {
+            return;
+        }
+        if (null == handler) {
+            return;
+        }
+        /**
+         * When optimization is needed in the future, add judgment and attention events
+         * to monitor.
+         */
+        try {
+            Method methodCreatedEvent = handler.getClass().getMethod("onEvent", CreatedEvent.class);
+            Method methodChangedEvent = handler.getClass().getMethod("onEvent", ChangedEvent.class);
+            Method methodDeletedEvent = handler.getClass().getMethod("onEvent", DeletedEvent.class);
+            if (!methodCreatedEvent.getDeclaringClass().equals(BaseEventHandler.class)) {
+                LOGGER.info("methodCreatedEvent is overrwide!");
+            }
+            if (!methodChangedEvent.getDeclaringClass().equals(BaseEventHandler.class)) {
+                LOGGER.info("methodChangedEvent is overrwide!");
+            }
+            if (!methodDeletedEvent.getDeclaringClass().equals(BaseEventHandler.class)) {
+                LOGGER.info("methodDeletedEvent is overrwide!");
+            }
+        } catch (Exception e) {
+        }
+        HandlerNode handlerNode = getHandlerNode(handler);
+        pathManager.addPathListener(path, handlerNode);
+        handlerNode.run();
+    }
 }
