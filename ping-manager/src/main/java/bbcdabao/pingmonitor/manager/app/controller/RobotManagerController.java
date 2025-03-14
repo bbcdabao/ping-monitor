@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.manager.app.domain.sse.processes.InstancesProcess;
+import bbcdabao.pingmonitor.manager.domain.sse.processes.InstancesProcess;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
