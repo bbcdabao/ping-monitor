@@ -143,19 +143,56 @@ ping-monitor
     └── pom.xml
 ```
 
-    @Bean("timeJobTaskScheduler")
-    TaskScheduler timeJobTaskScheduler() {
-        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(schedulerPoolSize);
-        scheduler.setThreadNamePrefix(SCHEDULER_PREFIX);
-        return scheduler;
-    }
 
-    public class NotInternetCondition implements Condition {
-	private static final String INTERNET = "internet";
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        String configValue = context.getEnvironment().getProperty("heartbeat.profiles.active");
-        return !INTERNET.equals(configValue);
+
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.framework.recipes.cache.CuratorCache;
+import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+
+public class CuratorCacheExample {
+    public static void main(String[] args) throws Exception {
+        String connectString = "localhost:2181";  // 替换成你的 Zookeeper 地址
+        String watchPath = "/stub/mtk"; // 需要监听的路径
+
+        // 创建 CuratorFramework 客户端
+        CuratorFramework client = CuratorFrameworkFactory.newClient(
+                connectString,
+                new ExponentialBackoffRetry(1000, 3)
+        );
+        client.start();
+
+        // 创建 CuratorCache 监听 /stub/mtk 目录
+        CuratorCache cache = CuratorCache.builder(client, watchPath).build();
+
+        // 添加 CuratorCacheListener 监听子节点变化
+        CuratorCacheListener listener = CuratorCacheListener.builder()
+                .forPathChildrenCache(watchPath, client, (curator, event) -> {
+                    switch (event.getType()) {
+                        case CHILD_ADDED:
+                            System.out.println("子节点添加: " + event.getData().getPath());
+                            break;
+                        case CHILD_UPDATED:
+                            System.out.println("子节点更新: " + event.getData().getPath());
+                            break;
+                        case CHILD_REMOVED:
+                            System.out.println("子节点删除: " + event.getData().getPath());
+                            break;
+                        default:
+                            break;
+                    }
+                }).build();
+
+        // 绑定监听器
+        cache.listenable().addListener(listener);
+
+        // 启动 CuratorCache
+        cache.start();
+        System.out.println("CuratorCache 监听启动，监听路径: " + watchPath);
+
+        // 阻止主线程退出
+        Thread.sleep(Long.MAX_VALUE);
     }
 }
+
