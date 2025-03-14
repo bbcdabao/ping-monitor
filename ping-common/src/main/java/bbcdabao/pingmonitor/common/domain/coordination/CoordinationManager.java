@@ -206,7 +206,7 @@ public class CoordinationManager {
     private static final String REG_UUID = UUID.randomUUID().toString();
     public void regRobotInstance(String robotGropName) throws Exception {
         String path = new StringBuilder()
-                .append("/register/")
+                .append("/robot/register/")
                 .append(robotGropName)
                 .append("/meta-info/instance/")
                 .append(REG_UUID).toString();
