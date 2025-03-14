@@ -37,6 +37,7 @@ public abstract class BaseEventHandler extends GameOver {
      */
     public static interface IRegister {
         CuratorCache reg(String patch, BaseEventHandler handler);
+        void regAndBlokingRun(String patch, BaseEventHandler handler);
     }
 
     /**
@@ -56,6 +57,9 @@ public abstract class BaseEventHandler extends GameOver {
      */
     public CuratorCache start(String patch) {
         return EventHandlerRegister.getInstance().reg(patch, this);
+    }
+    public void startBloking(String patch) {
+        EventHandlerRegister.getInstance().regAndBlokingRun(patch, this);
     }
 
     public void onEvent(CreatedEvent data) throws Exception {
