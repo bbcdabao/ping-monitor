@@ -30,7 +30,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,35 +49,43 @@ class PathManager implements Runnable {
     private final CuratorFramework client;
     private final long scanCycle;
 
-    private static final Map<Type, BiFunction<ChildData, ChildData, IEvent>> EVENT_GETTER = new HashMap<>(3);
+    private static final Map<org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type
+    , BiFunction<ChildData, ChildData, IEvent>> EVENT_GETTER = new HashMap<>(3);
     static {
-        EVENT_GETTER.put(Type.NODE_CREATED, (oldData, newData) -> {
+        EVENT_GETTER.put(org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type
+                .NODE_CREATED, (oldData, newData) -> {
             return new CreatedEvent(newData);
         });
-        EVENT_GETTER.put(Type.NODE_CHANGED, (oldData, newData) -> {
+        EVENT_GETTER.put(org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type
+                .NODE_CHANGED, (oldData, newData) -> {
             return new ChangedEvent(oldData, newData);
         });
-        EVENT_GETTER.put(Type.NODE_DELETED, (oldData, newData) -> {
+        EVENT_GETTER.put(org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type
+                .NODE_DELETED, (oldData, newData) -> {
             return new DeletedEvent(oldData);
         });
     }
 
-    /**
-     * To share monitoring
-     */
-    private class PathNode {
-        private final LinkedList<WeakReference<BaseEventSender>> queueEvent = new LinkedList<>();
-        private final CuratorCache curatorCache;
-        private final String path;
-        private PathNode(CuratorCache curatorCache, String path) {
-            this.curatorCache = curatorCache;
-            this.path = path;
-        }
-        private void sendEvent(final IEvent event) {
-            checks((sender) -> {
-                sender.send(event);
-            });
-        }
+    private static final Map<org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type
+    , BiFunction<ChildData, ChildData, IEvent>> CHILD_EVENT_GETTER = new HashMap<>(3);
+    static {
+        CHILD_EVENT_GETTER.put(org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type
+                .CHILD_ADDED, (oldData, newData) -> {
+            return new CreatedEvent(newData);
+        });
+        CHILD_EVENT_GETTER.put(org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type
+                .CHILD_UPDATED , (oldData, newData) -> {
+            return new ChangedEvent(oldData, newData);
+        });
+        CHILD_EVENT_GETTER.put(org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type
+                .CHILD_REMOVED, (oldData, newData) -> {
+            return new DeletedEvent(oldData);
+        });
+    }
+
+    private class NodeQueue {
+        private final LinkedList<WeakReference<BaseEventSender>> queueEvent =
+                new LinkedList<>();
         private synchronized void addSender(WeakReference<BaseEventSender> weakSender) {
             queueEvent.add(weakSender);
         }
@@ -105,13 +112,90 @@ class PathManager implements Runnable {
                         iterator.remove();
                         continue;
                     }
-                    if (null == consumer) {
-                        continue;
-                    }
                     consumer.accept(sender);
                 }
             }
             return queueEvent.isEmpty();
+        }
+    }
+    
+    private class NodeInfo {
+        private final CuratorCacheListener listener;
+        private final NodeQueue nodeQueue;
+        private NodeInfo(CuratorCacheListener listener, NodeQueue nodeQueue) {
+            this.listener = listener;
+            this.nodeQueue = nodeQueue;
+        }
+    }
+
+    /**
+     * To share monitoring
+     */
+    private class PathNode {
+        private final Map<String, NodeInfo> queueMap = new HashMap<>(10);
+        private final CuratorCache curatorCache;
+        private final String path;
+        private PathNode(CuratorCache curatorCache, String path) {
+            this.curatorCache = curatorCache;
+            this.path = path;
+        }
+        private void updateListenScope(String scope, String path,
+                WeakReference<BaseEventSender> weakSender) {
+            NodeInfo nodeInfo = queueMap.computeIfAbsent(scope, (k) -> {
+                switch (scope) {
+                case "ALL":
+                    return addAllListenScope();
+                case "CHILD":
+                    return addChildListenScope();
+                default:
+                    return null;
+                }
+            });
+            nodeInfo.nodeQueue.addSender(weakSender);
+        }
+        private NodeInfo addAllListenScope() {
+            NodeQueue nodeQueue = new NodeQueue();
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forAll((type, oldData, newData) -> {
+                BiFunction<ChildData, ChildData, IEvent> trevent = EVENT_GETTER.get(type);
+                if (null == trevent) {
+                    return;
+                }
+                nodeQueue.checks((sender) -> {
+                    sender.send(trevent.apply(oldData, newData));
+                });
+            }).build();
+            NodeInfo nodeInfo = new NodeInfo(listener, nodeQueue);
+            curatorCache.listenable().addListener(listener);
+            return nodeInfo;
+        }
+        private NodeInfo addChildListenScope() {
+            NodeQueue nodeQueue = new NodeQueue();
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forPathChildrenCache(path, client, (curator, event) -> {
+                BiFunction<ChildData, ChildData, IEvent> trevent = CHILD_EVENT_GETTER.get(event.getType());
+                if (null == trevent) {
+                    return;
+                }
+                nodeQueue.checks((sender) -> {
+                    sender.send(trevent.apply(null, event.getData()));
+                });
+            }).build();
+            NodeInfo nodeInfo = new NodeInfo(listener, nodeQueue);
+            curatorCache.listenable().addListener(listener);
+            return nodeInfo;
+        }
+        private boolean checks() {
+            Iterator<Map.Entry<String, NodeInfo>> iterator = queueMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, NodeInfo> entry = iterator.next();
+                NodeInfo nodeInfo = entry.getValue();
+                if (nodeInfo.nodeQueue.checks(null)) {
+                    iterator.remove();
+                    curatorCache.listenable().removeListener(nodeInfo.listener);
+                }
+            }
+            return queueMap.isEmpty();
         }
     }
 
@@ -119,22 +203,13 @@ class PathManager implements Runnable {
      * Add to send
      */
     private Map<String, PathNode> pathNodeMap = new HashMap<>(1000);
-    private synchronized CuratorCache getPathNode(String path, WeakReference<BaseEventSender> weakSender) {
+    private synchronized CuratorCache getPathNode(String scope, String path, WeakReference<BaseEventSender> weakSender) {
         PathNode pathNode = pathNodeMap.computeIfAbsent(path, (k) -> {
             CuratorCache curatorCache = CuratorCache.build(client, path);
             curatorCache.start();
-            final PathNode pathNodeNew = new PathNode(curatorCache, path);
-            CuratorCacheListener listener  = CuratorCacheListener.builder().forAll((type, oldData, newData) -> {
-                BiFunction<ChildData, ChildData, IEvent> trevent = EVENT_GETTER.get(type);
-                if (null == trevent) {
-                    return;
-                }
-                pathNodeNew.sendEvent(trevent.apply(oldData, newData));
-            }).build();
-            curatorCache.listenable().addListener(listener);
-            return pathNodeNew;
+            return new PathNode(curatorCache, path);
         });
-        pathNode.addSender(weakSender);
+        pathNode.updateListenScope(scope, path, weakSender);
         return pathNode.curatorCache;
     }
 
@@ -146,7 +221,7 @@ class PathManager implements Runnable {
         while (iterator.hasNext()) {
             Map.Entry<String, PathNode> entry = iterator.next();
             PathNode pathNode = entry.getValue();
-            if (pathNode.checks(null)) {
+            if (pathNode.checks()) {
                 iterator.remove();
                 try (pathNode.curatorCache) {
                     LOGGER.info("PathManager.pathNode:{} delete!", pathNode.path);
@@ -164,9 +239,24 @@ class PathManager implements Runnable {
         abstract void send(IEvent event);
     }
 
-    public CuratorCache addPathListener(String path, BaseEventSender sender) {
+    public CuratorCache addPathListener(String scopePath, BaseEventSender sender) {
+        String scope = null;
+        String path = null;
+        String[] strArray = scopePath.split(":");
+        switch (strArray.length) {
+        case 1:
+            path = strArray[0];
+            scope = "ALL";
+            break;
+        case 2:
+            path = strArray[1];
+            scope = strArray[0];
+            break;
+        default:
+            throw new RuntimeException("scopePath error!");
+        }
         WeakReference<BaseEventSender> weakSender = new WeakReference<>(sender);
-        return getPathNode(path, weakSender);
+        return getPathNode(scope, path, weakSender);
     }
 
     public PathManager(CuratorFramework client, long scanCycle) {
