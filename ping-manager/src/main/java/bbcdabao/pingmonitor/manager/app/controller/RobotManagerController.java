@@ -18,18 +18,21 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
-import java.io.IOException;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.manager.domain.sse.processes.InstancesProcess;
+import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotInstancesSession;
+import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
+import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
@@ -38,13 +41,22 @@ public class RobotManagerController {
 
     private final Logger logger = LoggerFactory.getLogger(RobotManagerController.class);
 
-    @GetMapping(value = "/{robotGroupName}/instances", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/sse/{robotGroupName}/instances", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public void getinstances(
+    public void getInstancesForSse (
             @PathVariable("robotGroupName") String robotGroupName,
-            HttpServletResponse response) throws IOException {
+            HttpServletResponse response) throws Exception {
         logger.info("enter:getinstances:{}", robotGroupName);
-        InstancesProcess instancesProcess = new InstancesProcess(robotGroupName, response);
-        instancesProcess.doRun();
+        BaseSseSession.startProcess(() -> {
+            return new RobotInstancesSession(robotGroupName, response);
+        });
+    }
+    
+    @GetMapping(value = "/{robotGroupName}/instances")
+    @ResponseBody
+    public ResponseEntity<Collection<RobotInstanceInfo>> getInstances (
+            @PathVariable("robotGroupName") String robotGroupName) {
+        ResponseEntity<Collection<RobotInstanceInfo>> response = ResponseEntity.ok(null);
+        return response;
     }
 }
