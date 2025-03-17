@@ -79,7 +79,7 @@ class PathManager implements Runnable {
         });
         CHILD_EVENT_GETTER.put(org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.Type
                 .CHILD_REMOVED, (oldData, newData) -> {
-            return new DeletedEvent(oldData);
+            return new DeletedEvent(newData);
         });
     }
 
