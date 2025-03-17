@@ -147,6 +147,16 @@ class PathManager implements Runnable {
                     return addAllListenScope();
                 case "CHILD":
                     return addChildListenScope();
+                case "CHANGED":
+                    return addChangedListenScope();
+                case "CREATE":    
+                    return addCreateListenScope();
+                case "DELETE":
+                    return addDeleteListenScope();
+                case "CREATEADNCHANGED":    
+                    return addCreateAndChangedListenScope();
+                case "NODE":  
+                    return addNodeListenScope();
                 default:
                     return null;
                 }
@@ -185,7 +195,106 @@ class PathManager implements Runnable {
             curatorCache.listenable().addListener(listener);
             return nodeInfo;
         }
-        private boolean checks() {
+        private NodeInfo addChangedListenScope() {
+            NodeQueue nodeQueue = new NodeQueue();
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forChanges((oldData, newData) -> {
+                BiFunction<ChildData, ChildData, IEvent> trevent =
+                        EVENT_GETTER
+                        .get(org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type
+                        .NODE_CHANGED);
+                if (null == trevent) {
+                    return;
+                }
+                nodeQueue.checks((sender) -> {
+                    sender.send(trevent.apply(oldData, newData));
+                });
+            }).build();
+            NodeInfo nodeInfo = new NodeInfo(listener, nodeQueue);
+            curatorCache.listenable().addListener(listener);
+            return nodeInfo;
+        }
+        private NodeInfo addCreateListenScope() {
+            NodeQueue nodeQueue = new NodeQueue();
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forCreates((newData) -> {
+                BiFunction<ChildData, ChildData, IEvent> trevent =
+                        EVENT_GETTER
+                        .get(org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type
+                        .NODE_CREATED);
+                if (null == trevent) {
+                    return;
+                }
+                nodeQueue.checks((sender) -> {
+                    sender.send(trevent.apply(null, newData));
+                });
+            }).build();
+            NodeInfo nodeInfo = new NodeInfo(listener, nodeQueue);
+            curatorCache.listenable().addListener(listener);
+            return nodeInfo;
+        }
+        private NodeInfo addDeleteListenScope() {
+            NodeQueue nodeQueue = new NodeQueue();
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forDeletes((newData) -> {
+                BiFunction<ChildData, ChildData, IEvent> trevent =
+                        EVENT_GETTER
+                        .get(org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type
+                        .NODE_DELETED);
+                if (null == trevent) {
+                    return;
+                }
+                nodeQueue.checks((sender) -> {
+                    sender.send(trevent.apply(null, newData));
+                });
+            }).build();
+            NodeInfo nodeInfo = new NodeInfo(listener, nodeQueue);
+            curatorCache.listenable().addListener(listener);
+            return nodeInfo;
+        }
+        private NodeInfo addCreateAndChangedListenScope() {
+            NodeQueue nodeQueue = new NodeQueue();
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forCreatesAndChanges((oldData, newData) -> {
+                org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type typeNow;
+                if (null == oldData) {
+                    typeNow = org.apache.curator.framework.recipes.cache.CuratorCacheListener
+                            .Type.NODE_CREATED; 
+                } else {
+                    typeNow = org.apache.curator.framework.recipes.cache.CuratorCacheListener
+                            .Type.NODE_CHANGED; 
+                }
+                BiFunction<ChildData, ChildData, IEvent> trevent = EVENT_GETTER.get(typeNow);
+                if (null == trevent) {
+                    return;
+                }
+                nodeQueue.checks((sender) -> {
+                    sender.send(trevent.apply(oldData, newData));
+                });
+            }).build();
+            NodeInfo nodeInfo = new NodeInfo(listener, nodeQueue);
+            curatorCache.listenable().addListener(listener);
+            return nodeInfo;
+        }
+        private NodeInfo addNodeListenScope() {
+            NodeQueue nodeQueue = new NodeQueue();
+            CuratorCacheListener listener = CuratorCacheListener.builder()
+                    .forNodeCache(() -> {
+                BiFunction<ChildData, ChildData, IEvent> trevent =
+                        EVENT_GETTER
+                        .get(org.apache.curator.framework.recipes.cache.CuratorCacheListener.Type.NODE_CHANGED);
+                if (null == trevent) {
+                    return;
+                }
+                nodeQueue.checks((sender) -> {
+                    sender.send(trevent.apply(null, null));
+                });
+            }).build();
+            NodeInfo nodeInfo = new NodeInfo(listener, nodeQueue);
+            curatorCache.listenable().addListener(listener);
+            return nodeInfo;
+        }
+        private boolean isNodeInfoEmpty() {
             Iterator<Map.Entry<String, NodeInfo>> iterator = queueMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, NodeInfo> entry = iterator.next();
@@ -193,6 +302,8 @@ class PathManager implements Runnable {
                 if (nodeInfo.nodeQueue.checks(null)) {
                     iterator.remove();
                     curatorCache.listenable().removeListener(nodeInfo.listener);
+                    String scope = entry.getKey();
+                    LOGGER.info("PathManager.pathNode:{} remove scope:{}!", path, scope);
                 }
             }
             return queueMap.isEmpty();
@@ -221,7 +332,7 @@ class PathManager implements Runnable {
         while (iterator.hasNext()) {
             Map.Entry<String, PathNode> entry = iterator.next();
             PathNode pathNode = entry.getValue();
-            if (pathNode.checks()) {
+            if (pathNode.isNodeInfoEmpty()) {
                 iterator.remove();
                 try (pathNode.curatorCache) {
                     LOGGER.info("PathManager.pathNode:{} delete!", pathNode.path);
