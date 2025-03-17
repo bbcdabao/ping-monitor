@@ -28,7 +28,44 @@ public class ZookeeperPaths {
         return Holder.INSTANCE;
     }
 
+    /**
+     * /sysconfig
+     * └── (JSON format system configuration) "{pingcycle: 60000}"
+     */
+    public String getSysconfigPath() {
+        return "/sysconfig";
+    }
+
+    /**
+     * /robot (Robot root directory)
+     * ├── /register (Robot registration directory)
+     * │   ├── /rebot-xxx (Robot group name)
+     * │   │   ├──meta-info (Robot and task inf)
+     * │   │   │   ├── /instance (Instance child nodes, all temporary nodes)
+     */
     public String getRobotInstancePath(String robotGropName) {
         return String.format("/robot/register/%s/meta-info/instance", robotGropName);
+    }
+
+    /**
+     * Table of contents is as follows:
+     * 
+     * /robot (Robot root directory)
+     * ├── /templates (Robot plugin templates)
+     * │   ├── /com_xxx_sss_PingCallTest
+     * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
+     * │   ├── /com_xxx_sss_HttpCallTest
+     * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
+     * │   ├── /com_xxx_sss_XXXXCallTest
+     * │         └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
+     * 
+     * @return
+     */
+    public String getPlugTemplatePath(String plugName) {
+        return String.format("/robot/templates/%s", plugName);
+    }
+
+    public String getTaskConfigPath(String taskName) {
+        return String.format("/tasks/%s/config", taskName);
     }
 }
