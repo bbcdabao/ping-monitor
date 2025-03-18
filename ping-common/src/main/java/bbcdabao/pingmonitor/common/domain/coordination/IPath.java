@@ -38,7 +38,9 @@ import java.util.UUID;
  * │   │   ├──meta-info (Robot and task inf)
  * │   │   │   ├── /instance (Instance child nodes, all temporary nodes)
  * │   │   │   │   ├── /UUID01 ("ip@procid")
+ * │   │   │   │   │   ├──/task-02
  * │   │   │   │   ├── /UUID02 ("ip@procid")
+ * │   │   │   │   │   ├──/task-01 
  * │   │   │   │   └── /UUID03 ("ip@procid")
  * │   │   │   ├── /tasks (Monitoring task list, child nodes must be unique)
  * │   │   │   │   ├── /task-01 (Scheduling concurrency configuration)
