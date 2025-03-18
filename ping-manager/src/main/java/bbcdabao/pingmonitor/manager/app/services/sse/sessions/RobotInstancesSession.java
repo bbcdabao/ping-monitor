@@ -18,6 +18,7 @@
 
 package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
+import bbcdabao.pingmonitor.common.domain.coordination.IPath;
 import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
@@ -42,26 +43,22 @@ public class RobotInstancesSession extends BaseSseSession {
     /**
      * ZOOKEEPER path /robot/register/GROUPXXX/instance
      */
-    private String path;
+    private IPath path;
 
     public RobotInstancesSession(String robotGroupName, HttpServletResponse response) {
         super(response);
-        path = new StringBuilder()
-                .append("/robot/register/")
-                .append(robotGroupName)
-                .append("/meta-info/instance")
-                .toString();
+        path = IPath.robotInstancePath(robotGroupName);
     }
 
     @Override
     public void doProcess() throws Exception {
-        String pathStart = "CHILD:" + path;
+        String pathStart = "CHILD:" + path.get();
         startBloking(pathStart);
     }
 
     public void onEvent(CreatedEvent data) throws Exception {
         String pathGet = data.getData().getPath();
-        String instanceId = pathGet.replaceFirst(path, "");
+        String instanceId = pathGet.replaceFirst(path.get(), "");
         String instanceInfo = ByteDataConver.getInstance()
                 .getConvertFromByteForString().getValue(data.getData().getData());
         RobotInstanceInfoEvent event = new RobotInstanceInfoEvent();
@@ -73,7 +70,7 @@ public class RobotInstancesSession extends BaseSseSession {
 
     public void onEvent(DeletedEvent data) throws Exception {
         String pathGet = data.getData().getPath();
-        String instanceId = pathGet.replaceFirst(path, "");
+        String instanceId = pathGet.replaceFirst(path.get(), "");
         RobotInstanceInfoEvent event = new RobotInstanceInfoEvent();
         event.setEventId(1);
         event.robotInstanceInfo.setRobotId(instanceId);
