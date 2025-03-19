@@ -20,7 +20,7 @@ package bbcdabao.pingmonitor.common.domain.coordination;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -105,15 +105,15 @@ public class CoordinationManager {
     public static interface IChildGetDataStat {
         void onData(IPath childPath, String child, byte[] data, Stat stat);
     }
-    public Collection<String> getChildren(IPath path) throws Exception {
-        Collection<String> children = CuratorFrameworkInstance
+    public List<String> getChildren(IPath path) throws Exception {
+        List<String> children = CuratorFrameworkInstance
                 .getInstance()
                 .getChildren()
                 .forPath(path.get());
         return children;
     }
-    public Collection<String> getChildren(IPath path, IChildGetStat statFun) throws Exception {
-        Collection<String> children = getChildren(path);
+    public List<String> getChildren(IPath path, IChildGetStat statFun) throws Exception {
+        List<String> children = getChildren(path);
         if (null == statFun) {
             return children;
         }
@@ -128,8 +128,8 @@ public class CoordinationManager {
         });
         return children;
     }
-    public Collection<String> getChildren(IPath path, IChildGetData dataFun) throws Exception {
-        Collection<String> children = getChildren(path);
+    public List<String> getChildren(IPath path, IChildGetData dataFun) throws Exception {
+        List<String> children = getChildren(path);
         if (null == dataFun) {
             return children;
         }
@@ -144,8 +144,8 @@ public class CoordinationManager {
         });
         return children;
     }
-    public Collection<String> getChildren(IPath path, IChildGetDataStat dataFun) throws Exception {
-        Collection<String> children = getChildren(path);
+    public List<String> getChildren(IPath path, IChildGetDataStat dataFun) throws Exception {
+        List<String> children = getChildren(path);
         if (null == dataFun) {
             return children;
         }
