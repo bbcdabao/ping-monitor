@@ -38,24 +38,17 @@ import java.util.UUID;
  * │   │   ├──meta-info (Robot and task inf)
  * │   │   │   ├── /instance (Instance child nodes, all temporary nodes)
  * │   │   │   │   ├── /UUID01 ("ip@procid")
- * │   │   │   │   │   ├──/task-02
  * │   │   │   │   ├── /UUID02 ("ip@procid")
- * │   │   │   │   │   ├──/task-01 
+ * │   │   │   │   └── /UUID03 ("ip@procid")
+ * │   │   │   ├── /sub-tasks (allocation tasks)
+ * │   │   │   │   ├── /UUID01 ("ip@procid")
+ * │   │   │   │   ├── /UUID02 ("ip@procid")
  * │   │   │   │   └── /UUID03 ("ip@procid")
  * │   │   │   ├── /tasks (Monitoring task list, child nodes must be unique)
  * │   │   │   │   ├── /task-01 (Scheduling concurrency configuration)
  * │   │   │   │   └── /task-02 (Scheduling concurrency configuration)
  * │   │   ├──run-info (Running control info)
- * │   │   │   ├── /election (Robot instance election)
- * │   │   │   ├── /task-fire (Task trigger)
- * │   │   │   │   ├── /task-01
- * │   │   │   │   ├── /task-02
- * │   │   │   ├── /task-avge (Avg child nodes, all temporary nodes)
- * │   │   │   │   ├── /UUID01 ("ip@procid")
- * │   │   │   │   │   ├── /task-02
- * │   │   │   │   ├── /UUID02 ("ip@procid")
- * │   │   │   │   │   ├── /task-02
- * │   │   │   │   └── /UUID03 ("ip@procid")
+ * │   │   │   └── /election (Robot instance election)
  * 
  * /tasks (Task configuration)
  * ├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
@@ -110,6 +103,11 @@ public interface IPath {
      * │   │   │   ├── /instances (Instance child nodes, all temporary nodes)
      * │   │   │   │   ├── /UUID01 ("ip@procid")
      * │   │   │   │   ├── /UUID02 ("ip@procid")
+     * │   │   │   ├── /sub-tasks (allocation tasks)
+     * │   │   │   │   ├── /UUID01
+     * │   │   │   │   │   └── /task-02
+     * │   │   │   │   ├── /UUID02
+     * │   │   │   │   │   └── /task-01
      * │   │   │   ├── /tasks (Monitoring task list, child nodes must be unique)
      * │   │   │   │   ├── /task-01 (Scheduling concurrency configuration)
      * │   │   │   │   └── /task-02 (Scheduling concurrency configuration)
@@ -129,6 +127,14 @@ public interface IPath {
 
     static IPath robotTask(String robotGroupName, String taskName) {
         return () -> String.format("/robot/register/%s/meta-info/tasks/%s", robotGroupName, taskName);
+    }
+
+    static IPath robotSubTaskPath(String robotGroupName) {
+        return () -> String.format("/robot/register/%s/meta-info/sub-tasks", robotGroupName);
+    }
+
+    static IPath robotSubTaskIdPath(String robotGroupName) {
+        return () -> String.format("/robot/register/%s/meta-info/sub-tasks/%s", robotGroupName, REG_UUID);
     }
 
     /**
