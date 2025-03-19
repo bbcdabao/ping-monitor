@@ -121,16 +121,20 @@ public interface IPath {
         return () -> String.format("/robot/register/%s/meta-info/instances/%s", robotGroupName, REG_UUID);
     }
 
-    static IPath robotTask(String robotGroupName) {
+    static IPath robotTaskPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info/tasks", robotGroupName);
     }
 
-    static IPath robotTask(String robotGroupName, String taskName) {
+    static IPath robotTaskPath(String robotGroupName, String taskName) {
         return () -> String.format("/robot/register/%s/meta-info/tasks/%s", robotGroupName, taskName);
     }
 
     static IPath robotSubTaskPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info/sub-tasks", robotGroupName);
+    }
+
+    static IPath robotSubTaskPath(String robotGroupName, String robotId, String taskName) {
+        return () -> String.format("/robot/register/%s/meta-info/sub-tasks/%s/%s", robotGroupName, robotId, taskName);
     }
 
     static IPath robotSubTaskIdPath(String robotGroupName) {
