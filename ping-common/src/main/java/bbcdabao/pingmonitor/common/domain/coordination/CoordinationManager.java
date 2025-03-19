@@ -56,6 +56,8 @@ public class CoordinationManager {
             CuratorFrameworkInstance
             .getInstance()
             .delete()
+            .guaranteed()
+            .deletingChildrenIfNeeded()
             .forPath(path.get());
         } catch (NoNodeException e) {
             e.printStackTrace();
@@ -94,8 +96,12 @@ public class CoordinationManager {
     }
 
     @FunctionalInterface
+    public static interface IChildOnly {
+        void onData(IPath childPath, String child);
+    }
+    @FunctionalInterface
     public static interface IChildGetStat {
-        void onStat(IPath childPath, String child, Stat stat);
+        void onData(IPath childPath, String child, Stat stat);
     }
     @FunctionalInterface
     public static interface IChildGetData {
@@ -112,15 +118,30 @@ public class CoordinationManager {
                 .forPath(path.get());
         return children;
     }
-    public List<String> getChildren(IPath path, IChildGetStat statFun) throws Exception {
+    public List<String> getChildren(IPath path, IChildOnly dataFun) throws Exception {
+        List<String> children = CuratorFrameworkInstance
+                .getInstance()
+                .getChildren()
+                .forPath(path.get());
+        children.forEach(child -> {
+            try {
+                IPath childPath = IPath.getPath(path.get() + "/" + child);
+                dataFun.onData(childPath, child);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return children;
+    }
+    public List<String> getChildren(IPath path, IChildGetStat dataFun) throws Exception {
         List<String> children = getChildren(path);
-        if (null == statFun) {
+        if (null == dataFun) {
             return children;
         }
         children.forEach(child -> {
             try {
                 IPath childPath = IPath.getPath(path.get() + "/" + child);
-                statFun.onStat(childPath, child,
+                dataFun.onData(childPath, child,
                         getStat(childPath));
             } catch (Exception e) {
                 e.printStackTrace();
