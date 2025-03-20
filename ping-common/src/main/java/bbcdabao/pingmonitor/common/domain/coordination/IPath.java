@@ -114,6 +114,10 @@ public interface IPath {
         return () -> String.format("/robot/register/%s/meta-info/instances/%s", robotGroupName, REG_UUID);
     }
 
+    static IPath robotMetaInfoPath(String robotGroupName) {
+        return () -> String.format("/robot/register/%s/meta-info", robotGroupName);
+    }
+
     /**
     /robot (Robot root directory)
     ├── /register (Robot registration directory)

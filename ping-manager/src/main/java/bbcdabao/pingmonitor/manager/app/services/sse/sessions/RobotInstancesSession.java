@@ -47,7 +47,7 @@ public class RobotInstancesSession extends BaseSseSession {
 
     public RobotInstancesSession(String robotGroupName, HttpServletResponse response) {
         super(response);
-        path = IPath.robotInstancePath(robotGroupName);
+        path = IPath.robotMetaInfoInstancePath(robotGroupName);
     }
 
     @Override

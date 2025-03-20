@@ -26,8 +26,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.api.transaction.CuratorMultiTransaction;
-import org.apache.curator.framework.api.transaction.TransactionOp;
+import org.apache.curator.framework.api.transaction.CuratorOp;
+import org.apache.curator.framework.api.transaction.CuratorTransactionResult;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -300,6 +300,11 @@ public class CoordinationManager {
                         .tobeJson(plugTemplate)));
     }
 
+    /**
+     * Register robot instance
+     * @param robotGroupName
+     * @throws Exception
+     */
     public void regRobotInstance(String robotGroupName) throws Exception {
         String ipAddr = "none";
         try {
@@ -322,27 +327,6 @@ public class CoordinationManager {
     }
 
     /**
-     * Task config by taskName
-     * @param taskName
-     * @return
-     * @throws Exception
-     */
-    public Properties getTaskConfigByTaskName(String taskName) throws Exception {
-        return ByteDataConver
-                .getInstance()
-                .getConvertFromByteForProperties()
-                .getValue(getData(IPath.taskConfigPath(taskName)));
-    }
-    public void setTaskConfigByTaskName(String taskName, Properties properties) throws Exception {
-        createOrSetData(IPath.taskConfigPath(taskName),
-                CreateMode.PERSISTENT,
-                ByteDataConver
-                .getInstance()
-                .getConvertToByteForProperties()
-                .getData(properties));
-    }
-
-    /**
      * Get plug name by taskName.
      * Just had get can not modify.
      * @param taskName
@@ -354,6 +338,37 @@ public class CoordinationManager {
                 .getInstance()
                 .getConvertFromByteForString()
                 .getValue(getData(IPath.taskPath(taskName)));
+    }
+
+    /**
+     * Task config by taskName
+     * @param taskName
+     * @return
+     * @throws Exception
+     */
+    public Properties getTaskConfigByTaskName(String taskName) throws Exception {
+        return ByteDataConver
+                .getInstance()
+                .getConvertFromByteForProperties()
+                .getValue(getData(IPath.taskConfigPath(taskName)));
+    }
+
+    
+    public void setTaskConfigByTaskName(String taskName, Properties properties) throws Exception {
+        String plugName = getPlugNameByTaskName(taskName);
+        Map<String, TemplateField> plugTemplate =  getPlugTemplate(plugName);
+        Set<String> plugFields = plugTemplate.keySet();
+        for (String plugField : plugFields) {
+            String plueFiledValue = properties.getProperty(plugField);
+            if (ObjectUtils.isEmpty(plueFiledValue)) {
+                throw new Exception(plugField + " is not config!");
+            }
+        }
+        setData(IPath.taskConfigPath(taskName),
+                ByteDataConver
+                .getInstance()
+                .getConvertToByteForProperties()
+                .getData(properties));
     }
 
     /**
@@ -375,25 +390,20 @@ public class CoordinationManager {
 
         IPath taskPath = IPath.taskPath(taskName);
         CuratorFramework cf = CuratorFrameworkInstance.getInstance();
-        cf.transactionOp().create().forPath(path.get());
-        cf.transactionOp().create()
-
-        createOrSetData(IPath.taskConfigPath(taskName),
-                CreateMode.PERSISTENT,
-                ByteDataConver
+        CuratorOp createTask = cf.transactionOp().create().forPath(taskPath.get());
+        byte[] propertiesData = ByteDataConver
                 .getInstance()
                 .getConvertToByteForProperties()
-                .getData(properties));
-        putData(path,
-                CreateMode.PERSISTENT,
-                ByteDataConver
-                .getInstance()
-                .getConvertToByteForString()
-                .getData(plugName));
-        try {
-            setTaskConfigByTaskName(taskName, properties);
-        } catch (Exception e) {
-            deleteData(path);
-        }
+                .getData(properties);
+        IPath taskConfigPath = IPath.taskConfigPath(taskName);
+        CuratorOp createTaskConfig = cf.transactionOp().create().forPath(taskConfigPath.get(), propertiesData);
+        
+        List<CuratorTransactionResult> results = cf.transaction().forOperations(createTask, createTaskConfig);
+        results.forEach(result -> {
+            LOGGER.info("createTask--------------------");
+            LOGGER.info("type:{}", result.getType());
+            LOGGER.info("forPath:{}", result.getForPath());
+            LOGGER.info("error:{}", result.getError());
+        });
     }
 }

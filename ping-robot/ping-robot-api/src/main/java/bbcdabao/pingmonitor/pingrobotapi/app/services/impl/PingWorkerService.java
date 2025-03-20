@@ -18,23 +18,17 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.util.CollectionUtils;
 
 import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.IPath;
-import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
@@ -45,9 +39,9 @@ import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfigNotify;
 import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
 import jakarta.annotation.PostConstruct;
 
-public class MasterService extends TimeWorkerBase implements ApplicationRunner, ISysconfigNotify {
+public class PingWorkerService extends TimeWorkerBase implements ApplicationRunner, ISysconfigNotify {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MasterService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PingWorkerService.class);
 
     private class MonitorChange extends BaseEventHandler {
         @Override
@@ -68,61 +62,15 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     private ISysconfig regSysconfigNotify;
 
     private MonitorChange monitorChange = new MonitorChange();
-
     private AtomicBoolean isReMake = new AtomicBoolean(true);
-    
-    private AtomicBoolean isMaster = new AtomicBoolean(false);
-
-    private String robotGroupName;
-
-    private class NtaskInfo {
-        private String nod;
-        private long czxid;
-        public NtaskInfo(String nod, long czxid) {
-            this.nod = nod;
-            this.czxid = czxid;
-        }
-    }
 
     private void doReMake() throws Exception {
         CoordinationManager cm = CoordinationManager.getInstance();
-
-        cm.deleteData(IPath.robotRunInfoTaskPath(robotGroupName));
-
-        List<NtaskInfo> ntasks = new ArrayList<>();
-        cm.getChildren(IPath.robotMetaInfoTaskPath(robotGroupName), (IPath childPath, String child, Stat stat) -> {
-            try {
-                ntasks.add(new NtaskInfo(child, stat.getCzxid()));
-            } catch (Exception e) {
-                LOGGER.info("doReMake.Exception:{}", e.getMessage());
-            }
-        });
-        if (CollectionUtils.isEmpty(ntasks)) {
-            return;
-        }
-
-        List<String> robots = cm.getChildren(IPath.robotMetaInfoInstancePath(robotGroupName));
-        if (CollectionUtils.isEmpty(robots)) {
-            return;
-        }
-        int robotCount = robots.size();
-        ntasks.forEach(ntask -> {
-            int ntaskMod = (int)(ntask.czxid % robotCount);
-            String robotUUID = robots.get(ntaskMod);
-            try {
-                cm.createOrSetData(IPath.robotRunInfoTaskPath(robotGroupName, robotUUID, ntask.nod),
-                        CreateMode.PERSISTENT, null);
-            } catch (Exception e) {
-                LOGGER.info("doReMake.Exception:{}", e.getMessage());
-            }
-        });
-    }
-
-    private void doExecute() throws Exception {
-        if (isReMake.get()) {
-            doReMake();
-            isReMake.set(false);
-        }
+        String robotGroupName = FactoryBase
+                .getFactory()
+                .getBean(RobotConfig.class).getRobotGroupName();
+        cm.getChildren(IPath.robotRunInfoTaskPath(robotGroupName, IPath.REG_UUID));
+        
     }
 
     @PostConstruct
@@ -140,22 +88,15 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         String robotGroupName = FactoryBase
                 .getFactory()
                 .getBean(RobotConfig.class).getRobotGroupName();
-        MasterKeeperTaskManager.getInstance().selectMasterNotify(IPath.robotRunInfoElectionPath(robotGroupName).get(),
-                () -> {
-                    isMaster.set(true);
-                    monitorChange.start(IPath.robotMetaInfoPath(robotGroupName).get());
-                },
-                () -> {
-                    isMaster.set(false);
-                    monitorChange.gameOver();
-                    isReMake.set(true);
-                }, null);
+        monitorChange.start("NODE:" +
+        IPath.robotRunInfoTaskPath(robotGroupName, IPath.REG_UUID).get());
     }
 
     @Override
     public void onExecute() throws Exception {
-        if (isMaster.get()) {
-            doExecute();
+        if (isReMake.get()) {
+            doReMake();
+            isReMake.set(false);
         }
     }
 }

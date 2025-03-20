@@ -31,12 +31,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotInstancesSession;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.IPath;
 import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
+import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotInstancesSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
@@ -64,7 +64,7 @@ public class RobotManagerController {
         CoordinationManager
         .getInstance()
         .getChildren(
-                IPath.robotInstancePath(robotGroupName),
+                IPath.robotMetaInfoInstanceIdPath(robotGroupName),
                 (IPath childPath, String child, byte[] data) -> {
                     RobotInstanceInfo robotInstanceInfo = new RobotInstanceInfo();
                     robotInstanceInfo.setRobotId(child);
@@ -85,7 +85,7 @@ public class RobotManagerController {
             @PathVariable("robotGroupName") String robotGroupName) throws Exception {
         Collection<String> tasks = CoordinationManager
                 .getInstance()
-                .getChildren(IPath.robotTask(robotGroupName));
+                .getChildren(IPath.robotMetaInfoTaskPath(robotGroupName));
         ResponseEntity<Collection<String>> response = ResponseEntity.ok(tasks);
         return response;
     }
