@@ -21,48 +21,45 @@ package bbcdabao.pingmonitor.common.domain.coordination;
 import java.util.UUID;
 
 /**
- * Distributed coordination
- * /sysconfig
- * └── (JSON format system configuration) "{pingcycle: 60000}"
- * 
- * /robot (Robot root directory)
- * ├── /templates (Robot plugin templates)
- * │   ├── /com_xxx_sss_PingCallTest
- * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
- * │   ├── /com_xxx_sss_HttpCallTest
- * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, url: [http://test.com}](http://test.com})"
- * │   ├── /com_xxx_sss_XXXXCallTest
- * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: [http://a.com}](http://a.com})"
- * ├── /register (Robot registration directory)
- * │   ├── /rebot-xxx (Robot group name)
- * │   │   ├──meta-info (Robot and task inf)
- * │   │   │   ├── /instance (Instance child nodes, all temporary nodes)
- * │   │   │   │   ├── /UUID01 ("ip@procid")
- * │   │   │   │   ├── /UUID02 ("ip@procid")
- * │   │   │   │   └── /UUID03 ("ip@procid")
- * │   │   │   ├── /sub-tasks (allocation tasks)
- * │   │   │   │   ├── /UUID01 ("ip@procid")
- * │   │   │   │   ├── /UUID02 ("ip@procid")
- * │   │   │   │   └── /UUID03 ("ip@procid")
- * │   │   │   ├── /tasks (Monitoring task list, child nodes must be unique)
- * │   │   │   │   ├── /task-01 (Scheduling concurrency configuration)
- * │   │   │   │   └── /task-02 (Scheduling concurrency configuration)
- * │   │   ├──run-info (Running control info)
- * │   │   │   └── /election (Robot instance election)
- * 
- * /tasks (Task configuration)
- * ├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
- * │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
- * ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
- * │   └── /config (Properties format) "{url=[https://baiduaa.com}](https://baiduaa.com})"
- * 
- * /result (Monitoring results, child nodes have TTL)
- * ├── /task-01
- * │   ├── /rebot-xxx (300ms)
- * │   └── /rebot-xxx (300ms)
- * ├── /task-02
- * │   ├── /rebot-xxx (300ms)
- * │   └── /rebot-xxx (500ms)
+/sysconfig
+  └── (JSON format system configuration) "{pingcycle: 60000}"
+
+/robot (Robot root directory)
+├── /templates (Robot plugin templates)
+│   ├── /com_xxx_sss_PingCallTest
+│   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
+│   ├── /com_xxx_sss_HttpCallTest
+│   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, url: http://test.com}"
+│   ├── /com_xxx_sss_XXXXCallTest
+│   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: http://a.com}"
+├── /register (Robot registration directory)
+│   ├── /rebot-xxx (Robot group name)
+│   │   ├── /meta-info (Robot and task inf)
+│   │   │   ├── /instance (Instance child nodes, all EPHEMERAL nodes)
+│   │   │   │   ├── /UUID01 ("ip@procid")
+│   │   │   │   ├── /UUID02 ("ip@procid")
+│   │   │   ├── /tasks (Monitoring task list)
+│   │   │   │   ├── /task-01
+│   │   │   │   └── /task-02
+│   │   ├── /run-info (Runing controle info)
+│   │   │   ├── /election (Robot instance election)
+│   │   │   ├── /tasks (Assigned tasks)
+│   │   │   │   ├── /UUID01
+│   │   │   │   │   └── /Utask-02
+│   │   │   │   ├── /UUID02 ()
+│   │   │   │   │   └── /Utask-01
+/tasks (Task configuration)
+├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
+│   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
+├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
+│   └── /config (Properties format) "{url=https://baiduaa.com}"
+/result (Monitoring results)
+├── /task-01
+│   ├── /rebot-xxx (300ms)
+│   └── /rebot-xxx (300ms)
+├── /task-02
+│   ├── /rebot-xxx (300ms)
+│   └── /rebot-xxx (500ms)
  */
 
 public interface IPath {
@@ -74,105 +71,97 @@ public interface IPath {
     }
 
     /**
-     * /sysconfig
-     * └── (JSON format system configuration) "{pingcycle: 60000}"
+    /sysconfig
+      └── (JSON format system configuration) "{pingcycle: 60000}"
      */
     static IPath sysconfig() {
         return () -> "/sysconfig";
     }
 
     /**
-     * /robot (Robot root directory)
-     * ├── /templates (Robot plugin templates)
-     * │   ├── /com_xxx_sss_PingCallTest
-     * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
-     * │   ├── /com_xxx_sss_HttpCallTest
-     * │   │     └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
-     * │   ├── /com_xxx_sss_XXXXCallTest
-     * │         └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
+    /robot (Robot root directory)
+    ├── /templates (Robot plugin templates)
+    │   ├── /com_xxx_sss_PingCallTest
+    │   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, ipaddr: 192.168.10.8}"
+    │   ├── /com_xxx_sss_HttpCallTest
+    │   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, url: http://test.com}"
+    │   ├── /com_xxx_sss_XXXXCallTest
+    │   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: http://a.com}"
      */
     static IPath plugTemplate(String plugName) {
         return () -> String.format("/robot/templates/%s", plugName);
     }
 
     /**
-     * /robot (Robot root directory)
-     * ├── /register (Robot registration directory)
-     * │   ├── /rebot-xxx (Robot group name)
-     * │   │   ├──meta-info (Robot and task inf)
-     * │   │   │   ├── /instances (Instance child nodes, all temporary nodes)
-     * │   │   │   │   ├── /UUID01 ("ip@procid")
-     * │   │   │   │   ├── /UUID02 ("ip@procid")
-     * │   │   │   ├── /sub-tasks (allocation tasks)
-     * │   │   │   │   ├── /UUID01
-     * │   │   │   │   │   └── /task-02
-     * │   │   │   │   ├── /UUID02
-     * │   │   │   │   │   └── /task-01
-     * │   │   │   ├── /tasks (Monitoring task list, child nodes must be unique)
-     * │   │   │   │   ├── /task-01 (Scheduling concurrency configuration)
-     * │   │   │   │   └── /task-02 (Scheduling concurrency configuration)
+     * Robot UUID
      */
-    static IPath robotInstancePath(String robotGroupName) {
+    static String REG_UUID = UUID.randomUUID().toString();
+
+    /**
+    /robot (Robot root directory)
+    ├── /register (Robot registration directory)
+    │   ├── /rebot-xxx (Robot group name)
+    │   │   ├── /meta-info (Robot and task inf)
+    │   │   │   ├── /instance (Instance child nodes, all EPHEMERAL nodes)
+    │   │   │   │   ├── /UUID01 ("ip@procid")
+    │   │   │   │   ├── /UUID02 ("ip@procid")
+     */
+    static IPath robotMetaInfoInstancePath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info/instances", robotGroupName);
     }
 
-    static String REG_UUID = UUID.randomUUID().toString();
-    static IPath robotInstanceIdPath(String robotGroupName) {
+    static IPath robotMetaInfoInstanceIdPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info/instances/%s", robotGroupName, REG_UUID);
     }
 
-    static IPath robotTaskPath(String robotGroupName) {
+    /**
+    /robot (Robot root directory)
+    ├── /register (Robot registration directory)
+    │   ├── /rebot-xxx (Robot group name)
+    │   │   ├── /meta-info (Robot and task inf)
+    │   │   │   ├── /tasks (Monitoring task list)
+    │   │   │   │   ├── /task-01
+    │   │   │   │   └── /task-02
+     */
+    static IPath robotMetaInfoTaskPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info/tasks", robotGroupName);
     }
 
-    static IPath robotTaskPath(String robotGroupName, String taskName) {
+    static IPath robotMetaInfoTaskPath(String robotGroupName, String taskName) {
         return () -> String.format("/robot/register/%s/meta-info/tasks/%s", robotGroupName, taskName);
     }
 
-    static IPath robotSubTaskPath(String robotGroupName) {
-        return () -> String.format("/robot/register/%s/meta-info/sub-tasks", robotGroupName);
-    }
-
-    static IPath robotSubTaskPath(String robotGroupName, String robotId, String taskName) {
-        return () -> String.format("/robot/register/%s/meta-info/sub-tasks/%s/%s", robotGroupName, robotId, taskName);
-    }
-
-    static IPath robotSubTaskIdPath(String robotGroupName) {
-        return () -> String.format("/robot/register/%s/meta-info/sub-tasks/%s", robotGroupName, REG_UUID);
-    }
-
     /**
-     * /robot (Robot root directory)
-     * ├── /register (Robot registration directory)
-     * │   ├── /rebot-xxx (Robot group name)
-     * │   │   ├──run-info (Running control info)
-     * │   │   │   ├── /election (Robot instance election)
-     * │   │   │   ├── /task-fire (Task trigger)
-     * │   │   │   │   ├── /task-01
-     * │   │   │   │   ├── /task-02
-     * │   │   │   ├── /task-avge (Avg child nodes, all temporary nodes)
-     * │   │   │   │   ├── /UUID01 ("ip@procid")
-     * │   │   │   │   │   ├── /task-02
-     * │   │   │   │   ├── /UUID02 ("ip@procid")
-     * │   │   │   │   │   ├── /task-02
-     * │   │   │   │   └── /UUID03 ("ip@procid")
+    /robot (Robot root directory)
+    ├── /register (Robot registration directory)
+    │   ├── /rebot-xxx (Robot group name)
+    │   │   ├── /run-info (Runing controle info)
+    │   │   │   ├── /election (Robot instance election)
+    │   │   │   ├── /tasks (Assigned tasks)
+    │   │   │   │   ├── /UUID01
+    │   │   │   │   │   └── /Utask-02
+    │   │   │   │   ├── /UUID02 ()
+    │   │   │   │   │   └── /Utask-01
      */
-    static IPath robotElectionPath(String robotGroupName) {
+    static IPath robotRunInfoElectionPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/run-info/election", robotGroupName);
     }
-    static IPath robotTaskFirePath(String robotGroupName) {
-        return () -> String.format("/robot/register/%s/run-info/task-fire", robotGroupName);
+    static IPath robotRunInfoTaskPath(String robotGroupName) {
+        return () -> String.format("/robot/register/%s/run-info/task", robotGroupName);
     }
-    static IPath robotTaskFirePath(String robotGroupName, String taskName) {
-        return () -> String.format("/robot/register/%s/run-info/task-fire/%s", robotGroupName, taskName);
+    static IPath robotRunInfoTaskPath(String robotGroupName, String robotUUID) {
+        return () -> String.format("/robot/register/%s/run-info/task/%s", robotGroupName, robotUUID);
+    }
+    static IPath robotRunInfoTaskPath(String robotGroupName, String robotUUID, String taskName) {
+        return () -> String.format("/robot/register/%s/run-info/task/%s/%s", robotGroupName, robotUUID, taskName);
     }
 
     /**
-     * /tasks (Task configuration)
-     * ├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
-     * │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
-     * ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
-     * │   └── /config (Properties format) "{url=[https://baiduaa.com}](https://baiduaa.com})"
+    /tasks (Task configuration)
+    ├── /task-01 (Robot plugin template: com_xxx_sss_PingCallTest)
+    │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
+    ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
+    │   └── /config (Properties format) "{url=https://baiduaa.com}"
      */
     static IPath taskPath() {
         return () -> "/tasks";
@@ -180,7 +169,26 @@ public interface IPath {
     static IPath taskPath(String taskName) {
         return () -> String.format("/tasks/%s", taskName);
     }
-    static IPath taskConfigPath(String taskName) {
+    static IPath taskPathConfig(String taskName) {
         return () -> String.format("/tasks/%s/config", taskName);
+    }
+
+    /**
+    /result (Monitoring results)
+    ├── /task-01
+    │   ├── /rebot-xxx (300ms)
+    │   └── /rebot-xxx (300ms)
+    ├── /task-02
+    │   ├── /rebot-xxx (300ms)
+    │   └── /rebot-xxx (500ms)
+     */
+    static IPath resultPath() {
+        return () -> "/result";
+    }
+    static IPath resultPath(String taskName) {
+        return () -> String.format("/result/%s", taskName);
+    }
+    static IPath resultPath(String taskName, String robotGroupName) {
+        return () -> String.format("/result/%s/%s", taskName, robotGroupName);
     }
 }
