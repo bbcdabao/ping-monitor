@@ -169,7 +169,7 @@ public interface IPath {
     static IPath taskPath(String taskName) {
         return () -> String.format("/tasks/%s", taskName);
     }
-    static IPath taskPathConfig(String taskName) {
+    static IPath taskConfigPath(String taskName) {
         return () -> String.format("/tasks/%s/config", taskName);
     }
 
