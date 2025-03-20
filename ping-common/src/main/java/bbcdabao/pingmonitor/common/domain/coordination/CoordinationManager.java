@@ -25,10 +25,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.api.transaction.CuratorMultiTransaction;
+import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -39,6 +44,8 @@ import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.core.CuratorFrameworkInstance;
 
 public class CoordinationManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CoordinationManager.class);
 
     private static class Holder {
         private static final CoordinationManager INSTANCE = new CoordinationManager();
@@ -51,32 +58,91 @@ public class CoordinationManager {
     private CoordinationManager() {
     }
 
+    /**
+     * delete data
+     * @param path
+     * @throws Exception
+     */
     public void deleteData(IPath path) throws Exception {
         try {
             CuratorFrameworkInstance
             .getInstance()
             .delete()
-            .guaranteed()
             .deletingChildrenIfNeeded()
             .forPath(path.get());
         } catch (NoNodeException e) {
-            e.printStackTrace();
+            LOGGER.info("deleteData NoNodeException path:{}", path.get());
+        } catch (Exception e) {
+            throw new RuntimeException("deleteData Failed to delete node:" + path.get(), e);
         }
     }
 
-    public void putData(IPath path, CreateMode mode, byte[] data) throws Exception {
+    /**
+     * set data
+     * @param path
+     * @param data
+     * @throws Exception
+     */
+    public void setData(IPath path, byte[] data) throws Exception {
+        CuratorFrameworkInstance
+        .getInstance()
+        .setData()
+        .forPath(path.get(), data);
+    }
+
+    public void setOrCreateData(IPath path, CreateMode mode, byte[] data) throws Exception {
         try {
-            CuratorFrameworkInstance
-            .getInstance()
-            .create()
-            .creatingParentsIfNeeded()
-            .withMode(mode)
-            .forPath(path.get(), data);
+            setData(path, data);
+        } catch (NoNodeException e) {
+            createData(path, mode, data);
+        }
+    }
+
+    public void createOrSetData(IPath path, CreateMode mode, byte[] data) throws Exception {
+        try {
+            createData(path, mode, data);
         } catch (NodeExistsException e) {
-            CuratorFrameworkInstance
-            .getInstance()
-            .setData()
-            .forPath(path.get(), data);
+            setData(path, data);
+        }
+    }
+
+    /**
+     * create data
+     * @param path
+     * @param mode
+     * @param data
+     * @throws Exception
+     */
+    public void createData(IPath path, CreateMode mode, byte[] data) throws Exception {
+        CuratorFrameworkInstance
+        .getInstance()
+        .create()
+        .creatingParentsIfNeeded()
+        .withMode(mode)
+        .forPath(path.get(), data);
+    }
+
+    @FunctionalInterface
+    public static interface IExists {
+        void onNotify(Stat stat);
+    }
+    @FunctionalInterface
+    public static interface INotExists {
+        void onNotify();
+    }
+    public void checkExists(IPath path, IExists exists, INotExists notExists) throws Exception {
+        Stat stat = CuratorFrameworkInstance
+        .getInstance()
+        .checkExists()
+        .forPath(path.get());
+        if (null == stat) {
+            if (null != notExists) {
+                notExists.onNotify();
+            }
+        } else {
+            if (null != exists) {
+                exists.onNotify(stat);
+            }
         }
     }
 
@@ -91,6 +157,14 @@ public class CoordinationManager {
         byte[] data = CuratorFrameworkInstance
                 .getInstance()
                 .getData()
+                .forPath(path.get());
+        return data;
+    }
+    public byte[] getData(IPath path, Stat stat) throws Exception {
+        byte[] data = CuratorFrameworkInstance
+                .getInstance()
+                .getData()
+                .storingStatIn(stat)
                 .forPath(path.get());
         return data;
     }
@@ -173,9 +247,11 @@ public class CoordinationManager {
         children.forEach(child -> {
             try {
                 IPath childPath = IPath.getPath(path.get() + "/" + child);
+                Stat stat = new Stat();
+                byte[] data = getData(childPath, stat);
                 dataFun.onData(childPath, child,
-                        getData(childPath),
-                        getStat(childPath));
+                        data,
+                        stat);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -193,7 +269,7 @@ public class CoordinationManager {
                         Sysconfig.class);
     }
     public void setSysconfig(Sysconfig sysconfig) throws Exception {
-        putData(IPath.sysconfig(),
+        setOrCreateData(IPath.sysconfig(),
                 CreateMode.PERSISTENT,
                 ByteDataConver
                 .getInstance()
@@ -214,7 +290,7 @@ public class CoordinationManager {
                         TYP_PLUGTEMPLATE);
     }
     public void setPlugTemplate(String plugName, Map<String, TemplateField> plugTemplate) throws Exception {
-        putData(IPath.plugTemplate(plugName),
+        setOrCreateData(IPath.plugTemplate(plugName),
                 CreateMode.PERSISTENT,
                 ByteDataConver
                 .getInstance()
@@ -237,7 +313,7 @@ public class CoordinationManager {
                 .append("@")
                 .append(ProcessHandle.current().pid())
                 .toString();
-        putData(IPath.robotInstanceIdPath(robotGroupName),
+        createData(IPath.robotMetaInfoInstanceIdPath(robotGroupName),
                 CreateMode.EPHEMERAL,
                 ByteDataConver
                 .getInstance()
@@ -258,7 +334,7 @@ public class CoordinationManager {
                 .getValue(getData(IPath.taskConfigPath(taskName)));
     }
     public void setTaskConfigByTaskName(String taskName, Properties properties) throws Exception {
-        putData(IPath.taskConfigPath(taskName),
+        createOrSetData(IPath.taskConfigPath(taskName),
                 CreateMode.PERSISTENT,
                 ByteDataConver
                 .getInstance()
@@ -296,7 +372,18 @@ public class CoordinationManager {
                 throw new Exception(plugField + " is not config!");
             }
         }
-        IPath path = IPath.taskPath(taskName); 
+
+        IPath taskPath = IPath.taskPath(taskName);
+        CuratorFramework cf = CuratorFrameworkInstance.getInstance();
+        cf.transactionOp().create().forPath(path.get());
+        cf.transactionOp().create()
+
+        createOrSetData(IPath.taskConfigPath(taskName),
+                CreateMode.PERSISTENT,
+                ByteDataConver
+                .getInstance()
+                .getConvertToByteForProperties()
+                .getData(properties));
         putData(path,
                 CreateMode.PERSISTENT,
                 ByteDataConver
