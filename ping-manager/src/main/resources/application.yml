@@ -29,7 +29,7 @@ executor-config:
   enable: true
 
 sysconfig:
-  cron: 0/10 * * * * ?
+  cron-task: 0/10 * * * * ?
+  cron-main: 5/10 * * * * ?
   time-out-ms: 10000
   overwrite: true
-
