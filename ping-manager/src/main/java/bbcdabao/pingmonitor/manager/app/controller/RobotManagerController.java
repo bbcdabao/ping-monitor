@@ -67,7 +67,7 @@ public class RobotManagerController {
                 IPath.robotMetaInfoInstanceIdPath(robotGroupName),
                 (IPath childPath, String child, byte[] data) -> {
                     RobotInstanceInfo robotInstanceInfo = new RobotInstanceInfo();
-                    robotInstanceInfo.setRobotId(child);
+                    robotInstanceInfo.setRobotUUID(child);
                     robotInstanceInfo.setRobotInfo(
                             ByteDataConver
                             .getInstance()
