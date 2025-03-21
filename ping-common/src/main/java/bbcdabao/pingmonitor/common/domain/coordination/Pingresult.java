@@ -22,6 +22,20 @@ import lombok.Data;
 
 @Data
 public class Pingresult {
+    /**
+     * pint is success
+     */
+    private boolean success;
+    /**
+     * ping delay
+     */
     private long delay;
+    /**
+     * the template to use
+     */
+    private String template;
+    /**
+     * the reason for error
+     */
     private String info;
 }
