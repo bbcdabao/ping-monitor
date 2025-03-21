@@ -18,6 +18,8 @@
 
 package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
+import org.apache.curator.utils.ZKPaths;
+
 import bbcdabao.pingmonitor.common.domain.coordination.IPath;
 import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
@@ -25,6 +27,7 @@ import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
+import bbcdabao.pingmonitor.manager.app.services.sse.EventType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 
@@ -32,17 +35,10 @@ public class RobotInstancesSession extends BaseSseSession {
 
     @Data
     private static class RobotInstanceInfoEvent {
-        /**
-         * 0 is add event
-         * 1 is delete event
-         */
-        private int eventId;
+        private EventType eventType;
         private RobotInstanceInfo robotInstanceInfo = new RobotInstanceInfo();
     }
 
-    /**
-     * ZOOKEEPER path /robot/register/GROUPXXX/instance
-     */
     private IPath path;
 
     public RobotInstancesSession(String robotGroupName, HttpServletResponse response) {
@@ -57,23 +53,20 @@ public class RobotInstancesSession extends BaseSseSession {
     }
 
     public void onEvent(CreatedEvent data) throws Exception {
-        String pathGet = data.getData().getPath();
-        String instanceId = pathGet.replaceFirst(path.get(), "");
         String instanceInfo = ByteDataConver.getInstance()
                 .getConvertFromByteForString().getValue(data.getData().getData());
+
         RobotInstanceInfoEvent event = new RobotInstanceInfoEvent();
-        event.setEventId(0);
-        event.robotInstanceInfo.setRobotId(instanceId);
+        event.setEventType(EventType.CREATE);
+        event.robotInstanceInfo.setRobotUUID(ZKPaths.getNodeFromPath(data.getData().getPath()));
         event.robotInstanceInfo.setRobotInfo(instanceInfo);
         sendMessage(JsonConvert.getInstance().tobeJson(event));
     }
 
     public void onEvent(DeletedEvent data) throws Exception {
-        String pathGet = data.getData().getPath();
-        String instanceId = pathGet.replaceFirst(path.get(), "");
         RobotInstanceInfoEvent event = new RobotInstanceInfoEvent();
-        event.setEventId(1);
-        event.robotInstanceInfo.setRobotId(instanceId);
+        event.setEventType(EventType.DELETE);
+        event.robotInstanceInfo.setRobotUUID(ZKPaths.getNodeFromPath(data.getData().getPath()));
         sendMessage(JsonConvert.getInstance().tobeJson(event));  
     }
 }
