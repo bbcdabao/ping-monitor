@@ -20,5 +20,5 @@ package bbcdabao.pingmonitor.common.domain.coordination;
 
 @FunctionalInterface
 public interface IMasterNotify {
-    void onNotify()  throws Exception;
+    void onChangeNotify()  throws Exception;
 }
