@@ -1,2 +1,2 @@
 bbcdabao.pingmonitor.pingrobotapi.app.configs.Config
-bbcdabao.pingmonitor.pingrobotapi.infra.configs.Config
+bbcdabao.pingmonitor.pingrobotapi.app.configs.TaskSchedulerConfig
