@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.apache.curator.framework.recipes.leader.LeaderLatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import bbcdabao.pingmonitor.common.domain.PingmonitorExecutor;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.core.CuratorFrameworkInstance;
@@ -30,6 +32,8 @@ import bbcdabao.pingmonitor.common.domain.zkclientframe.core.CuratorFrameworkIns
  * Master keep run
  */
 public class MasterKeeperTaskManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MasterKeeperTaskManager.class);
 
     private static class Holder {
         private static final MasterKeeperTaskManager INSTANCE = new MasterKeeperTaskManager();
@@ -44,7 +48,7 @@ public class MasterKeeperTaskManager {
 
     private void sleepStep() {
         try {
-            Thread.sleep(000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -61,7 +65,7 @@ public class MasterKeeperTaskManager {
                     if (null != errorHandler) {
                         errorHandler.accept(e);
                     } else {
-                        e.printStackTrace();
+                        LOGGER.info("selectMasterRun.Exception:{}", e.getMessage());
                     }
                     sleepStep();
                 }
@@ -77,7 +81,7 @@ public class MasterKeeperTaskManager {
                     if (null != errorHandler) {
                         errorHandler.accept(e);
                     } else {
-                        e.printStackTrace();
+                        LOGGER.info("selectMasterRun.Exception:{}", e.getMessage());
                     }
                     sleepStep();
                 }
@@ -102,7 +106,7 @@ public class MasterKeeperTaskManager {
                     if (null != errorHandler) {
                         errorHandler.accept(e);
                     } else {
-                        e.printStackTrace();
+                        LOGGER.info("selectMasterNotify.Exception:{}", e.getMessage());
                     }
                     sleepStep();
                 }
@@ -111,13 +115,13 @@ public class MasterKeeperTaskManager {
                 try {
                     if (leaderLatch.hasLeadership()) {
                         if (!isMaster) {
-                            set.notify();
+                            set.onChangeNotify();
                             isMaster = true; 
                         }
                         Thread.sleep(1000);
                     } else {
                         if (isMaster) {
-                            cancel.notify();
+                            cancel.onChangeNotify();
                             isMaster = false;
                         }
                         leaderLatch.await(10, TimeUnit.SECONDS);
@@ -126,7 +130,7 @@ public class MasterKeeperTaskManager {
                     if (null != errorHandler) {
                         errorHandler.accept(e);
                     } else {
-                        e.printStackTrace();
+                        LOGGER.info("selectMasterNotify.Exception:{}", e.getMessage());
                     }
                     sleepStep();
                 }
@@ -134,7 +138,7 @@ public class MasterKeeperTaskManager {
             try {
                 leaderLatch.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.info("selectMasterNotify.Exception:{}", e.getMessage());
             }
         });
     }
