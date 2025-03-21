@@ -18,11 +18,13 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.app.configs;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.RegSysconfigNotify;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.StartUpService;
+import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
 
 @Configuration
 public class Config {
@@ -33,5 +35,10 @@ public class Config {
     @Bean
     RegSysconfigNotify getRegSysconfigNotify() {
         return new RegSysconfigNotify();
+    }
+    @Bean
+    @ConfigurationProperties(prefix = "robot")
+    RobotConfig getRobotConfig() {
+        return new RobotConfig();
     }
 }
