@@ -31,7 +31,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.util.CollectionUtils;
 
-import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.IPath;
 import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
@@ -49,31 +48,41 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MasterService.class);
 
+    /**
+     * Monitor changes
+     */
     private class MonitorChange extends BaseEventHandler {
         @Override
         public void onEvent(CreatedEvent data) throws Exception {
             isReMake.set(true);
+            LOGGER.info("MasterService.MonitorChange.CreatedEvent");
         }
         @Override
         public void onEvent(ChangedEvent data) throws Exception {
             isReMake.set(true);
+            LOGGER.info("MasterService.MonitorChange.ChangedEvent");
         }
         @Override
         public void onEvent(DeletedEvent data) throws Exception {
             isReMake.set(true);
+            LOGGER.info("MasterService.MonitorChange.DeletedEvent");
         }
     }
 
     @Autowired
     private ISysconfig regSysconfigNotify;
 
+    @Autowired
+    private RobotConfig robotConfig;
+    
     private MonitorChange monitorChange = new MonitorChange();
 
     private AtomicBoolean isReMake = new AtomicBoolean(true);
     
     private AtomicBoolean isMaster = new AtomicBoolean(false);
 
-    private String robotGroupName;
+    private IPath robotMetaInfoTaskPath;
+    private IPath robotRunInfoTaskPath;
 
     private class NtaskInfo {
         private String nod;
@@ -84,38 +93,62 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         }
     }
 
+    private List<NtaskInfo> getNtasks() {
+        CoordinationManager cm = CoordinationManager.getInstance();
+        List<NtaskInfo> ntasks = new ArrayList<>();
+        try {
+            cm.getChildren(robotMetaInfoTaskPath,
+                    (IPath childPath, String child, Stat stat) -> {
+                ntasks.add(new NtaskInfo(child, stat.getCzxid()));
+            });
+        } catch (Exception e) {
+            LOGGER.info("MasterService-getNtasks Exception:{}", e.getMessage());
+        }
+        return ntasks;
+    }
+    
+    private List<String> getRobots() {
+        CoordinationManager cm = CoordinationManager.getInstance();
+        List<String> robots = null;
+        try {
+            robots = cm.getChildren(robotMetaInfoTaskPath);
+        } catch (Exception e) {
+            LOGGER.info("MasterService-getRobots Exception:{}", e.getMessage());
+        }
+        return robots;
+    }
+
     private void doReMake() throws Exception {
+        LOGGER.info("MasterService-doReMake Enter");
         CoordinationManager cm = CoordinationManager.getInstance();
 
-        cm.deleteData(IPath.robotRunInfoTaskPath(robotGroupName));
+        cm.deleteData(robotRunInfoTaskPath);
 
-        List<NtaskInfo> ntasks = new ArrayList<>();
-        cm.getChildren(IPath.robotMetaInfoTaskPath(robotGroupName), (IPath childPath, String child, Stat stat) -> {
-            try {
-                ntasks.add(new NtaskInfo(child, stat.getCzxid()));
-            } catch (Exception e) {
-                LOGGER.info("doReMake.Exception:{}", e.getMessage());
-            }
-        });
+        List<NtaskInfo> ntasks = getNtasks();
         if (CollectionUtils.isEmpty(ntasks)) {
+            LOGGER.info("MasterService-doReMake ntasks is empty!");
             return;
         }
 
-        List<String> robots = cm.getChildren(IPath.robotMetaInfoInstancePath(robotGroupName));
+        List<String> robots = getRobots();
         if (CollectionUtils.isEmpty(robots)) {
+            LOGGER.info("MasterService-doReMake robots is empty!");
             return;
         }
+
         int robotCount = robots.size();
         ntasks.forEach(ntask -> {
             int ntaskMod = (int)(ntask.czxid % robotCount);
             String robotUUID = robots.get(ntaskMod);
             try {
-                cm.createOrSetData(IPath.robotRunInfoTaskPath(robotGroupName, robotUUID, ntask.nod),
-                        CreateMode.PERSISTENT, null);
+                cm.createOrSetData(IPath.robotRunInfoTaskPath(robotConfig.getRobotGroupName(),
+                        robotUUID, ntask.nod), CreateMode.PERSISTENT, null);
+                LOGGER.info("MasterService-doReMake task:{} to:{}", ntask.nod, robotUUID);
             } catch (Exception e) {
-                LOGGER.info("doReMake.Exception:{}", e.getMessage());
+                LOGGER.info("MasterService-doReMake create job Exception:{}", e.getMessage());
             }
         });
+        LOGGER.info("MasterService-doReMake Over");
     }
 
     private void doExecute() throws Exception {
@@ -128,18 +161,13 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     @PostConstruct
     public void init() {
         regSysconfigNotify.reg(this);
-    }
-
-    @Override
-    public void onChange(Sysconfig config) throws Exception {
-        beginCron(config.getCron());
+        robotMetaInfoTaskPath = IPath.robotMetaInfoInstancePath(robotConfig.getRobotGroupName());
+        robotRunInfoTaskPath = IPath.robotRunInfoTaskPath(robotConfig.getRobotGroupName());
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        String robotGroupName = FactoryBase
-                .getFactory()
-                .getBean(RobotConfig.class).getRobotGroupName();
+        String robotGroupName = robotConfig.getRobotGroupName();
         MasterKeeperTaskManager.getInstance().selectMasterNotify(IPath.robotRunInfoElectionPath(robotGroupName).get(),
                 () -> {
                     isMaster.set(true);
@@ -150,6 +178,11 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
                     monitorChange.gameOver();
                     isReMake.set(true);
                 }, null);
+    }
+
+    @Override
+    public void onChange(Sysconfig config) throws Exception {
+        beginCron(config.getCronMain());
     }
 
     @Override
