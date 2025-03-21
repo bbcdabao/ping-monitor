@@ -90,6 +90,13 @@ public class CoordinationManager {
         .forPath(path.get(), data);
     }
 
+    /**
+     * frist try set
+     * @param path
+     * @param mode
+     * @param data
+     * @throws Exception
+     */
     public void setOrCreateData(IPath path, CreateMode mode, byte[] data) throws Exception {
         try {
             setData(path, data);
@@ -98,6 +105,13 @@ public class CoordinationManager {
         }
     }
 
+    /**
+     * frist try create
+     * @param path
+     * @param mode
+     * @param data
+     * @throws Exception
+     */
     public void createOrSetData(IPath path, CreateMode mode, byte[] data) throws Exception {
         try {
             createData(path, mode, data);
@@ -318,7 +332,7 @@ public class CoordinationManager {
                 .append("@")
                 .append(ProcessHandle.current().pid())
                 .toString();
-        createData(IPath.robotMetaInfoInstanceIdPath(robotGroupName),
+        createOrSetData(IPath.robotMetaInfoInstanceIdPath(robotGroupName),
                 CreateMode.EPHEMERAL,
                 ByteDataConver
                 .getInstance()
