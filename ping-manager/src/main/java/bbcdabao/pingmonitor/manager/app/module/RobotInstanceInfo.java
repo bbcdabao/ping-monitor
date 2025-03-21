@@ -22,6 +22,7 @@ import lombok.Data;
 
 @Data
 public class RobotInstanceInfo {
-    private String robotId;
+    private String robotUUID;
     private String robotInfo = "none";
 }
+
