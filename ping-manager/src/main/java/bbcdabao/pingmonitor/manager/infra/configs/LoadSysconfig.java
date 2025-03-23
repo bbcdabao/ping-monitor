@@ -18,17 +18,44 @@
 
 package bbcdabao.pingmonitor.manager.infra.configs;
 
+import org.apache.zookeeper.KeeperException.NoNodeException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
+import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
 
 @Configuration
-public class LoadSysconfig {
+public class LoadSysconfig implements ApplicationRunner {
     @Bean
     @ConfigurationProperties(prefix = "sysconfig")
     Sysconfig getSysconfig() {
         return new Sysconfig();
+    }
+    @Autowired
+    @Lazy
+    private Sysconfig sysconfig;
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        if (sysconfig.isOverwrite()) {
+            CoordinationManager
+            .getInstance()
+            .setSysconfig(sysconfig);
+            return;
+        }
+        try {
+            CoordinationManager
+            .getInstance()
+            .getSysconfig();
+        } catch (NoNodeException e) {
+            CoordinationManager
+            .getInstance()
+            .setSysconfig(sysconfig);
+        }        
     }
 }
