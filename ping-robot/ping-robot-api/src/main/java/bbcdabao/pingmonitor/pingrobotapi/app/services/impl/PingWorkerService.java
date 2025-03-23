@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,10 @@ import org.springframework.util.CollectionUtils;
 import bbcdabao.pingmonitor.common.domain.PingmonitorExecutor;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.IPath;
+import bbcdabao.pingmonitor.common.domain.coordination.Pingresult;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
@@ -186,10 +190,40 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
         if (null == plug) {
             return;
         }
+        Pingresult pingresult = new Pingresult();
+        long beg = System.currentTimeMillis();
         try {
             plug.doPingExecute(timeOutMs);
+            
+            long sub = System.currentTimeMillis() - beg;
+            pingresult.setDelay(sub);
+            pingresult.setSuccess(true);
+            pingresult.setInfo("success");
+            
         } catch (Exception e) {
-            LOGGER.info("PingWorkerService-doPing Exception:{}", e.getMessage());
+            String info = e.getMessage();
+            
+            long sub = System.currentTimeMillis() - beg;
+            pingresult.setDelay(sub);
+            pingresult.setSuccess(false);
+            pingresult.setInfo(info);
+            
+            LOGGER.info("PingWorkerService-doPing Exception:{}", info);
+        }
+        try {
+            CoordinationManager
+            .getInstance()
+            .setOrCreateData(IPath.resultPath(taskName,
+                    robotConfig.getRobotGroupName()),
+                    CreateMode.PERSISTENT,
+                    ByteDataConver
+                    .getInstance()
+                    .getConvertToByteForString()
+                    .getData(JsonConvert
+                            .getInstance()
+                            .tobeJson(pingresult)));
+        } catch (Exception e) {
+            LOGGER.info("PingWorkerService-write resultException:{}", e.getMessage());
         }
     }
 

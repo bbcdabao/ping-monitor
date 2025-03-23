@@ -31,10 +31,6 @@ public class Pingresult {
      */
     private long delay;
     /**
-     * the template to use
-     */
-    private String template;
-    /**
      * the reason for error
      */
     private String info;
