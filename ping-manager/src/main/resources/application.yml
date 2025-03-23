@@ -18,15 +18,32 @@ server:
   servlet:
     context-path: /manager
 
+# Built-in ZooKeeper configuration
+# mode config "single" and "cluster"
+# if mode config "none" is tun-off Built-in ZooKeeper
+# other config item reference ZookeeperRelatedCfg.java
 zk-server:
   mode: single
+  zk-config-path:
+  client-port: 2181
+  tick-time: 1000
+  data-dir:
+  data-log-dir:
 
+# config zookeeper link
+# other config item reference ZkclientframeConfig.java
 zkclientframe:
   enable: true
+  connect-string: 127.0.0.1:2181
   name-space: baominghui
 
 executor-config:
   enable: true
+  core-pool-size: 100
+  max-pool-size: 500
+  queue-capacity: 1000
+  keep-alive-seconds: 30
+  thread-name-prefix: monitor-
 
 sysconfig:
   cron-task: 0/10 * * * * ?

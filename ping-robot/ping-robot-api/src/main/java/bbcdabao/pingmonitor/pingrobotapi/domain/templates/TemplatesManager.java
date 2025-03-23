@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.zookeeper.data.Stat;
 import org.reflections.Reflections;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -94,6 +95,14 @@ public class TemplatesManager {
             throw new NoPlugFoundException(plugName);
         }
         return plugClazz.getConstructor().newInstance();
+    }
+
+    public IPingMoniterPlug getPingMoniterPlugUsedTaskName(String taskName, Stat stat) throws Exception {
+        String plugName = CoordinationManager.getInstance().getPlugNameByTaskName(taskName);
+        Properties properties = CoordinationManager.getInstance().getTaskConfigByTaskName(taskName, stat);
+        IPingMoniterPlug pingMoniterPlug = getPingMoniterPlug(plugName);
+        ExtractionField.getInstance().populateObjectFromProperties(properties, pingMoniterPlug);
+        return pingMoniterPlug;
     }
 
     public IPingMoniterPlug getPingMoniterPlugUsedTaskName(String taskName) throws Exception {

@@ -22,12 +22,14 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
+import bbcdabao.pingmonitor.common.domain.coordination.IPath;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
 import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
@@ -43,6 +45,8 @@ public class RegSysconfigNotify extends BaseEventHandler implements ISysconfig, 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegSysconfigNotify.class);
 
     private final Collection<WeakReference<ISysconfigNotify>> sysconfigNotifys = new ArrayList<>();
+
+    private AtomicReference<Sysconfig> sysconfigRef = new AtomicReference<>(null);
 
     private synchronized void onNotifySyn(Sysconfig sysconfig) {
         Iterator<WeakReference<ISysconfigNotify>> iterator = sysconfigNotifys.iterator();
@@ -68,7 +72,7 @@ public class RegSysconfigNotify extends BaseEventHandler implements ISysconfig, 
     }
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        start("/sysconfig");
+        start(IPath.sysconfig().get());
     }
     @Override
     public void onEvent(CreatedEvent data) throws Exception {
@@ -80,6 +84,7 @@ public class RegSysconfigNotify extends BaseEventHandler implements ISysconfig, 
         Sysconfig sysconfigNow = JsonConvert
                 .getInstance()
                 .fromJson(strSysconfig, Sysconfig.class);
+        sysconfigRef.set(sysconfigNow);
         onNotifySyn(sysconfigNow);
     }
     @Override
@@ -92,10 +97,15 @@ public class RegSysconfigNotify extends BaseEventHandler implements ISysconfig, 
         Sysconfig sysconfigNow = JsonConvert
                 .getInstance()
                 .fromJson(strSysconfig, Sysconfig.class);
+        sysconfigRef.set(sysconfigNow);
         onNotifySyn(sysconfigNow);
     }
     @Override
     public void onEvent(DeletedEvent data) throws Exception {
         LOGGER.info("DeletedEvent:{}", data.getData().getPath());
+    }
+    @Override
+    public Sysconfig getSysconfig() {
+        return sysconfigRef.get();
     }
 }

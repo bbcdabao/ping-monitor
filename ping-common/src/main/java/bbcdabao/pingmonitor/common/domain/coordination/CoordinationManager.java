@@ -360,6 +360,12 @@ public class CoordinationManager {
      * @return
      * @throws Exception
      */
+    public Properties getTaskConfigByTaskName(String taskName, Stat stat) throws Exception {
+        return ByteDataConver
+                .getInstance()
+                .getConvertFromByteForProperties()
+                .getValue(getData(IPath.taskConfigPath(taskName), stat));
+    }
     public Properties getTaskConfigByTaskName(String taskName) throws Exception {
         return ByteDataConver
                 .getInstance()

@@ -21,6 +21,7 @@ package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -54,17 +55,17 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     private class MonitorChange extends BaseEventHandler {
         @Override
         public void onEvent(CreatedEvent data) throws Exception {
-            isReMake.set(true);
+            tsAssign.set(0);
             LOGGER.info("MasterService.MonitorChange.CreatedEvent");
         }
         @Override
         public void onEvent(ChangedEvent data) throws Exception {
-            isReMake.set(true);
+            tsAssign.set(0);
             LOGGER.info("MasterService.MonitorChange.ChangedEvent");
         }
         @Override
         public void onEvent(DeletedEvent data) throws Exception {
-            isReMake.set(true);
+            tsAssign.set(0);
             LOGGER.info("MasterService.MonitorChange.DeletedEvent");
         }
     }
@@ -77,7 +78,7 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     
     private MonitorChange monitorChange = new MonitorChange();
 
-    private AtomicBoolean isReMake = new AtomicBoolean(true);
+    private AtomicLong tsAssign = new AtomicLong(0);
     
     private AtomicBoolean isMaster = new AtomicBoolean(false);
 
@@ -118,7 +119,10 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         return robots;
     }
 
-    private void doReMake() throws Exception {
+    private void assignTasks() throws Exception {
+        if(0 != tsAssign.getAndIncrement()) {
+            return;
+        }
         LOGGER.info("MasterService-doReMake Enter");
         CoordinationManager cm = CoordinationManager.getInstance();
 
@@ -151,13 +155,6 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         LOGGER.info("MasterService-doReMake Over");
     }
 
-    private void doExecute() throws Exception {
-        if (isReMake.get()) {
-            doReMake();
-            isReMake.set(false);
-        }
-    }
-
     @PostConstruct
     public void init() {
         regSysconfigNotify.reg(this);
@@ -176,7 +173,7 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
                 () -> {
                     isMaster.set(false);
                     monitorChange.gameOver();
-                    isReMake.set(true);
+                    tsAssign.set(0);
                 }, null);
     }
 
@@ -188,7 +185,7 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     @Override
     public void onExecute() throws Exception {
         if (isMaster.get()) {
-            doExecute();
+            assignTasks();
         }
     }
 }

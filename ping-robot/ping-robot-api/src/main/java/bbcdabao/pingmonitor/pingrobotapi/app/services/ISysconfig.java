@@ -18,6 +18,9 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.app.services;
 
+import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+
 public interface ISysconfig {
     void reg(ISysconfigNotify notify);
+    Sysconfig getSysconfig();
 }

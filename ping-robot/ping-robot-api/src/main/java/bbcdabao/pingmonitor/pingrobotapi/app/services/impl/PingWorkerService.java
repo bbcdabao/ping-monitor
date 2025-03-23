@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.util.CollectionUtils;
 
 import bbcdabao.pingmonitor.common.domain.PingmonitorExecutor;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
@@ -44,6 +45,7 @@ import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfig;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfigNotify;
 import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.domain.templates.TemplatesManager;
 import jakarta.annotation.PostConstruct;
 
 public class PingWorkerService extends TimeWorkerBase implements ApplicationRunner, ISysconfigNotify {
@@ -56,17 +58,17 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
     private class MonitorChange extends BaseEventHandler {
         @Override
         public void onEvent(CreatedEvent data) throws Exception {
-            isReMake.set(true);
+            tsAssign.set(0);
             LOGGER.info("PingWorkerService.MonitorChange.CreatedEvent");
         }
         @Override
         public void onEvent(ChangedEvent data) throws Exception {
-            isReMake.set(true);
+            tsAssign.set(0);
             LOGGER.info("PingWorkerService.MonitorChange.ChangedEvent");
         }
         @Override
         public void onEvent(DeletedEvent data) throws Exception {
-            isReMake.set(true);
+            tsAssign.set(0);
             LOGGER.info("PingWorkerService.MonitorChange.DeletedEvent");
         }
     }
@@ -79,7 +81,9 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
 
     private MonitorChange monitorChange = new MonitorChange();
 
-    private AtomicBoolean isReMake = new AtomicBoolean(true);
+    private AtomicLong tsAssign = new AtomicLong(0);
+    
+    private int timeOutMs = 0;
 
     private Map<String, PlugInfo> plugInfoMap = new HashMap<>(100);
 
@@ -87,43 +91,75 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
     private String pathMonitor;
 
     private class PlugInfo {
-        private String taskName;
         /**
          * system update
          */
-        private long sytime;
+        private long stime = 0;
         /**
          * task config update
          */
-        private long mtime;
-        private IPingMoniterPlug plug;
+        private long mtime = 0;
+        private IPingMoniterPlug plug = null;
     }
 
-    private void checkRemove() {
-        CoordinationManager cm = CoordinationManager.getInstance();
-        Iterator<Map.Entry<String, PlugInfo>> iterator = plugInfoMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, PlugInfo> entry = iterator.next();
-            PlugInfo plugInfo = entry.getValue();
-            try {
-                Stat stat = cm.getStat(IPath.taskConfigPath(plugInfo.taskName));
-                if (stat.getMtime() != plugInfo.mtime) {
-                    iterator.remove();
-                }
-            } catch (Exception e) {
-                LOGGER.info("PingWorkerService-checkRemove Exception:{}", e.getMessage());
-            }
-        }
-    }
 
     private List<String> rtasks = new ArrayList<>();
-    private void doReMake() {
+    private long stime = System.currentTimeMillis();
+    private void assignTasks() throws Exception {
+        if(0 != tsAssign.getAndIncrement()) {
+            return;
+        }
+        stime = System.currentTimeMillis();
         LOGGER.info("PingWorkerService-doReMake Enter");
         CoordinationManager cm = CoordinationManager.getInstance();
         try {
             rtasks = cm.getChildren(robotRunInfoTaskPath);
         } catch (Exception e) {
-            LOGGER.info("PingWorkerService-doReMake Exception:{}", e.getMessage());
+            LOGGER.info("PingWorkerService-assignTasks Exception:{}", e.getMessage());
+        }
+        if (CollectionUtils.isEmpty(rtasks)) {
+            return;
+        }
+        rtasks.forEach(rtask -> {
+            plugInfoMap.computeIfAbsent(rtask, key -> {
+                return new PlugInfo();
+            }).stime = stime;
+        });
+    }
+    private void assignUpdate() throws Exception {
+        CoordinationManager cm = CoordinationManager.getInstance();
+        Iterator<Map.Entry<String, PlugInfo>> iterator = plugInfoMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, PlugInfo> entry = iterator.next();
+            String taskName = entry.getKey();
+            PlugInfo plugInfo = entry.getValue();
+            try {
+                if (plugInfo.stime != stime) {
+                    iterator.remove();
+                    continue;
+                }
+                if (null == plugInfo.plug) {
+                    try {
+                        Stat stat = new Stat();
+                        plugInfo.plug = TemplatesManager.getInstance().getPingMoniterPlugUsedTaskName(taskName, stat);
+                        plugInfo.mtime = stat.getMtime();
+                    } catch (Exception e) {
+                        LOGGER.info("PingWorkerService-assignUpdate.create task Exception:{}", e.getMessage());
+                    }
+                    continue;
+                }
+                Stat statGet = cm.getStat(IPath.taskConfigPath(taskName));
+                if (statGet.getMtime() != plugInfo.mtime) {
+                    try {
+                        plugInfo.plug = TemplatesManager.getInstance().getPingMoniterPlugUsedTaskName(taskName);
+                        plugInfo.mtime = statGet.getMtime();
+                    } catch (Exception e) {
+                        LOGGER.info("PingWorkerService-assignUpdate.update task Exception:{}", e.getMessage());
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.info("PingWorkerService-assignUpdate Exception:{}", e.getMessage());
+            }
         }
     }
 
@@ -142,16 +178,29 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
     @Override
     public void onChange(Sysconfig config) throws Exception {
         beginCron(config.getCronTask());
+        timeOutMs = config.getTimeOutMs();
+    }
+
+    private void doPing(String taskName, PlugInfo plugInfo) {
+        IPingMoniterPlug plug = plugInfo.plug;
+        if (null == plug) {
+            return;
+        }
+        try {
+            plug.doPingExecute(timeOutMs);
+        } catch (Exception e) {
+            LOGGER.info("PingWorkerService-doPing Exception:{}", e.getMessage());
+        }
     }
 
     @Override
     public void onExecute() throws Exception {
-        if (isReMake.get()) {
-            doReMake();
-            isReMake.set(false);
-        }
-        PingmonitorExecutor.getInstance().execute(() -> {
-            
+        assignTasks();
+        assignUpdate();
+        plugInfoMap.forEach((taskName, plugInfo) -> {
+            PingmonitorExecutor.getInstance().execute(() -> {
+                doPing(taskName, plugInfo);
+            });
         });
     }
 }
