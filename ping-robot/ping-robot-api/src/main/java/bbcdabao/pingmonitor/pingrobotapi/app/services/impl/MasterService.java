@@ -158,7 +158,7 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     @PostConstruct
     public void init() {
         regSysconfigNotify.reg(this);
-        robotMetaInfoTaskPath = IPath.robotMetaInfoInstancePath(robotConfig.getRobotGroupName());
+        robotMetaInfoTaskPath = IPath.robotMetaInfoTaskPath(robotConfig.getRobotGroupName());
         robotRunInfoTaskPath = IPath.robotRunInfoTaskPath(robotConfig.getRobotGroupName());
     }
 

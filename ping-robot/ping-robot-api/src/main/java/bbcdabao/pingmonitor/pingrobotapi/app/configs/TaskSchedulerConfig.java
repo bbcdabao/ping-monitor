@@ -25,6 +25,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.MasterService;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.impl.PingWorkerService;
 
 @Configuration
 @ConfigurationProperties(prefix = "robot")
@@ -41,5 +42,9 @@ public class TaskSchedulerConfig {
     @Bean
     MasterService getMasterService() {
         return new MasterService();
+    }
+    @Bean
+    PingWorkerService getPingWorkerService() {
+        return new PingWorkerService();
     }
 }
