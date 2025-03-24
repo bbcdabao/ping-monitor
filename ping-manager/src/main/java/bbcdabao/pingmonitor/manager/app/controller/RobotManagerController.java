@@ -18,11 +18,11 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,10 +31,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.domain.coordination.IPath;
-import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
+import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
+import bbcdabao.pingmonitor.manager.app.services.IRobotManager;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotInstancesSession;
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,9 +44,12 @@ public class RobotManagerController {
 
     private final Logger logger = LoggerFactory.getLogger(RobotManagerController.class);
 
+    @Autowired
+    private IRobotManager robotManager;
+
     @GetMapping(value = "/sse/{robotGroupName}/instances", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public void getInstancesForSse (
+    public void getRobotGroupNameInstancesForSse (
             @PathVariable("robotGroupName") String robotGroupName,
             HttpServletResponse response) throws Exception {
         logger.info("enter:getinstances:{}", robotGroupName);
@@ -58,35 +60,35 @@ public class RobotManagerController {
     
     @GetMapping(value = "/{robotGroupName}/instances")
     @ResponseBody
-    public ResponseEntity<Collection<RobotInstanceInfo>> getInstances (
+    public ResponseEntity<Collection<RobotInstanceInfo>> getRobotGroupNameInstances (
             @PathVariable("robotGroupName") String robotGroupName) throws Exception {
-        Collection<RobotInstanceInfo> robotInstanceInfos = new ArrayList<>();
-        CoordinationManager
-        .getInstance()
-        .getChildren(
-                IPath.robotMetaInfoInstanceIdPath(robotGroupName),
-                (IPath childPath, String child, byte[] data) -> {
-                    RobotInstanceInfo robotInstanceInfo = new RobotInstanceInfo();
-                    robotInstanceInfo.setRobotUUID(child);
-                    robotInstanceInfo.setRobotInfo(
-                            ByteDataConver
-                            .getInstance()
-                            .getConvertFromByteForString()
-                            .getValue(data));
-                    robotInstanceInfos.add(robotInstanceInfo);
-                });
-        ResponseEntity<Collection<RobotInstanceInfo>> response = ResponseEntity.ok(robotInstanceInfos);
+        ResponseEntity<Collection<RobotInstanceInfo>> response = ResponseEntity.ok(
+                robotManager.getInstances(robotGroupName));
+        return response;
+    }
+
+    @GetMapping(value = "/instances")
+    @ResponseBody
+    public ResponseEntity<Collection<RobotInstanceInfo>> getInstances () throws Exception {
+        ResponseEntity<Collection<RobotInstanceInfo>> response = ResponseEntity.ok(
+                robotManager.getInstances());
         return response;
     }
 
     @GetMapping(value = "/{robotGroupName}/tasks")
     @ResponseBody
-    public ResponseEntity<Collection<String>> getTasks (
+    public ResponseEntity<Collection<RobotTaskInfo>> getRobotGroupNameTasks (
             @PathVariable("robotGroupName") String robotGroupName) throws Exception {
-        Collection<String> tasks = CoordinationManager
-                .getInstance()
-                .getChildren(IPath.robotMetaInfoTaskPath(robotGroupName));
-        ResponseEntity<Collection<String>> response = ResponseEntity.ok(tasks);
+        ResponseEntity<Collection<RobotTaskInfo>> response = ResponseEntity.ok(
+                robotManager.getTasks(robotGroupName));
+        return response;
+    }
+
+    @GetMapping(value = "/tasks")
+    @ResponseBody
+    public ResponseEntity<Collection<RobotTaskInfo>> getTasks () throws Exception {
+        ResponseEntity<Collection<RobotTaskInfo>> response = ResponseEntity.ok(
+                robotManager.getTasks());
         return response;
     }
 }
