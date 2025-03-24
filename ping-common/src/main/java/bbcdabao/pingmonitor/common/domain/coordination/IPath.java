@@ -147,6 +147,10 @@ public interface IPath {
     │   │   │   │   ├── /UUID02 ()
     │   │   │   │   │   └── /Utask-01
      */
+    static IPath robotRegisterPath() {
+        return () -> "/robot/register";
+    }
+  
     static IPath robotRunInfoElectionPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/run-info/election", robotGroupName);
     }
