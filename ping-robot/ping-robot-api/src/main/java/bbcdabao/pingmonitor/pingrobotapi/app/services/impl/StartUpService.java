@@ -20,6 +20,11 @@ package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 
 import java.util.Map;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
@@ -31,7 +36,8 @@ import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
 import bbcdabao.pingmonitor.pingrobotapi.domain.templates.TemplatesManager;
 
-public class StartUpService implements ApplicationRunner {
+public class StartUpService implements ApplicationRunner, ConnectionStateListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StartUpService.class);
     private void regTemplatesInfo() throws Exception {
         TemplatesManager
         .getInstance()
@@ -46,11 +52,25 @@ public class StartUpService implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         regTemplatesInfo();
-        CoordinationManager
-        .getInstance()
-        .regRobotInstance(FactoryBase
-                .getFactory()
-                .getBean(RobotConfig.class)
-                .getRobotGroupName());
+    }
+    @Override
+    public void stateChanged(CuratorFramework client, ConnectionState newState) {
+        switch (newState) {
+        case CONNECTED:
+        case RECONNECTED:
+            try {
+                CoordinationManager
+                .getInstance()
+                .regRobotInstance(FactoryBase
+                        .getFactory()
+                        .getBean(RobotConfig.class)
+                        .getRobotGroupName());
+            } catch (Exception e) {
+                LOGGER.info("StartUpService Exception:{}", e.getMessage());
+            }
+            break;
+        default:
+            break;
+        }
     }
 }
