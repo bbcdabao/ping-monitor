@@ -22,7 +22,7 @@ package bbcdabao.pingmonitor.manager.app.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,7 +39,7 @@ public class SysconfigController {
         ResponseEntity<Sysconfig> response = ResponseEntity.ok(CoordinationManager.getInstance().getSysconfig());
         return response;
     }
-    @PutMapping(value = "/update")
+    @PostMapping(value = "/update")
     @ResponseBody
     public ResponseEntity<String> updateConfig(@RequestBody Sysconfig newConfig) throws Exception {
         CoordinationManager.getInstance().setSysconfig(newConfig);
