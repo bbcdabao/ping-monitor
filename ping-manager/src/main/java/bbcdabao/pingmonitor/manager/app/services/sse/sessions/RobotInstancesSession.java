@@ -49,9 +49,10 @@ public class RobotInstancesSession extends BaseSseSession {
     @Override
     public void doProcess() throws Exception {
         String pathStart = "CHILD:" + path.get();
-        startBloking(pathStart);
+        startBlokingAlone(pathStart);
     }
 
+    @Override
     public void onEvent(CreatedEvent data) throws Exception {
         String instanceInfo = ByteDataConver.getInstance()
                 .getConvertFromByteForString().getValue(data.getData().getData());
@@ -63,6 +64,7 @@ public class RobotInstancesSession extends BaseSseSession {
         sendMessage(JsonConvert.getInstance().tobeJson(event));
     }
 
+    @Override
     public void onEvent(DeletedEvent data) throws Exception {
         RobotInstanceInfoEvent event = new RobotInstanceInfoEvent();
         event.setEventType(EventType.DELETE);
