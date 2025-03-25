@@ -22,6 +22,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.RetrySleeper;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.state.ConnectionStateListener;
 
 import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.ZkclientframeConfig;
@@ -57,6 +58,8 @@ public class CuratorFrameworkInstance {
         if (null == zkclientframeConfig) {
             System.exit(1);
         }
+        ConnectionStateListener connectionStateListener = FactoryBase
+                .getFactory().getBean(ConnectionStateListener.class);
 
         CuratorFramework curatorFramework = CuratorFrameworkFactory.builder()
                 .retryPolicy(retryPolicy)
@@ -65,7 +68,9 @@ public class CuratorFrameworkInstance {
                 .sessionTimeoutMs(zkclientframeConfig.getSessionTimeoutMs())
                 .connectionTimeoutMs(zkclientframeConfig.getConnectionTimeoutMs())
                 .build();
-
+        if (null != connectionStateListener) {
+            curatorFramework.getConnectionStateListenable().addListener(connectionStateListener);
+        }
         curatorFramework.start();
         registerShutdownHook();
         return curatorFramework;
