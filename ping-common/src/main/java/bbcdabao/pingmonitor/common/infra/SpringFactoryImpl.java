@@ -31,6 +31,11 @@ public class SpringFactoryImpl extends FactoryBase implements ApplicationContext
     }
     @Override
     public <T> T getBean(Class<T> clazz) {
-        return context.getBean(clazz);
+        T bean = null;
+        try {
+            bean = context.getBean(clazz);
+        } catch (Exception e) {
+        }
+        return bean;
     }
 }
