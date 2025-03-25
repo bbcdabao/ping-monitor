@@ -43,6 +43,8 @@ import java.util.UUID;
 │   │   │   │   └── /task-02
 │   │   ├── /run-info (Runing controle info)
 │   │   │   ├── /election (Robot instance election)
+│   │   │   ├── /master-instance (Instance child nodes, all EPHEMERAL nodes)
+│   │   │   │   ├── /UUID01 ()
 │   │   │   ├── /tasks (Assigned tasks)
 │   │   │   │   ├── /UUID01
 │   │   │   │   │   └── /Utask-02
@@ -109,17 +111,17 @@ public interface IPath {
     static IPath robotRegisterPath() {
         return () -> "/robot/register";
     }
-    
+
+    static IPath robotMetaInfoPath(String robotGroupName) {
+        return () -> String.format("/robot/register/%s/meta-info", robotGroupName);
+    }
+
     static IPath robotMetaInfoInstancePath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info/instances", robotGroupName);
     }
 
     static IPath robotMetaInfoInstanceIdPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info/instances/%s", robotGroupName, REG_UUID);
-    }
-
-    static IPath robotMetaInfoPath(String robotGroupName) {
-        return () -> String.format("/robot/register/%s/meta-info", robotGroupName);
     }
 
     /**
@@ -153,6 +155,13 @@ public interface IPath {
      */
     static IPath robotRunInfoElectionPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/run-info/election", robotGroupName);
+    }
+    static IPath robotRunInfoMasterInstancePath(String robotGroupName) {
+        return () -> String.format("/robot/register/%s/run-info/master-instances", robotGroupName);
+    }
+
+    static IPath robotRunInfoMasterInstanceIdPath(String robotGroupName) {
+        return () -> String.format("/robot/register/%s/run-info/master-instances/%s", robotGroupName, REG_UUID);
     }
     static IPath robotRunInfoTaskPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/run-info/task", robotGroupName);
