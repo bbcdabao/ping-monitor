@@ -31,7 +31,7 @@ import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
  * Zookeeper monitoring processing, used for shared monitoring
  */
 public abstract class BaseEventHandler extends GameOver {
-
+    private static AtomicLong INDEX = new AtomicLong(0L);
     /**
      * Monitoring interface
      */
@@ -55,11 +55,27 @@ public abstract class BaseEventHandler extends GameOver {
      * @param patch
      * @param register
      */
-    public CuratorCache start(String patch) {
-        return EventHandlerRegister.getInstance().reg(patch, this);
+    public CuratorCache start(String path) {
+        return EventHandlerRegister.getInstance().reg(path, this);
     }
-    public void startBloking(String patch) {
-        EventHandlerRegister.getInstance().regAndBlokingRun(patch, this);
+    public CuratorCache startAlone(String path) {
+        String pathNow = new StringBuilder()
+                .append(path)
+                .append("@")
+                .append(INDEX.incrementAndGet())
+                .toString();
+        return EventHandlerRegister.getInstance().reg(pathNow, this);
+    }
+    public void startBloking(String path) {
+        EventHandlerRegister.getInstance().regAndBlokingRun(path, this);
+    }
+    public void startBlokingAlone(String path) {
+        String pathNow = new StringBuilder()
+                .append(path)
+                .append("@")
+                .append(INDEX.incrementAndGet())
+                .toString();
+        EventHandlerRegister.getInstance().regAndBlokingRun(pathNow, this);
     }
 
     public void onEvent(CreatedEvent data) throws Exception {
