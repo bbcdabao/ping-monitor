@@ -36,6 +36,7 @@ import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
 import bbcdabao.pingmonitor.manager.app.services.IRobotManager;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotInstancesSession;
+import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotMasterInstancesSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
@@ -55,6 +56,17 @@ public class RobotManagerController {
         logger.info("enter:getinstances:{}", robotGroupName);
         BaseSseSession.startProcess(() -> {
             return new RobotInstancesSession(robotGroupName, response);
+        });
+    }
+
+    @GetMapping(value = "/sse/{robotGroupName}/masterinstances", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @ResponseBody
+    public void getRobotGroupNameMasterInstancesForSse (
+            @PathVariable("robotGroupName") String robotGroupName,
+            HttpServletResponse response) throws Exception {
+        logger.info("enter:getinstances:{}", robotGroupName);
+        BaseSseSession.startProcess(() -> {
+            return new RobotMasterInstancesSession(robotGroupName, response);
         });
     }
     
