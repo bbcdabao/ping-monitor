@@ -138,11 +138,11 @@ public class CoordinationManager {
 
     @FunctionalInterface
     public static interface IExists {
-        void onNotify(Stat stat);
+        void onNotify(Stat stat) throws Exception;
     }
     @FunctionalInterface
     public static interface INotExists {
-        void onNotify();
+        void onNotify() throws Exception;
     }
     public void checkExists(IPath path, IExists exists, INotExists notExists) throws Exception {
         Stat stat = CuratorFrameworkInstance
@@ -151,11 +151,19 @@ public class CoordinationManager {
         .forPath(path.get());
         if (null == stat) {
             if (null != notExists) {
-                notExists.onNotify();
+                try {
+                    notExists.onNotify();
+                } catch (Exception e) {
+                    LOGGER.info("checkExists notExists Exception:{}", e.getMessage());
+                }
             }
         } else {
             if (null != exists) {
-                exists.onNotify(stat);
+                try {
+                    exists.onNotify(stat);
+                } catch (Exception e) {
+                    LOGGER.info("checkExists exists Exception:{}", e.getMessage());
+                }
             }
         }
     }
