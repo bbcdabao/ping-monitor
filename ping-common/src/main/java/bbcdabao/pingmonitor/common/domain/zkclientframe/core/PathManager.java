@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -316,9 +317,10 @@ class PathManager implements Runnable {
     private Map<String, PathNode> pathNodeMap = new HashMap<>(1000);
     private synchronized CuratorCache getPathNode(String scope, String path, WeakReference<BaseEventSender> weakSender) {
         PathNode pathNode = pathNodeMap.computeIfAbsent(path, (k) -> {
-            CuratorCache curatorCache = CuratorCache.build(client, path);
+            String pathNow = path.split("@")[0];
+            CuratorCache curatorCache = CuratorCache.build(client, pathNow);
             curatorCache.start();
-            return new PathNode(curatorCache, path);
+            return new PathNode(curatorCache, pathNow);
         });
         pathNode.updateListenScope(scope, path, weakSender);
         return pathNode.curatorCache;
@@ -350,24 +352,30 @@ class PathManager implements Runnable {
         abstract void send(IEvent event);
     }
 
+    private class PathInfo{
+        String scope;
+        String path;
+    }
+    private Map<Integer, Function<String[], PathInfo>> scopePathMap = new HashMap<>(2);
+    {
+        scopePathMap.put(1, (scopePath) -> {
+            PathInfo pathInfo = new PathInfo();
+            pathInfo.scope = "ALL";
+            pathInfo.path = scopePath[0];
+            return pathInfo; 
+        });
+        scopePathMap.put(2, (scopePath) -> {
+            PathInfo pathInfo = new PathInfo();
+            pathInfo.scope = scopePath[0];
+            pathInfo.path = scopePath[1];
+            return pathInfo; 
+        });
+    }
     public CuratorCache addPathListener(String scopePath, BaseEventSender sender) {
-        String scope = null;
-        String path = null;
         String[] strArray = scopePath.split(":");
-        switch (strArray.length) {
-        case 1:
-            path = strArray[0];
-            scope = "ALL";
-            break;
-        case 2:
-            path = strArray[1];
-            scope = strArray[0];
-            break;
-        default:
-            throw new RuntimeException("scopePath error!");
-        }
+        PathInfo pathInfo = scopePathMap.get(strArray.length).apply(strArray);
         WeakReference<BaseEventSender> weakSender = new WeakReference<>(sender);
-        return getPathNode(scope, path, weakSender);
+        return getPathNode(pathInfo.scope, pathInfo.path, weakSender);
     }
 
     public PathManager(CuratorFramework client, long scanCycle) {
