@@ -35,7 +35,10 @@ import org.springframework.util.CollectionUtils;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.IPath;
 import bbcdabao.pingmonitor.common.domain.coordination.MasterKeeperTaskManager;
+import bbcdabao.pingmonitor.common.domain.coordination.MasterRobotInfo;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
@@ -76,7 +79,7 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     @Autowired
     private RobotConfig robotConfig;
     
-    private MonitorChange monitorChange = new MonitorChange();
+    private MonitorChange monitorChange = null;
 
     private AtomicLong tsAssign = new AtomicLong(0);
     
@@ -84,6 +87,9 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
 
     private IPath robotMetaInfoTaskPath;
     private IPath robotRunInfoTaskPath;
+    private IPath robotMetaInfoPath;
+    private IPath robotRunInfoElectionPath;
+    private IPath robotRunInfoMasterInstanceIdPath;
 
     private class NtaskInfo {
         private String nod;
@@ -155,24 +161,80 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         LOGGER.info("MasterService-doReMake Over");
     }
 
+    @FunctionalInterface
+    public interface ActionDo {
+        void execute() throws Exception;
+    }
+    private void onMaster(ActionDo act) {
+        MasterRobotInfo masterRobotInfo = new MasterRobotInfo();
+        if (0 == tsAssign.get()) {
+            masterRobotInfo.setAct(true);
+            LOGGER.info("ffffffffffffffffffffffffffffffffffffffffff");
+        } else {
+            masterRobotInfo.setAct(false);
+            LOGGER.info("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+        }
+        masterRobotInfo.setInfo("success");
+        long beg = System.currentTimeMillis();
+        try {
+            act.execute();
+            masterRobotInfo.setLatency(System.currentTimeMillis() - beg);
+        } catch (Exception e) {
+            masterRobotInfo.setLatency(System.currentTimeMillis() - beg);
+            masterRobotInfo.setInfo(e.getMessage());
+            LOGGER.info("MasterService-onMaster Exception:{}", e.getMessage());
+        }
+        try {
+            CoordinationManager
+            .getInstance()
+            .setOrCreateData(robotRunInfoMasterInstanceIdPath, CreateMode.EPHEMERAL,
+                    ByteDataConver
+                    .getInstance()
+                    .getConvertToByteForString()
+                    .getData(
+                            JsonConvert
+                            .getInstance()
+                            .tobeJson(masterRobotInfo)));
+        }  catch (Exception e) {
+            LOGGER.info("MasterService-onMaster write info Exception:{}", e.getMessage());
+        }
+    }
+
+    private void onSlave(ActionDo act) {
+        try {
+            act.execute();
+        } catch (Exception e) {
+            LOGGER.info("MasterService-onSlave Exception:{}", e.getMessage());
+        }
+    }
+
     @PostConstruct
     public void init() {
         regSysconfigNotify.reg(this);
-        robotMetaInfoTaskPath = IPath.robotMetaInfoTaskPath(robotConfig.getRobotGroupName());
-        robotRunInfoTaskPath = IPath.robotRunInfoTaskPath(robotConfig.getRobotGroupName());
+        String robotGroupName = robotConfig.getRobotGroupName();
+        robotMetaInfoTaskPath = IPath.robotMetaInfoTaskPath(robotGroupName);
+        robotRunInfoTaskPath = IPath.robotRunInfoTaskPath(robotGroupName);
+        robotMetaInfoPath = IPath.robotMetaInfoPath(robotGroupName);
+        robotRunInfoElectionPath = IPath.robotRunInfoElectionPath(robotGroupName);
+        robotRunInfoMasterInstanceIdPath = IPath.robotRunInfoMasterInstanceIdPath(robotGroupName);
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        String robotGroupName = robotConfig.getRobotGroupName();
-        MasterKeeperTaskManager.getInstance().selectMasterNotify(IPath.robotRunInfoElectionPath(robotGroupName).get(),
+        MasterKeeperTaskManager.getInstance().selectMasterNotify(robotRunInfoElectionPath.get(),
                 () -> {
                     isMaster.set(true);
-                    monitorChange.start(IPath.robotMetaInfoPath(robotGroupName).get());
+                    if (null == monitorChange) {
+                        monitorChange = new MonitorChange();
+                        monitorChange.start(robotMetaInfoPath.get());
+                    }
                 },
                 () -> {
                     isMaster.set(false);
-                    monitorChange.gameOver();
+                    if (null != monitorChange) {
+                        monitorChange.gameOver();
+                        monitorChange = null;
+                    }
                     tsAssign.set(0);
                 }, null);
     }
@@ -185,7 +247,17 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     @Override
     public void onExecute() throws Exception {
         if (isMaster.get()) {
-            assignTasks();
+            onMaster(() -> {
+                assignTasks();
+            });
+        } else {
+            final CoordinationManager cm = CoordinationManager.getInstance();
+            onSlave(() -> {
+                cm.checkExists(robotRunInfoMasterInstanceIdPath,
+                        (Stat stat) -> {
+                            cm.deleteData(robotRunInfoMasterInstanceIdPath);
+                        }, null);
+            });
         }
     }
 }
