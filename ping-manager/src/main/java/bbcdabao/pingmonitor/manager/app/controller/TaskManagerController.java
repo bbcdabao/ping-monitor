@@ -18,10 +18,10 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,78 +33,51 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.domain.coordination.IPath;
-import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.manager.app.module.TaskInfo;
+import bbcdabao.pingmonitor.manager.app.services.ITaskManager;
 
 @Controller
 @RequestMapping("/task")
 public class TaskManagerController {
+
+    @Autowired
+    private ITaskManager taskManager;
+
     @PutMapping(value = "/{taskName}/plug/{plugName}")
     @ResponseBody
     public ResponseEntity<String> addTask(
             @PathVariable("taskName") String taskName,
             @PathVariable("plugName") String plugName,
             @RequestBody Properties properties) throws Exception {
-        CoordinationManager.getInstance().createTask(taskName, plugName, properties);
+        taskManager.addTask(taskName, plugName, properties);
         return ResponseEntity.ok("success");
     }
     @DeleteMapping(value = "/{taskName}")
     @ResponseBody
     public ResponseEntity<String> deleteTask(
             @PathVariable("taskName") String taskName) throws Exception {
-        CoordinationManager.getInstance().deleteData(IPath.taskPath(taskName));
-        return ResponseEntity.ok("Task deleted successfully");
+        taskManager.deleteTask(taskName);
+        return ResponseEntity.ok("success");
     }
     @PostMapping(value = "/{taskName}")
     @ResponseBody
     public ResponseEntity<String> updateTask(
             @PathVariable("taskName") String taskName,
             @RequestBody Properties properties) throws Exception {
-        CoordinationManager.getInstance().setTaskConfigByTaskName(taskName, properties);
+        taskManager.updateTask(taskName, properties);
         return ResponseEntity.ok("success");
     }
     @GetMapping(value = "/{taskName}")
     @ResponseBody
-    public ResponseEntity<TaskInfo> getOneTask(
+    public ResponseEntity<Collection<TaskInfo>> getOneTask(
             @PathVariable("taskName") String taskName) throws Exception {
-        CoordinationManager cm = CoordinationManager.getInstance();
-        ByteDataConver bd = ByteDataConver.getInstance();
-        TaskInfo taskInfo = new TaskInfo();
-        taskInfo.setPlugName(bd
-                .getConvertFromByteForString()
-                .getValue(cm
-                        .getData(IPath.taskPath(taskName))));
-        taskInfo.setConfig(bd
-                .getConvertFromByteForProperties()
-                .getValue(cm
-                        .getData(IPath.taskConfigPath(taskName))));
-        ResponseEntity<TaskInfo> response = ResponseEntity.ok(taskInfo);
+        ResponseEntity<Collection<TaskInfo>> response = ResponseEntity.ok(taskManager.getTask(taskName));
         return response;
     }
     @GetMapping(value = "")
     @ResponseBody
-    public ResponseEntity<List<TaskInfo>> getTask() throws Exception {
-        CoordinationManager cm = CoordinationManager.getInstance();
-        ByteDataConver bd = ByteDataConver.getInstance();
-        List<TaskInfo> taskInfos = new ArrayList<>();
-        cm.getChildren(IPath.taskPath(), (IPath childPath, String child, byte[] data) -> {
-            try {
-                TaskInfo taskInfo = new TaskInfo();
-                taskInfo.setPlugName(bd
-                        .getConvertFromByteForString()
-                        .getValue(data));
-                IPath childConfig = IPath.taskConfigPath(child);
-                taskInfo.setConfig(bd
-                        .getConvertFromByteForProperties()
-                        .getValue(cm
-                                .getData(childConfig)));
-                
-            } catch (Exception e) {
-            }
-        });
-        ResponseEntity<List<TaskInfo>> response = ResponseEntity.ok(taskInfos);
+    public ResponseEntity<Collection<TaskInfo>> getTask() throws Exception {
+        ResponseEntity<Collection<TaskInfo>> response = ResponseEntity.ok(taskManager.getTask(null));
         return response;
     }
 }
