@@ -1,0 +1,129 @@
+* {
+	margin: 0;
+	padding: 0;
+	outline: 0 !important;
+}
+
+body {
+	font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, 'microsoft yahei', arial, STHeiTi, sans-serif;
+}
+
+a {
+	text-decoration: none;
+}
+
+i {
+	font-style: normal;
+}
+
+.el-button + .el-tooltip {
+	margin-left: 10px;
+}
+
+.mgb20 {
+	margin-bottom: 20px;
+}
+.mgb10 {
+	margin-bottom: 10px;
+}
+.mr10 {
+	margin-right: 10px;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+.flex-center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+:root {
+	--header-height: 40px;
+	--header-bg-color: #000000;
+	--header-text-color: #ffffff;
+	--sidebar-bg-color: #000000;
+	--sidebar-text-color: #ffffff;
+	--sidebar-index-bg-color: #333333;
+	--sidebar-index-text-color: #ffffff;
+	--shadow-color: #ff0000;
+	--nodept-bg-color: #ffffff;
+	--nodept-text-color: #000000;
+	--active-color: var(--el-color-primary);
+}
+
+.el-form .el-form-item__label {
+	color: var(--sidebar-text-color);
+}
+
+.this-page {
+    width: 100%;
+    height: 100%;
+	overflow-y: scroll;
+	background: var(--sidebar-bg-color);
+}
+
+.el-card__header {
+	font-size: 18px;
+	font-weight: bold;
+	height: var(--header-height);
+	display: flex;
+    justify-content: flex-start;
+	align-items: center;
+	color: var(--header-text-color);
+	background: var(--header-bg-color);
+}
+
+.el-card__header > :first-child {
+    margin-left: 30px;
+}
+
+.el-card__body {
+	color: var(--sidebar-text-color);
+	background: var(--sidebar-bg-color);
+}
+
+.el-card:hover .el-card__header {
+    background-image: url(@/assets/img/hand-point.png);
+    background-size: 40px;
+    background-position: left;
+    background-repeat: no-repeat;
+    animation: moveleftact 0.5s linear infinite;
+    animation-iteration-count: 1;
+}
+
+@keyframes moveleftact {
+    0% {
+        background-position: -8% center;
+    }
+    70% {
+        background-position: 1% center;
+    }
+    100% {
+        background-position: 0% center;
+    }
+}
+
+.el-card__body:hover {
+	color: var(--sidebar-index-text-color);
+    background: var(--sidebar-index-bg-color);
+}
+
+.custom-shadow:hover {
+    box-shadow: 0 0px 30px var(--shadow-color) !important;
+}
+
+#nprogress .bar { 
+	background: var(--shadow-color) !important;
+}
+
+#nprogress .spinner { 
+	top: 10px !important;
+}
+
+#nprogress .spinner-icon {
+    border-top-color: var(--shadow-color) !important;
+    border-left-color: var(--shadow-color) !important;
+}
