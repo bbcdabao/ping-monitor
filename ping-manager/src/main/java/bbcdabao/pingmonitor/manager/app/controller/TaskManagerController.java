@@ -67,14 +67,14 @@ public class TaskManagerController {
         taskManager.updateTask(taskName, properties);
         return ResponseEntity.ok("success");
     }
-    @GetMapping(value = "/{taskName}")
+    @GetMapping(value = "/{taskName}/taskInfos")
     @ResponseBody
     public ResponseEntity<Collection<TaskInfo>> getOneTask(
             @PathVariable("taskName") String taskName) throws Exception {
         ResponseEntity<Collection<TaskInfo>> response = ResponseEntity.ok(taskManager.getTask(taskName));
         return response;
     }
-    @GetMapping(value = "")
+    @GetMapping(value = "/taskInfos")
     @ResponseBody
     public ResponseEntity<Collection<TaskInfo>> getTask() throws Exception {
         ResponseEntity<Collection<TaskInfo>> response = ResponseEntity.ok(taskManager.getTask(null));
