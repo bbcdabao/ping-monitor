@@ -19,6 +19,7 @@
 package bbcdabao.pingmonitor.manager.app.controller;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,22 +28,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+import bbcdabao.pingmonitor.manager.app.services.ISysconfig;
 
 @Controller
 @RequestMapping("/sysconfig")
 public class SysconfigController {
+
+    @Autowired
+    private ISysconfig sysconfigOpt;
+
     @GetMapping(value = "/getconfig")
     @ResponseBody
     public ResponseEntity<Sysconfig> getConfig () throws Exception {
-        ResponseEntity<Sysconfig> response = ResponseEntity.ok(CoordinationManager.getInstance().getSysconfig());
+        Sysconfig sysconfig = sysconfigOpt.getConfig();
+        ResponseEntity<Sysconfig> response = ResponseEntity.ok(sysconfig);
         return response;
     }
+
     @PostMapping(value = "/update")
     @ResponseBody
-    public ResponseEntity<String> updateConfig(@RequestBody Sysconfig newConfig) throws Exception {
-        CoordinationManager.getInstance().setSysconfig(newConfig);
+    public ResponseEntity<String> updateConfig(@RequestBody Sysconfig sysconfig) throws Exception {
+        sysconfigOpt.setConfig(sysconfig);
         return ResponseEntity.ok("success");
     }
 }
