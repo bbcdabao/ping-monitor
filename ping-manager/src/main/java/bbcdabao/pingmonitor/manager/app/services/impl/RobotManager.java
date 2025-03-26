@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.coordination.IPath;
@@ -33,8 +34,8 @@ import bbcdabao.pingmonitor.manager.app.services.IRobotManager;
 
 @Service
 public class RobotManager implements IRobotManager {
-    @Override
-    public Collection<RobotInstanceInfo> getInstances(String robotGroupName) throws Exception {
+
+    private Collection<RobotInstanceInfo> getRobotInstanceInfos(String robotGroupName) throws Exception {
         Collection<RobotInstanceInfo> robotInstanceInfos = new ArrayList<>();
         CoordinationManager
         .getInstance()
@@ -53,20 +54,24 @@ public class RobotManager implements IRobotManager {
                 });
         return robotInstanceInfos;
     }
+
     @Override
-    public Collection<RobotInstanceInfo> getInstances() throws Exception {
+    public Collection<RobotInstanceInfo> getInstances(String robotGroupName) throws Exception {
+        if (!ObjectUtils.isEmpty(robotGroupName)) {
+            return getRobotInstanceInfos(robotGroupName);
+        }
         Collection<RobotInstanceInfo> robotInstanceInfos = new ArrayList<>();
         List<String> robotGroupNames = CoordinationManager
                 .getInstance()
                 .getChildren(IPath.robotRegisterPath());
-        for (String robotGroupName : robotGroupNames) {
-            Collection<RobotInstanceInfo> subRobotInstanceInfos = getInstances(robotGroupName);
+        for (String robotGroupNameGet : robotGroupNames) {
+            Collection<RobotInstanceInfo> subRobotInstanceInfos = getRobotInstanceInfos(robotGroupNameGet);
             robotInstanceInfos.addAll(subRobotInstanceInfos);
         }
         return robotInstanceInfos;
     }
-    @Override
-    public Collection<RobotTaskInfo> getTasks(String robotGroupName) throws Exception {
+
+    private Collection<RobotTaskInfo> getRobotTaskInfos(String robotGroupName) throws Exception {
         Collection<RobotTaskInfo> taskInfos = new ArrayList<>();
         Collection<String> tasks = CoordinationManager
                 .getInstance()
@@ -79,14 +84,18 @@ public class RobotManager implements IRobotManager {
         }
         return taskInfos;
     }
+
     @Override
-    public Collection<RobotTaskInfo> getTasks() throws Exception {
+    public Collection<RobotTaskInfo> getTasks(String robotGroupName) throws Exception {
+        if (!ObjectUtils.isEmpty(robotGroupName)) {
+            return getRobotTaskInfos(robotGroupName);
+        }
         Collection<RobotTaskInfo> taskInfos = new ArrayList<>();
         List<String> robotGroupNames = CoordinationManager
                 .getInstance()
                 .getChildren(IPath.robotRegisterPath());
-        for (String robotGroupName : robotGroupNames) {
-            Collection<RobotTaskInfo> subTaskInfos = getTasks(robotGroupName);
+        for (String robotGroupNameGet : robotGroupNames) {
+            Collection<RobotTaskInfo> subTaskInfos = getTasks(robotGroupNameGet);
             taskInfos.addAll(subTaskInfos);
         }
         return taskInfos;
