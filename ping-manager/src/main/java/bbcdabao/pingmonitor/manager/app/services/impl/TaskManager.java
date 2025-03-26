@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
+import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
@@ -31,6 +32,7 @@ import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.manager.app.module.TaskInfo;
 import bbcdabao.pingmonitor.manager.app.services.ITaskManager;
 
+@Service
 public class TaskManager implements ITaskManager {
     private TaskInfo getOneTask(String taskName) throws Exception {
         CoordinationManager cm = CoordinationManager.getInstance();
