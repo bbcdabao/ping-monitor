@@ -83,7 +83,7 @@ public class RobotManagerController {
     @ResponseBody
     public ResponseEntity<Collection<RobotInstanceInfo>> getInstances () throws Exception {
         ResponseEntity<Collection<RobotInstanceInfo>> response = ResponseEntity.ok(
-                robotManager.getInstances());
+                robotManager.getInstances(null));
         return response;
     }
 
@@ -100,7 +100,7 @@ public class RobotManagerController {
     @ResponseBody
     public ResponseEntity<Collection<RobotTaskInfo>> getTasks () throws Exception {
         ResponseEntity<Collection<RobotTaskInfo>> response = ResponseEntity.ok(
-                robotManager.getTasks());
+                robotManager.getTasks(null));
         return response;
     }
 }
