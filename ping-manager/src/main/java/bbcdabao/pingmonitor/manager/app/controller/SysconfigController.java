@@ -38,7 +38,7 @@ public class SysconfigController {
     @Autowired
     private ISysconfig sysconfigOpt;
 
-    @GetMapping(value = "/getconfig")
+    @GetMapping(value = "")
     @ResponseBody
     public ResponseEntity<Sysconfig> getConfig () throws Exception {
         Sysconfig sysconfig = sysconfigOpt.getConfig();
@@ -46,7 +46,7 @@ public class SysconfigController {
         return response;
     }
 
-    @PostMapping(value = "/update")
+    @PostMapping(value = "")
     @ResponseBody
     public ResponseEntity<String> updateConfig(@RequestBody Sysconfig sysconfig) throws Exception {
         sysconfigOpt.setConfig(sysconfig);
