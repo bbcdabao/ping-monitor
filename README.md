@@ -26,6 +26,7 @@ The following is based on a zk namespace
 │   │   │   │   └── /task-02
 │   │   ├── /run-info (Runing controle info)
 │   │   │   ├── /election (Robot instance election)
+│   │   │   ├── /master-instance (EPHEMERAL nodes)
 │   │   │   ├── /tasks (Assigned tasks)
 │   │   │   │   ├── /UUID01
 │   │   │   │   │   └── /Utask-02
@@ -36,7 +37,8 @@ The following is based on a zk namespace
 │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
 ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
 │   └── /config (Properties format) "{url=https://baiduaa.com}"
-/result (Monitoring results)
+│
+/result (Monitoring results, Use Zookeeper for small scale and Redis for large capacity)
 ├── /task-01
 │   ├── /rebot-xxx (300ms)
 │   └── /rebot-xxx (300ms)
@@ -71,6 +73,7 @@ The following is based on a zk namespace
 │   │   │   │   └── /task-02
 │   │   ├── /run-info (运行调度控制信息)
 │   │   │   ├── /election (各个实例选主)
+│   │   │   ├── /master-instance (主机器人工作信息)
 │   │   │   ├── /tasks (分派触发调度)
 │   │   │   │   ├── /UUID01
 │   │   │   │   │   └── /Utask-02
@@ -81,7 +84,8 @@ The following is based on a zk namespace
 │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
 ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
 │   └── /config (Properties format) "{url=https://baiduaa.com}"
-/result (拨测结果)
+│
+/result (拨测结果， 小规模保存在本地Zookeeper，大规模保存在Redis)
 ├── /task-01
 │   ├── /rebot-xxx (300ms)
 │   └── /rebot-xxx (300ms)
