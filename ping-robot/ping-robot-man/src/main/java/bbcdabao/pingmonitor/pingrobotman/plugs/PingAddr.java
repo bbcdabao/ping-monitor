@@ -34,12 +34,19 @@ public class PingAddr implements IPingMoniterPlug {
     private String ipAddr;
 
     @Override
-    public void doPingExecute(int timeOutMs) throws Exception {
+    public String doPingExecute(int timeOutMs) throws Exception {
         boolean reachable = InetAddress.getByName(ipAddr).isReachable(timeOutMs);
+        StringBuilder sb = new StringBuilder();
+        sb.append("ping:");
+        sb.append(ipAddr);
+        sb.append(":");
         if (reachable) {
             logger.info("PingAddr:{}:is ok", ipAddr);
+            sb.append("ok");
         } else {
-            logger.info("PingAddr:{}:is not reachable", ipAddr);            
+            logger.info("PingAddr:{}:is not reachable", ipAddr);
+            sb.append("not reachable");
         }
+        return sb.toString();
     }
 }
