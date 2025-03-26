@@ -18,6 +18,49 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
+import java.util.Collection;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import bbcdabao.pingmonitor.manager.app.module.PlugInfo;
+import bbcdabao.pingmonitor.manager.app.services.IPlugOpt;
+
+@Controller
+@RequestMapping("/plug")
 public class PlugController {
 
+    @Autowired
+    private IPlugOpt plugOpt;
+
+    @GetMapping(value = "/{plugName}/pluginfos")
+    @ResponseBody
+    public ResponseEntity<Collection<PlugInfo>> getPlugNamePlugInfos(
+            @PathVariable("plugName") String plugName) throws Exception {
+        ResponseEntity<Collection<PlugInfo>> response = ResponseEntity.ok(
+                plugOpt.getPlugInfos(plugName));
+        return response;
+    }
+
+    @GetMapping(value = "/pluginfos")
+    @ResponseBody
+    public ResponseEntity<Collection<PlugInfo>> getPlugInfos() throws Exception {
+        ResponseEntity<Collection<PlugInfo>> response = ResponseEntity.ok(
+                plugOpt.getPlugInfos(null));
+        return response;
+    }
+    
+    @DeleteMapping(value = "/{plugName}")
+    @ResponseBody
+    public ResponseEntity<String> deletePlug(   
+            @PathVariable("plugName") String plugName) throws Exception {
+        plugOpt.deletePlug(plugName);
+        return ResponseEntity.ok("success");
+    }
 }
