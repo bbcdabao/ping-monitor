@@ -46,6 +46,7 @@ executor-config:
   thread-name-prefix: monitor-
 
 sysconfig:
+  rs-type: inner
   cron-task: 0/10 * * * * ?
   cron-main: 5/10 * * * * ?
   time-out-ms: 10000
