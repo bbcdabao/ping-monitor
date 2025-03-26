@@ -18,12 +18,73 @@
 
 package bbcdabao.pingmonitor.common.domain.coordination;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Sysconfig {
+
+    public static enum RsType {
+        INNER("inner"),
+        REDIS("redis");
+
+        private final String value;
+        RsType(String value) {
+            this.value = value;
+        }
+
+        private static final Map<String, RsType> RSTYPE_MAP = new HashMap<>(5);
+        static {
+            for (RsType type : RsType.values()) {
+                RSTYPE_MAP.put(type.getValue(), type);
+            }
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
+        @JsonCreator
+        public static RsType fromValue(String value) {
+            RsType type = RSTYPE_MAP.get(value);
+            if (null == type) {
+                throw new IllegalArgumentException("Unexpected value '" + value + "'");
+            }
+            return type;
+        }
+    }
+
+    @Data
+    public static class RedisConfig {
+        private String host;
+        private int port;
+        private String password;
+        private int database;
+        private int timeout;
+    }
+
+    private RsType rsType = RsType.INNER;
+    private RedisConfig redisConfig = null;
+    /**
+     * ping test cycle
+     */
     private String cronTask;
+    /**
+     * master assign task detection cycle
+     */
     private String cronMain;
+    /**
+     * ping time out
+     */
     private int timeOutMs;
+    
     private boolean isOverwrite = false;
 }
