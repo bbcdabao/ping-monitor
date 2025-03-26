@@ -48,7 +48,7 @@ public class RobotManagerController {
     @Autowired
     private IRobotManager robotManager;
 
-    @GetMapping(value = "/sse/{robotGroupName}/instances", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/{robotGroupName}/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
     public void getRobotGroupNameInstancesForSse (
             @PathVariable("robotGroupName") String robotGroupName,
@@ -59,7 +59,7 @@ public class RobotManagerController {
         });
     }
 
-    @GetMapping(value = "/sse/{robotGroupName}/masterinstances", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/{robotGroupName}/masterinstances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
     public void getRobotGroupNameMasterInstancesForSse (
             @PathVariable("robotGroupName") String robotGroupName,
@@ -69,7 +69,7 @@ public class RobotManagerController {
             return new RobotMasterInstancesSession(robotGroupName, response);
         });
     }
-    
+
     @GetMapping(value = "/{robotGroupName}/instances")
     @ResponseBody
     public ResponseEntity<Collection<RobotInstanceInfo>> getRobotGroupNameInstances (
