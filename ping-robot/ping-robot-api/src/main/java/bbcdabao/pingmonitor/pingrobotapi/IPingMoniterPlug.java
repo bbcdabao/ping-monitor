@@ -19,5 +19,5 @@
 package bbcdabao.pingmonitor.pingrobotapi;
 
 public interface IPingMoniterPlug {
-    void doPingExecute(int timeOutMs) throws Exception;
+    String doPingExecute(int timeOutMs) throws Exception;
 }
