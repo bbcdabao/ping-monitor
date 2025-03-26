@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -26,10 +25,10 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
-import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.domain.extraction.TemplateField;
@@ -38,7 +37,12 @@ import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
 import bbcdabao.pingmonitor.pingrobotapi.domain.templates.TemplatesManager;
 
 public class StartUpService implements ApplicationRunner, ConnectionStateListener {
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(StartUpService.class);
+    
+    @Autowired
+    private RobotConfig robotConfig;
+    
     private void regTemplatesInfo() throws Exception {
         TemplatesManager
         .getInstance()
@@ -50,22 +54,21 @@ public class StartUpService implements ApplicationRunner, ConnectionStateListene
             CoordinationManager.getInstance().setPlugTemplate(plugName, plugTemplate);
         });
     }
+    
     @Override
     public void run(ApplicationArguments args) throws Exception {
         regTemplatesInfo();
     }
     @Override
     public void stateChanged(CuratorFramework client, ConnectionState newState) {
+        String robotGroupName = robotConfig.getRobotGroupName();
         switch (newState) {
         case CONNECTED:
         case RECONNECTED:
             try {
                 CoordinationManager
                 .getInstance()
-                .regRobotInstance(FactoryBase
-                        .getFactory()
-                        .getBean(RobotConfig.class)
-                        .getRobotGroupName());
+                .regRobotInstance(robotGroupName);
             } catch (Exception e) {
                 LOGGER.info("StartUpService Exception:{}", e.getMessage());
             }
