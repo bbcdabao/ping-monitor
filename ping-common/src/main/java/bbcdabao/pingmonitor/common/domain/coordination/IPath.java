@@ -43,7 +43,7 @@ import java.util.UUID;
 │   │   │   │   └── /task-02
 │   │   ├── /run-info (Runing controle info)
 │   │   │   ├── /election (Robot instance election)
-│   │   │   ├── /master-instance (Instance child nodes, all EPHEMERAL nodes)
+│   │   │   ├── /master-instance (EPHEMERAL nodes)
 │   │   │   │   ├── /UUID01 ()
 │   │   │   ├── /tasks (Assigned tasks)
 │   │   │   │   ├── /UUID01
@@ -55,7 +55,8 @@ import java.util.UUID;
 │   └── /config (Properties format) "{ip=127.0.0.1, port=3251}"
 ├── /task-02 (Robot plugin template: com_xxx_sss_HttpCallTest)
 │   └── /config (Properties format) "{url=https://baiduaa.com}"
-/result (Monitoring results)
+│   
+/result (Monitoring results, Use Zookeeper for small scale and Redis for large capacity)
 ├── /task-01
 │   ├── /rebot-xxx (300ms)
 │   └── /rebot-xxx (300ms)
@@ -90,6 +91,9 @@ public interface IPath {
     │   ├── /com_xxx_sss_XXXXCallTest
     │   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: http://a.com}"
      */
+    static IPath plugTemplate() {
+        return () -> String.format("/robot/templates");
+    }
     static IPath plugTemplate(String plugName) {
         return () -> String.format("/robot/templates/%s", plugName);
     }
