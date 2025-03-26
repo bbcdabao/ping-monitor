@@ -25,7 +25,5 @@ import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
 
 public interface IRobotManager {
     Collection<RobotInstanceInfo> getInstances(String robotGroupName) throws Exception;
-    Collection<RobotInstanceInfo> getInstances() throws Exception;
     Collection<RobotTaskInfo> getTasks(String robotGroupName) throws Exception;
-    Collection<RobotTaskInfo> getTasks() throws Exception;
 }
