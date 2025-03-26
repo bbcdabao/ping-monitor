@@ -193,12 +193,12 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
         Pingresult pingresult = new Pingresult();
         long beg = System.currentTimeMillis();
         try {
-            plug.doPingExecute(timeOutMs);
+            String info = plug.doPingExecute(timeOutMs);
             
             long sub = System.currentTimeMillis() - beg;
             pingresult.setDelay(sub);
             pingresult.setSuccess(true);
-            pingresult.setInfo("success");
+            pingresult.setInfo(info);
             
         } catch (Exception e) {
             String info = e.getMessage();
