@@ -131,3 +131,27 @@ ping-monitor
     │ 
     └── pom.xml
 ```
+
+            <template v-for="(menu, index) in menuData" :key="index">
+                <!-- 如果存在 rout，则是一级菜单 -->
+                <el-menu-item v-if="menu.rout" :index="menu.rout">
+                <i :class="menu.icon"></i>
+                <span>{{ menu.title }}</span>
+                </el-menu-item>
+
+                <!-- 否则，如果有 child，则是二级菜单 -->
+                <el-sub-menu v-else :index="String(index)">
+                <template #title>
+                    <i :class="menu.icon"></i>
+                    <span>{{ menu.title }}</span>
+                </template>
+                <el-menu-item
+                    v-for="(child, subIndex) in menu.child"
+                    :key="subIndex"
+                    :index="child.rout"
+                >
+                    <i :class="child.icon"></i>
+                    <span>{{ child.title }}</span>
+                </el-menu-item>
+                </el-sub-menu>
+            </template>
