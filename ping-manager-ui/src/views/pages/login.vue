@@ -127,7 +127,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
 .login-container {
     width: 360px;
     margin-left: 8px;
-    border-radius: 10px;
+    border-radius: 4px;
     background: var(--sidebar-bg-color);
     padding: 20px 50px 20px;
     box-sizing: border-box;
