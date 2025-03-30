@@ -114,7 +114,7 @@ const setFullScreen = () => {
     justify-content: center;
     align-items: center;
     height: 100%;
-    padding: 0 10px;
+    padding: 0 12px;
     cursor: pointer;
     opacity: 0.8;
     font-size: 22px;
@@ -135,7 +135,8 @@ const setFullScreen = () => {
     }
 }
 .cmd-terminal {
-    width: 197px;
+    height: 40px;
+    margin-left: 30px;
     animation: slideInRight 0.3s ease-in-out; 
 }
 @keyframes slideInRight {

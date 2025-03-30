@@ -122,7 +122,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
 }
 .login-title {
     font-size: 22px;
-    color: var(--sidebar-text-color);
+    color: var(--login-text-color);
     font-weight: bold;
     text-decoration: underline;
 }
@@ -130,7 +130,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
     width: 360px;
     margin-left: 8px;
     border-radius: 4px;
-    background: var(--sidebar-bg-color);
+    background: var(--login-bg-color);
     padding: 20px 50px 20px;
     box-sizing: border-box;
     border: 1px solid white;
@@ -141,12 +141,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
     align-items: center;
     font-size: 14px;
     margin: -10px 0 10px;
-    color: var(--sidebar-text-color);
+    color: var(--login-text-color);
 }
 .pwd-checkbox {
     margin-top: 15px;
     height: auto;
-    color: var(--sidebar-text-color);
+    color: var(--login-text-color);
 }
 .login-btn {
     display: block;
@@ -155,6 +155,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
 .login-tips {
     margin-top: 4px;
     font-size: 12px;
-    color: var(--sidebar-text-color);
+    color: var(--login-text-color);
 }
 </style>

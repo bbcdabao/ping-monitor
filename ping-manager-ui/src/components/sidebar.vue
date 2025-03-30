@@ -11,8 +11,10 @@
         >
             <template v-for="(menu, index) in sidebar.sidemenu" :key="index">
                 <el-menu-item v-if="menu.route" :index="menu.route">
-                    <i :class="menu.itemicon"></i>
-                    <span>{{ menu.itemname }}</span>
+                    <el-icon v-if="menu.itemicon">
+                        <component :is="icons[menu.itemicon]" />
+                    </el-icon>
+                    <span>{{ menu.itemtitle }}</span>
                 </el-menu-item>
                 <el-sub-menu v-else :index="String(index)">
                     <template #title>
@@ -24,7 +26,9 @@
                         :key="subIndex"
                         :index="child.route"
                     >
-                        <i :class="child.itemicon"></i>
+                        <el-icon v-if="child.itemicon">
+                            <component :is="icons[child.itemicon]" />
+                        </el-icon>
                         <span>{{ child.itemname }}</span>
                     </el-menu-item>
                 </el-sub-menu>
@@ -38,14 +42,17 @@ import { useSidebarStore } from '@/store/sidebar';
 import { useThemeStore } from '@/store/theme';
 import { useRoute } from 'vue-router';
 import { ElMenu } from 'element-plus';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
 const route = useRoute();
 const onRoutes = computed(() => {
     return route.path;
 });
 
+const icons = ElementPlusIconsVue;
 const sidebar = useSidebarStore();
 const themeStore = useThemeStore();
+
 </script>
 <style scoped>
 .sidebar {
@@ -64,6 +71,7 @@ const themeStore = useThemeStore();
 }
 .sidebar-el-menu {
     min-height: 100%;
+    background-color: var(--sidebar-bg-color);
 }
 .sidebar-el-menu .el-menu-item.is-active {
   font-size: 14px;
@@ -71,8 +79,13 @@ const themeStore = useThemeStore();
   color: var(--sidebar-index-text-color) !important;
   font-weight: bold !important;
 }
-.el-sub-menu .el-menu-item i {
-    font-size: 18px;
+.el-menu-item [class^=el-icon] {
+    font-size: 22px;
+    margin-right: 5px;
+}
+.el-sub-menu .el-icon {
+    font-size: 22px;
+    margin-right: 5px;
 }
 
 </style>

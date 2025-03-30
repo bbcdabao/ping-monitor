@@ -1,20 +1,28 @@
 import { defineStore } from 'pinia';
-import { Sshitem } from '@/types/sshitem';
+import i18n from '@/i18n';
 
 export const useSidebarStore = defineStore('sidebar', {
 	state: () => {
+        const t = i18n.global.t;
+        const processMenu = (menu) => {
+            return menu.map(item => ({
+                ...item,
+                itemtitle: t(`${item.itemname}`),
+                children: item.children ? processMenu(item.children) : undefined
+            }));
+        };
 		return {
 			collapse: false,
-            sidemenu: [
+            sidemenu: processMenu([
                 {
-                    itemname: 'MainTest1',
-                    itemicon: 'el-icon-lx-full',
+                    itemname: 'overview',
+                    itemicon: 'Histogram',
                     route: '/manager'
                 },
                 {
-                    itemname: 'MainTest2',
-                    itemicon: 'el-icon-lx-full',
-                    route: '/main2'
+                    itemname: 'template',
+                    itemicon: 'Tickets',
+                    route: '/theme'
                 },
                 {
                     itemname: 'MainTest3',
@@ -27,7 +35,7 @@ export const useSidebarStore = defineStore('sidebar', {
                     children: [
                         {
                             itemname: 'Child1',
-                            itemicon: 'el-icon-lx-full',
+                            itemicon: 'HomeFilled',
                             route: '/child1'
                         },
                         {
@@ -42,7 +50,7 @@ export const useSidebarStore = defineStore('sidebar', {
                         }
                     ]
                 }
-            ]
+            ])
 		};
 	},
 	getters: {},

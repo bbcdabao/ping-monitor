@@ -103,7 +103,7 @@ const systemmap = {
         name: t('default'),
         headerBgColor:'#000000',
         headerTextColor: '#ffffff',
-        sidebarBgColor: '#000000',
+        sidebarBgColor: '#ff0000',
         sidebarTextColor: '#ffffff',
         sidebarIndexBgColor: '#4B4B4B',
         sidebarIndexTextColor: '#ffffff',
