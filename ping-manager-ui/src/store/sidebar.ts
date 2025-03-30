@@ -5,25 +5,50 @@ export const useSidebarStore = defineStore('sidebar', {
 	state: () => {
 		return {
 			collapse: false,
-			sshitems: JSON.parse(localStorage.getItem('sidebar-sshitems') || '{}') as { [key: string]: Sshitem }
+            sidemenu: [
+                {
+                    itemname: 'MainTest1',
+                    itemicon: 'el-icon-lx-full',
+                    route: '/manager'
+                },
+                {
+                    itemname: 'MainTest2',
+                    itemicon: 'el-icon-lx-full',
+                    route: '/main2'
+                },
+                {
+                    itemname: 'MainTest3',
+                    itemicon: 'el-icon-lx-full',
+                    route: '/main3'
+                },
+                {
+                    itemname: 'MainTest4',
+                    itemicon: 'el-icon-lx-full',
+                    children: [
+                        {
+                            itemname: 'Child1',
+                            itemicon: 'el-icon-lx-full',
+                            route: '/child1'
+                        },
+                        {
+                            itemname: 'Child2',
+                            itemicon: 'el-icon-lx-full',
+                            route: '/child2'
+                        },
+                        {
+                            itemname: 'Child3',
+                            itemicon: 'el-icon-lx-full',
+                            route: '/child3'
+                        }
+                    ]
+                }
+            ]
 		};
 	},
 	getters: {},
 	actions: {
 		handleCollapse() {
 			this.collapse = !this.collapse;
-		},
-		addSshitem(item: Sshitem) {
-			this.sshitems[item.addr] = item;
-			localStorage.setItem('sidebar-sshitems', JSON.stringify(this.sshitems));
-		},
-		delSshitem(addr: string) {
-			delete this.sshitems[addr];
-			localStorage.setItem('sidebar-sshitems', JSON.stringify(this.sshitems));
-		},
-		clsSshitem() {
-			this.sshitems = {};
-			localStorage.setItem('sidebar-sshitems', JSON.stringify(this.sshitems));
-		},
+		}
 	}
 });

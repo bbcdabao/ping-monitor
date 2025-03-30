@@ -2,9 +2,9 @@
     <div class="login-bg">
         <div class="login-container">
             <div class="login-header">
-                <vLanguage style="margin-top: 10px;" />
-                <img class="logo mr10" src="@/assets/img/logo.svg" alt="" />
-                <div class="login-title">{{ $t('starkIndustries') }}</div>
+                <vLanguage style="margin-top: 10px; width: 80px;" />
+                <img class="logo mr10" src="@/assets/img/pm-logo.png" alt="" />
+                <div class="login-title">Ping Monitor</div>
             </div>
             <el-form :model="param" :rules="rules" ref="login" size="large">
                 <el-form-item prop="username">
@@ -117,12 +117,14 @@ const submitForm = (formEl: FormInstance | undefined) => {
     margin-bottom: 20px;
 }
 .logo {
+    margin-left: 10px;
     width: 42px;
 }
 .login-title {
     font-size: 22px;
     color: var(--sidebar-text-color);
     font-weight: bold;
+    text-decoration: underline;
 }
 .login-container {
     width: 360px;

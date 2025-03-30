@@ -56,7 +56,7 @@ import { useHeaderStore } from '@/store/header';
 import { useRouter } from 'vue-router';
 import vLanguage from '@/components/language.vue';
 import imgurl from '@/assets/img/user-logo.jpg';
-import cmdTerminal from '@/assets/img/cmd-termianl.png';
+import cmdTerminal from '@/assets/img/pm-logo-title.png';
 
 const sidebar = useSidebarStore();
 const header = useHeaderStore();
@@ -135,8 +135,18 @@ const setFullScreen = () => {
     }
 }
 .cmd-terminal {
-    height: 40px;
-    animation: graduallyShow 1.5s ease-in-out; 
+    width: 197px;
+    animation: slideInRight 0.3s ease-in-out; 
+}
+@keyframes slideInRight {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 .header-right {
     float: right;
