@@ -6,9 +6,8 @@
 <script setup lang="ts">
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
 import { ElConfigProvider } from 'element-plus';
-import { useThemeStore } from '@/store/theme';
-const theme = useThemeStore();
-theme.initTheme();
+import { useThemeWatcher } from '@/store/theme';
+useThemeWatcher();
 </script>
 <style>
 @import './assets/css/main.css';

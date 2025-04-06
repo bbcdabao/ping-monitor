@@ -1,114 +1,78 @@
-import { mix, setProperty } from '@/utils';
 import { defineStore } from 'pinia';
+import { ThemeConfig } from '@/types/themeConfig';
+
+const dfltaThemeConfig: ThemeConfig = {
+    primary: '#409EFF',
+    success: '#67C23A',
+    warning: '#E6A23C',
+    danger: '#F56C6C"',
+    info: '#909399',
+
+    headerBgColor: '#FFFFFF',
+    headerBdColor: '#E4E7ED',
+    headerColor: '#303133',
+
+    bodyBgColor: '#E4E7ED',
+    bodyBdColor: '#E4E7ED',
+    bodyColor: '#E4E7ED',
+
+    sidebarBgColor: '#F4F4F5',
+    sidebarBdColor: '#D3D4D6',
+    sidebarColor: '#606266',
+
+    sidebarIndexBgColor: '#E4E7ED',
+    sidebarIndexBdColor: '#D3D4D6',
+    sidebarIndexColor: '#303133',
+
+    cardbodyBgColor: '#FFFFFF',
+    cardbodyBdColor: '#EBEEF5',
+    cardbodyColor: '#303133',
+
+    customhadowColor: '#000000'
+};
+
+function toKebabCase(str: string): string {
+    const matches = str.match(/[A-Z]?[a-z]+|[A-Z]+(?![a-z])/g) || [];
+    return `--${matches.join('-').toLowerCase()}`;
+}
+
+const initialThemeConfig = (() => {
+    try {
+        const storedConfig = localStorage.getItem("theme-config");
+        return storedConfig ? { ...dfltaThemeConfig, ...JSON.parse(storedConfig) } : { ...dfltaThemeConfig };
+    } catch (error) {
+        console.error("Error parsing theme config from localStorage:", error);
+        return { ...dfltaThemeConfig };
+    }
+})();
 
 export const useThemeStore = defineStore('theme', {
-    state: () => {
-        return {
-            primary: '',
-            success: '',
-            warning: '',
-            danger: '',
-            info: '',
-            headerBgColor: '#000000',
-            headerTextColor: '#ffffff',
-            sidebarBgColor: '#000000',
-            sidebarTextColor: '#ffffff',
-            sidebarIndexBgColor: '#333333',
-            sidebarIndexTextColor: '#ffffff',
-            shadowColor: '#ff0000',
-            nodeptBgColor: '#ffffff',
-            nodeptTextColor: '#000000',
-        };
-    },
+    state: () => ({
+        themeConfig: initialThemeConfig
+    }),
     getters: {},
     actions: {
-        initTheme() {
-            ['primary', 'success', 'warning', 'danger', 'info'].forEach((type) => {
-                const color = localStorage.getItem(`theme-${type}`) || '';
-                if (color) {
-                    this.setPropertyColor(color, type);
-                }
-            });
-            const headerBgColor = localStorage.getItem('header-bg-color');
-            headerBgColor && this.setHeaderBgColor(headerBgColor);
-            const headerTextColor = localStorage.getItem('header-text-color');
-            headerTextColor && this.setHeaderTextColor(headerTextColor);
-            const sidebarBgColor = localStorage.getItem('sidebar-bg-color');
-            sidebarBgColor && this.setSidebarBgColor(sidebarBgColor);
-            const sidebarTextColor = localStorage.getItem('sidebar-text-color');
-            sidebarTextColor && this.setSidebarTextColor(sidebarTextColor);
-            const sidebarIndexBgColor = localStorage.getItem('sidebar-index-bg-color');
-            sidebarIndexBgColor && this.setSidebarIndexBgColor(sidebarIndexBgColor);
-            const sidebarIndexTextColor = localStorage.getItem('sidebar-index-text-color');
-            sidebarIndexTextColor && this.setSidebarIndexTextColor(sidebarIndexTextColor);
-            const shadowColor = localStorage.getItem('shadow-color');
-            shadowColor && this.setShadowColor(shadowColor);
-            const nodeptBgColor = localStorage.getItem('nodept-bg-color');
-            nodeptBgColor && this.setNodeptBgColor(nodeptBgColor);
-            const nodeptTextColor = localStorage.getItem('nodept-text-color');
-            nodeptTextColor && this.setNodeptTextColor(nodeptTextColor);
-        },
-        resetTheme() {
-            ['primary', 'success', 'warning', 'danger', 'info'].forEach((type) => {
-                this.setPropertyColor('', type);
-            });
-        },
-        setPropertyColor(color: string, type: string = 'primary') {
-            this[type] = color;
-            setProperty(`--el-color-${type}`, color);
-            localStorage.setItem(`theme-${type}`, color);
-            this.setThemeLight(type);
-        },
-        setThemeLight(type: string = 'primary') {
-            [3, 5, 7, 8, 9].forEach((v) => {
-                setProperty(`--el-color-${type}-light-${v}`, mix('#ffffff', this[type], v / 10));
-            });
-            setProperty(`--el-color-${type}-dark-2`, mix('#ffffff', this[type], 0.2));
-        },
-        setHeaderBgColor(color: string) {
-            this.headerBgColor = color;
-            setProperty('--header-bg-color', color);
-            localStorage.setItem(`header-bg-color`, color);
-        },
-        setHeaderTextColor(color: string) {
-            this.headerTextColor = color;
-            setProperty('--header-text-color', color);
-            localStorage.setItem(`header-text-color`, color);
-        },
-        setSidebarBgColor(color: string) {
-            this.sidebarBgColor = color;
-            setProperty('--sidebar-bg-color', color);
-            localStorage.setItem(`sidebar-bg-color`, color);
-        },
-        setSidebarTextColor(color: string) {
-            this.sidebarTextColor = color;
-            setProperty('--sidebar-text-color', color);
-            localStorage.setItem(`sidebar-text-color`, color);
-        },
-        setSidebarIndexBgColor(color: string) {
-            this.sidebarIndexBgColor = color;
-            setProperty('--sidebar-index-bg-color', color);
-            localStorage.setItem(`sidebar-index-bg-color`, color);
-        },
-        setSidebarIndexTextColor(color: string) {
-            this.sidebarIndexTextColor = color;
-            setProperty('--sidebar-index-text-color', color);
-            localStorage.setItem(`sidebar-index-text-color`, color);
-        },
-        setShadowColor(color: string) {
-            this.shadowColor = color;
-            setProperty('--shadow-color', color);
-            localStorage.setItem(`shadow-color`, color);
-        },
-        setNodeptBgColor(color: string) {
-            this.nodeptBgColor = color;
-            setProperty('--nodept-bg-color', color);
-            localStorage.setItem(`nodept-bg-color`, color);
-        },
-        setNodeptTextColor(color: string) {
-            this.nodeptTextColor = color;
-            setProperty('--nodept-text-color', color);
-            localStorage.setItem(`nodept-text-color`, color);
+        saveThemeConfig(indexThemeConfig: ThemeConfig) {
+            this.themeConfig = { ...dfltaThemeConfig, ...indexThemeConfig };
+            localStorage.setItem("theme-config", JSON.stringify(this.themeConfig));
         }
     }
 });
+
+export const useThemeWatcher = () => {
+    const themeStore = useThemeStore();
+
+    const applyTheme = (themeConfig: Record<string, string>) => {
+        Object.entries(themeConfig).forEach(([key, value]) => {
+            const colorset = toKebabCase(key);
+            console.info(">>:", colorset);
+            document.documentElement.style.setProperty(colorset, value);
+        });
+    }
+
+    applyTheme(themeStore.themeConfig)
+
+    themeStore.$subscribe((_, state) => {
+        applyTheme(state.themeConfig)
+    })
+}

@@ -35,6 +35,13 @@
     "clean": "洁净",
     "littlePink": "小粉红",
     "bright": "明亮",
-    "overview": "拨测概况",
-    "template": "任务模板"
+    "pingallview": "拨测概况",
+    "taskmanager": "任务管理",
+    "template": "任务模板",
+    "fortasks": "任务操作",
+    "robotmanager": "机器人管理",
+    "robotmonitor": "机器人监控",
+    "robotaskinfo": "机器人任务",
+    "roboworkinfo": "机器人工况",
+    "thememanager": "主题设置"
 }

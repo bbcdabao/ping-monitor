@@ -6,27 +6,40 @@
                     <div class="content-title">{{ $t('sysTheme') }}</div>
                 </template>
                 <div class="theme-list mgb20">
-                    <div class="theme-item" @click="setSystemTheme(value)" v-for="[key, value] in Object.entries(systemmap)"
-                        :style="{ background: getGradientBackground(value.headerBgColor, value.sidebarBgColor), color: getInverseColor(value.headerBgColor) }">{{ value.name }}
+                    <div
+                        class="theme-item"
+                        @click="setSystemTheme(value)"
+                        v-for="[key, value] in Object.entries(systemmap)"
+                    >
+                        <div
+                            :style="{
+                                width: '100%',
+                                height: '10px',
+                                backgroundColor: value.headerBgColor,
+                                border: '1px solid ' + value.headerBdColor
+                            }"
+                        />
+                        <div
+                            :style="{
+                                width: '100%',
+                                height: '60px',
+                                backgroundColor: value.bodyBgColor,
+                                border: '1px solid ' + value.bodyBdColor
+                            }"
+                        >
+                            <div
+                                :style="{
+                                    width: '30%',
+                                    height: '59px',
+                                    backgroundColor: value.sidebarBgColor,
+                                    border: '1px solid ' + value.sidebarBdColor
+                                }"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div class="flex-center">
                     <el-button type="primary" @click="resetSystemTheme">{{ $t('resetTheme') }}</el-button>
-                </div>
-            </el-card>
-            <el-card class="mgb20 custom-shadow" shadow="hover">
-                <template #header>
-                    <div class="content-title">Element-Plus</div>
-                </template>
-                <div class="theme-list mgb20">
-                    <div class="theme-item" v-for="theme in themes">
-                        <el-button :type="theme.name">{{ theme.name }}</el-button>
-                        <div class="theme-color">{{ theme.color }}</div>
-                        <el-color-picker v-model="color[theme.name]" @change="changeColor(theme.name)" />
-                    </div>
-                </div>
-                <div class="flex-center">
-                    <el-button type="primary" @click="resetTheme">{{ $t('resetTheme') }}</el-button>
                 </div>
             </el-card>
         </div>
@@ -34,7 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import { useThemeStore } from '@/store/theme'
+import { ThemeConfig } from '@/types/themeConfig';
+import { useThemeStore } from '@/store/theme';
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -48,39 +62,39 @@ const color = reactive({
     warning: localStorage.getItem('theme-warning') || '#e6a23c',
     danger: localStorage.getItem('theme-danger') || '#f56c6c',
     info: localStorage.getItem('theme-info') || '#909399',
-    headerBgColor: themeStore.headerBgColor,
-    headerTextColor: themeStore.headerTextColor,
+    headerBgColor: themeStore.themeConfig.headerBgColor,
+    headerTextColor: themeStore.themeConfig.headerColor,
 });
 
 const themes = [
     {
         name: 'primary',
-        color: themeStore.primary || color.primary
+        color: themeStore.themeConfig.primary || color.primary
     },
     {
         name: 'success',
-        color: themeStore.success || color.success
+        color: themeStore.themeConfig.success || color.success
     },
     {
         name: 'warning',
-        color: themeStore.warning || color.warning
+        color: themeStore.themeConfig.warning || color.warning
     },
     {
         name: 'danger',
-        color: themeStore.danger || color.danger
+        color: themeStore.themeConfig.danger || color.danger
     },
     {
         name: 'info',
-        color: themeStore.info || color.info
+        color: themeStore.themeConfig.info || color.info
     }
 ];
 
 const changeColor = (name: string) => {
-    themeStore.setPropertyColor(color[name], name)
+    //themeStore.setPropertyColor(color[name], name)
 };
 
 const resetTheme = () => {
-    themeStore.resetTheme()
+    //themeStore.resetTheme()
 };
 
 const getInverseColor = (color: string) => {
@@ -98,103 +112,85 @@ const getGradientBackground = (color1: string, color2: string) => {
     return `linear-gradient(to bottom, ${color1} 0%, ${color1} 30%, ${color2} 0%, ${color2} 70%)`;
 };
 
-const systemmap = {
+const systemmap: Record<string, ThemeConfig> = {
     '1': {
-        name: t('default'),
-        headerBgColor:'#000000',
-        headerTextColor: '#ffffff',
-        sidebarBgColor: '#ff0000',
-        sidebarTextColor: '#ffffff',
-        sidebarIndexBgColor: '#4B4B4B',
-        sidebarIndexTextColor: '#ffffff',
-        shadowColor: '#ff0000',
-        nodeptBgColor: '#99CCCC',
-        nodeptTextColor: '#663333',
+        primary: '#ff0000',
+        success: '#ff0000',
+        warning: '#ff0000',
+        danger: '#ff0000',
+        info: '#ff0000',
+        headerBgColor: '#000000',
+        headerBdColor: '#4d4d4d',
+        headerColor: '#ffffff',
+        bodyBgColor: '#4d4d4d',
+        bodyBdColor: '#4d4d4d',
+        bodyColor: '#ffffff',
+        sidebarBgColor: '#000000',
+        sidebarBdColor: '#4d4d4d',
+        sidebarColor: '#ffffff',
+        sidebarIndexBgColor: '#4d4d4d',
+        sidebarIndexBdColor: '#4d4d4d',
+        sidebarIndexColor: '#ffffff',
+        cardbodyBgColor: '#000000',
+        cardbodyBdColor: '#4d4d4d',
+        cardbodyColor: '#ffffff',
+        customhadowColor: '#000000'
     },
     '2': {
-        name: t('grey'),
-        headerBgColor:'#4B4B4B',
-        headerTextColor: '#ffffff',
-        sidebarBgColor: '#4B4B4B',
-        sidebarTextColor: '#ffffff',
-        sidebarIndexBgColor: '#808080',
-        sidebarIndexTextColor: '#ffffff',
-        shadowColor: '#00ff00',
-        nodeptBgColor: '#ffffff',
-        nodeptTextColor: '#000000',
+        primary: '#ff0000',
+        success: '#ff0000',
+        warning: '#ff0000',
+        danger: '#ff0000',
+        info: '#ff0000',
+        headerBgColor: '#336699',
+        headerBdColor: '#0099CC',
+        headerColor: '#ffffff',
+        bodyBgColor: '#0099CC',
+        bodyBdColor: '#0099CC',
+        bodyColor: '#ffffff',
+        sidebarBgColor: '#336699',
+        sidebarBdColor: '#0099CC',
+        sidebarColor: '#ffffff',
+        sidebarIndexBgColor: '#0099CC',
+        sidebarIndexBdColor: '#0099CC',
+        sidebarIndexColor: '#ffffff',
+        cardbodyBgColor: '#336699',
+        cardbodyBdColor: '#0099CC',
+        cardbodyColor: '#ffffff',
+        customhadowColor: '#336699'
     },
     '3': {
-        name: t('doubleFight'),
-        headerBgColor:'#000000',
-        headerTextColor: '#ffffff',
-        sidebarBgColor: '#4B4B4B',
-        sidebarTextColor: '#ffffff',
-        sidebarIndexBgColor: '#808080',
-        sidebarIndexTextColor: '#ffffff',
-        shadowColor: '#ff0000',
-        nodeptBgColor: '#ffffff',
-        nodeptTextColor: '#000000',
-    },
-    '4': {
-        name: t('clean'),
-        headerBgColor:'#003366',
-        headerTextColor: '#ffffff',
-        sidebarBgColor: '#003366',
-        sidebarTextColor: '#ffffff',
-        sidebarIndexBgColor: '#666699',
-        sidebarIndexTextColor: '#ffffff',
-        shadowColor: '#0099FF',
-        nodeptBgColor: '#FFCC99',
-        nodeptTextColor: '#003366',
-    },
-    '5': {
-        name: t('littlePink'),
-        headerBgColor:'#FF99CC',
-        headerTextColor: '#000000',
-        sidebarBgColor: '#FF99CC',
-        sidebarTextColor: '#000000',
-        sidebarIndexBgColor: '#CCCCFF',
-        sidebarIndexTextColor: '#000000',
-        shadowColor: '#663366',
-        nodeptBgColor: '#006633',
-        nodeptTextColor: '#FF99CC',
-    },
-    '6': {
-        name: t('bright'),
-        headerBgColor:'#ffffff',
-        headerTextColor: '#000000',
-        sidebarBgColor: '#ffffff',
-        sidebarTextColor: '#000000',
-        sidebarIndexBgColor: '#CCCCCC',
-        sidebarIndexTextColor: '#000000',
-        shadowColor: '#CCCCCC',
-        nodeptBgColor: '#000000',
-        nodeptTextColor: '#ffffff',
+        primary: '#ff0000',
+        success: '#ff0000',
+        warning: '#ff0000',
+        danger: '#ff0000',
+        info: '#ff0000',
+        headerBgColor: '#333399',
+        headerBdColor: '#ccffff',
+        headerColor: '#ffffff',
+        bodyBgColor: '#ccffff',
+        bodyBdColor: '#ccffff',
+        bodyColor: '#000000',
+        sidebarBgColor: '#333399',
+        sidebarBdColor: '#ccffff',
+        sidebarColor: '#ffffff',
+        sidebarIndexBgColor: '#ccffff',
+        sidebarIndexBdColor: '#ccffff',
+        sidebarIndexColor: '#000000',
+        cardbodyBgColor: '#333399',
+        cardbodyBdColor: '#ccffff',
+        cardbodyColor: '#ffffff',
+        customhadowColor: '#333399'
     }
 };
 
 const setSystemTheme = (data: any) => {
     console.info("theme:", data);
-    themeStore.setHeaderBgColor(data.headerBgColor);
-    themeStore.setHeaderTextColor(data.headerTextColor);
-    themeStore.setSidebarBgColor(data.sidebarBgColor);
-    themeStore.setSidebarTextColor(data.sidebarTextColor);
-    themeStore.setSidebarIndexBgColor(data.sidebarIndexBgColor);
-    themeStore.setSidebarIndexTextColor(data.sidebarIndexTextColor);
-    themeStore.setShadowColor(data.shadowColor);
-    themeStore.setNodeptBgColor(data.nodeptBgColor);
-    themeStore.setNodeptTextColor(data.nodeptTextColor);
+    themeStore.saveThemeConfig(data);
 };
 
 const resetSystemTheme = () => {
     resetTheme();
-    localStorage.removeItem('header-bg-color');
-    localStorage.removeItem('header-text-color');
-    localStorage.removeItem('sidebar-bg-color');
-    localStorage.removeItem('sidebar-text-color');
-    localStorage.removeItem('sidebar-bg-color');
-    localStorage.removeItem('sidebar-index-bg-color');
-    localStorage.removeItem('sidebar-index-text-color');
     location.reload();
 };
 
@@ -210,10 +206,10 @@ const resetSystemTheme = () => {
 .theme-item {
     margin-right: 10px;
     margin-top: 10px;
-    padding: 30px;
-    width: 70px;
+    padding: 10px;
+    width: 100px;
     border: 1px solid #dcdfe6;
-    border-radius: 10px;
+    border-radius: 2px;
     text-align: center;
 }
 

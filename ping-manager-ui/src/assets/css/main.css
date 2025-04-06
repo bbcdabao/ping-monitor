@@ -40,35 +40,8 @@ i {
 	align-items: center;
 }
 
-:root {
-	--header-height: 40px;
-
-	--header-bg-color: #000000;
-	--header-text-color: #ffffff;
-
-	--sidebar-bg-color: #000000;
-    --sidebar-text-color: #ffffff;
-	--sidebar-index-bg-color: #333333;
-	--sidebar-index-text-color: #ffffff;
-
-    --cardbody-color: #00ff00;
-    --cardbody-bg-color: #000000;
-
-    --body-bg-color: #0000ff;
-
-    --login-text-color: #ffffff;
-    --login-bg-color: #000000;
-
-	--shadow-color: #ff0000;
-
-	--nodept-bg-color: #ffffff;
-	--nodept-text-color: #000000;
-    
-	--active-color: var(--el-color-primary);
-}
-
 .el-form .el-form-item__label {
-	color: var(--sidebar-text-color);
+	color: var(--sidebar-color);
 }
 
 .this-page {
@@ -86,12 +59,9 @@ i {
 	display: flex;
     justify-content: flex-start;
 	align-items: center;
-	color: var(--header-text-color);
-	background: var(--header-bg-color);
-}
-
-.el-card__header > :first-child {
-    margin-left: 20px;
+	color: var(--cardbody-color);
+	background: var(--cardbody-bg-color);
+    border-bottom: 1px solid var(--cardbody-bd-color) !important;
 }
 
 .el-card__body {
@@ -99,12 +69,25 @@ i {
 	background: var(--cardbody-bg-color);
 }
 
+.el-card__body:hover {
+	color: var(--cardbody-color);
+	background: var(--cardbody-bg-color);
+}
+
+.el-card__header > :first-child {
+    margin-left: 20px;
+}
+
+.el-card {
+    border: 1px solid var(--cardbody-bd-color) !important;
+}
+
 .el-card:hover .el-card__header {
     background-image: url(@/assets/img/hand-point.png);
-    background-size: 20px;
+    background-size: 22px;
     background-position: left;
     background-repeat: no-repeat;
-    animation: moveleftact 0.5s linear infinite;
+    animation: moveleftact 0.3s linear infinite;
     animation-iteration-count: 1;
 }
 
@@ -120,13 +103,13 @@ i {
     }
 }
 
-.el-card__body:hover {
-	color: var(--sidebar-index-text-color);
-    background: var(--sidebar-index-bg-color);
+.el-menu--popup {
+    background-color: var(--sidebar-bg-color) !important;
+    border: 1px solid var(--sidebar-bd-color) !important;
 }
 
 .custom-shadow:hover {
-    box-shadow: 0 0px 10px var(--shadow-color) !important;
+    box-shadow: 0 0px 10px #000000 !important;
 }
 
 #nprogress .bar { 
@@ -140,4 +123,8 @@ i {
 #nprogress .spinner-icon {
     border-top-color: var(--shadow-color) !important;
     border-left-color: var(--shadow-color) !important;
+}
+
+:root {
+	--header-height: 40px;
 }

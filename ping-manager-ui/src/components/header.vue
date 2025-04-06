@@ -11,7 +11,7 @@
                 </el-icon>
             </div>
             <div class="collapse-img" v-if="!sidebar.collapse">
-                <img :src="cmdTerminal" alt="CMD.terminal" class="cmd-terminal">
+                <img :src="cmdTerminal" alt="CMD.terminal" class="ping-monitor">
             </div>
         </div>
         <div>{{ header.titlesp }}</div>
@@ -99,9 +99,9 @@ const setFullScreen = () => {
     box-sizing: border-box;
     width: 100%;
     height: var(--header-height);
-    color: var(--header-text-color);
+    color: var(--header-color);
     background-color: var(--header-bg-color);
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--header-bd-color);
 }
 .header-left {
     display: flex;
@@ -134,9 +134,9 @@ const setFullScreen = () => {
         opacity: 1;
     }
 }
-.cmd-terminal {
-    height: 40px;
-    margin-left: 30px;
+.ping-monitor {
+    height: 38px;
+    margin-left: 0px;
     animation: slideInRight 0.3s ease-in-out; 
 }
 @keyframes slideInRight {
@@ -166,7 +166,7 @@ const setFullScreen = () => {
     cursor: pointer;
     display: flex;
     align-items: center;
-    color: var(--header-text-color);
+    color: var(--header-color);
     margin: 0 5px;
     font-size: 20px;
 }
@@ -174,7 +174,7 @@ const setFullScreen = () => {
     margin: 0 10px 0 20px;
 }
 .el-dropdown-link {
-    color: var(--header-text-color);
+    color: var(--header-color);
     cursor: pointer;
     display: flex;
     align-items: center;

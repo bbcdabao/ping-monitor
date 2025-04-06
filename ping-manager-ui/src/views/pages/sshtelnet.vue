@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
     font-weight: bold;
     margin-bottom: 20px;
     text-align: center;
-    color: var(--sidebar-text-color);
+    color: var(--sidebar-color);
 }
 .terminal {
     width: 100%;

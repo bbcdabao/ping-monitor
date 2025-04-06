@@ -45,7 +45,7 @@ watch(idxLanguage, (newVal, oldVal) => {
 </script>
 <style scoped>
 .el-dropdown-link {
-    color: var(--header-text-color);
+    color: var(--header-color);
     cursor: pointer;
     display: flex;
     align-items: center;

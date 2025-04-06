@@ -1,11 +1,9 @@
 <template>
-    <div class="sidebar">
+    <div class="this-page">
         <el-menu
             class="sidebar-el-menu"
             :default-active="onRoutes"
             :collapse="sidebar.collapse"
-            :background-color="themeStore.sidebarBgColor"
-            :text-color="themeStore.sidebarTextColor"
             :default-openeds="['1']"
             router
         >
@@ -19,7 +17,7 @@
                 <el-sub-menu v-else :index="String(index)">
                     <template #title>
                         <el-icon><Menu /></el-icon>
-                        <span>{{ menu.itemname }}</span>
+                        <span>{{ menu.itemtitle }}</span>
                     </template>
                     <el-menu-item
                         v-for="(child, subIndex) in menu.children"
@@ -29,7 +27,7 @@
                         <el-icon v-if="child.itemicon">
                             <component :is="icons[child.itemicon]" />
                         </el-icon>
-                        <span>{{ child.itemname }}</span>
+                        <span>{{ child.itemtitle }}</span>
                     </el-menu-item>
                 </el-sub-menu>
             </template>
@@ -55,37 +53,44 @@ const themeStore = useThemeStore();
 
 </script>
 <style scoped>
-.sidebar {
-    display: block;
-    position: absolute;
-    left: 0;
-    top: var(--header-height);
-    bottom: 0;
-    overflow-y: scroll;
-}
-.sidebar::-webkit-scrollbar {
-    width: 0;
-}
 .sidebar-el-menu:not(.el-menu--collapse) {
-    width: 249px;
+    width: 250px;
+    border-top: 1px solid var(--sidebar-bd-color);
+    border-right: 1px solid var(--sidebar-bd-color);
 }
 .sidebar-el-menu {
     min-height: 100%;
     background-color: var(--sidebar-bg-color);
+    border-top: 1px solid var(--sidebar-bd-color);
+    border-right: 1px solid var(--sidebar-bd-color);
 }
-.sidebar-el-menu .el-menu-item.is-active {
-  font-size: 14px;
-  background-color: var(--sidebar-index-bg-color) !important;
-  color: var(--sidebar-index-text-color) !important;
-  font-weight: bold !important;
+.el-menu-item.is-active {
+    font-size: 14px;
+    color: var(--sidebar-index-color) !important;
+    background-color: var(--sidebar-index-bg-color) !important;
+    font-weight: bold !important;
 }
-.el-menu-item [class^=el-icon] {
-    font-size: 22px;
-    margin-right: 5px;
+.el-menu-item:hover {
+    font-size: 14px;
+    color: var(--sidebar-index-color) !important;
+    background-color: var(--sidebar-index-bg-color) !important;
 }
-.el-sub-menu .el-icon {
-    font-size: 22px;
-    margin-right: 5px;
+.el-menu-item {
+    font-size: 14px;
+    color: var(--sidebar-color) !important;
+    background-color: var(--sidebar-bg-color) !important;
+}
+.el-sub-menu {
+    font-size: 14px;
+    color: var(--sidebar-color) !important;
+    background-color: var(--sidebar-bg-color) !important;
+}
+:deep(.el-sub-menu__title) {
+    color: var(--sidebar-color);
+}
+:deep(.el-sub-menu__title:hover) {
+    color: var(--sidebar-color);
+    background-color: var(--sidebar-bg-color) !important;
 }
 
 </style>

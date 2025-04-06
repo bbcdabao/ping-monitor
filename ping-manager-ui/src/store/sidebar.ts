@@ -15,40 +15,39 @@ export const useSidebarStore = defineStore('sidebar', {
 			collapse: false,
             sidemenu: processMenu([
                 {
-                    itemname: 'overview',
+                    itemname: 'pingallview',
                     itemicon: 'Histogram',
                     route: '/manager'
                 },
                 {
                     itemname: 'template',
-                    itemicon: 'Tickets',
+                    itemicon: 'SetUp',
                     route: '/theme'
                 },
                 {
-                    itemname: 'MainTest3',
-                    itemicon: 'el-icon-lx-full',
-                    route: '/main3'
+                    itemname: 'fortasks',
+                    itemicon: 'Tickets',
+                    route: '/aaaa1'
                 },
                 {
-                    itemname: 'MainTest4',
-                    itemicon: 'el-icon-lx-full',
-                    children: [
-                        {
-                            itemname: 'Child1',
-                            itemicon: 'HomeFilled',
-                            route: '/child1'
-                        },
-                        {
-                            itemname: 'Child2',
-                            itemicon: 'el-icon-lx-full',
-                            route: '/child2'
-                        },
-                        {
-                            itemname: 'Child3',
-                            itemicon: 'el-icon-lx-full',
-                            route: '/child3'
-                        }
-                    ]
+                    itemname: 'robotmonitor',
+                    itemicon: 'Notification',
+                    route: '/aaaa2'
+                },
+                {
+                    itemname: 'robotaskinfo',
+                    itemicon: 'Coordinate',
+                    route: '/aaaa3'
+                },
+                {
+                    itemname: 'roboworkinfo',
+                    itemicon: 'Cpu',
+                    route: '/aaaa4'
+                },
+                {
+                    itemname: 'sysconfig',
+                    itemicon: 'Tools',
+                    route: '/aaaa5'
                 }
             ])
 		};
