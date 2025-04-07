@@ -1,49 +1,109 @@
 <template>
-    <div class="this-page">
-        <div style="padding: 10px;">
-            <el-card class="mgb20 custom-shadow" shadow="hover">
-                <template #header>
-                    <div class="content-title">{{ $t('sysTheme') }}</div>
-                </template>
-                <div class="theme-list mgb20">
-                    <div
-                        class="theme-item"
-                        @click="setSystemTheme(value)"
-                        v-for="[key, value] in Object.entries(systemmap)"
-                    >
-                        <div
-                            :style="{
-                                width: '100%',
-                                height: '10px',
-                                backgroundColor: value.headerBgColor,
-                                border: '1px solid ' + value.headerBdColor
-                            }"
-                        />
-                        <div
-                            :style="{
-                                width: '100%',
-                                height: '60px',
-                                backgroundColor: value.bodyBgColor,
-                                border: '1px solid ' + value.bodyBdColor
-                            }"
-                        >
-                            <div
-                                :style="{
-                                    width: '30%',
-                                    height: '59px',
-                                    backgroundColor: value.sidebarBgColor,
-                                    border: '1px solid ' + value.sidebarBdColor
-                                }"
-                            />
-                        </div>
-                    </div>
+  <div class="this-page">
+    <div style="padding: 10px;">
+      <el-card class="custom-shadow mgb20" shadow="hover">
+        <template #header>
+          <div class="content-title">{{ $t('sysTheme') }}</div>
+        </template>
+        <div class="theme-list mgb20">
+          <div
+            class="theme-item"
+            v-for="[key, value] in Object.entries(systemmap)"
+            :key="key"
+            @click="setSystemTheme(value)"
+          >
+            <div
+              :style="{
+                width: '100%',
+                height: '12px',
+                backgroundColor: value.headerBgColor,
+                borderLeft: '0px solid ' + value.headerBdColor,
+                borderRight: '0px solid ' + value.headerBdColor,
+                borderTop: '1px solid ' + value.headerBdColor,
+                borderBottom: '1px solid ' + value.headerBdColor
+              }"
+            />
+            <div
+              :style="{
+                width: '100%',
+                height: '120px',
+                border: '0',
+                backgroundColor: value.bodyBgColor,
+                display: 'flex',
+                justifyContent: 'space-between'
+              }"
+            >
+              <div
+                :style="{
+                  width: '30%',
+                  height: '119px',
+                  backgroundColor: value.sidebarBgColor,
+                  borderLeft: '0px solid ' + value.sidebarBdColor,
+                  borderRight: '1px solid ' + value.sidebarBdColor,
+                  borderTop: '1px solid ' + value.sidebarBdColor,
+                  borderBottom: '0px solid ' + value.sidebarBdColor
+                }"
+              >
+                <div
+                  :style="{
+                    width: '100%',
+                    height: '10%',
+                    backgroundColor: value.sidebarBgColor
+                  }"
+                />
+                <div
+                  :style="{
+                    width: '100%',
+                    height: '10%',
+                    backgroundColor: value.sidebarBgColor
+                  }"
+                />
+                <div
+                  :style="{
+                    width: '100%',
+                    height: '10%',
+                    color: value.sidebarIndexColor,
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    backgroundColor: value.sidebarIndexBgColor
+                  }"
+                >
+                  XXXXX
                 </div>
-                <div class="flex-center">
-                    <el-button type="primary" @click="resetSystemTheme">{{ $t('resetTheme') }}</el-button>
-                </div>
-            </el-card>
+              </div>
+              <div
+                :style="{
+                  width: '65%',
+                  height: '70%',
+                  margin: '6px',
+                  backgroundColor: value.cardbodyBgColor,
+                  borderRadius: '4px',
+                  border: '1px solid ' + value.cardbodyBdColor
+                }"
+              >
+              <div
+                style='fontSize: 9px; textAlign: left; marginLeft: 5px;'
+              >
+                xxxxxx
+              </div>
+              <div
+                :style="{
+                  width: '100%',
+                  height: '1px',
+                  backgroundColor: value.cardbodyBdColor,
+                  marginTop: '1px'
+                }"
+              />
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="flex-center">
+          <el-button type="primary" @click="resetSystemTheme">{{ $t('resetTheme') }}</el-button>
+        </div>
+      </el-card>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -207,7 +267,7 @@ const resetSystemTheme = () => {
     margin-right: 10px;
     margin-top: 10px;
     padding: 10px;
-    width: 100px;
+    width: 260px;
     border: 1px solid #dcdfe6;
     border-radius: 2px;
     text-align: center;
