@@ -1,29 +1,39 @@
 export interface ThemeConfig {
-    primary: string;
-    success: string;
-    warning: string;
-    danger: string;
-    info: string;
+  primary: string;
+  success: string;
+  warning: string;
+  danger: string;
+  info: string;
 
-    headerBgColor: string;
-    headerBdColor: string;
-    headerColor: string;
+  nprogressBarColor: string;
+  nprogressSpinnerTopColor: string;
+  nprogressSpinnerleftColor: string;
 
-    bodyBgColor: string;
-    bodyBdColor: string;
-    bodyColor: string;
+  headerColor: string;
+  headerBgColor: string;
 
-    sidebarBgColor: string;
-    sidebarBdColor: string;
-    sidebarColor: string;
+  bodyColor: string;
+  bodyBgColor: string;
+  bodyLineColor: string;
 
-    sidebarIndexBgColor: string;
-    sidebarIndexBdColor: string;
-    sidebarIndexColor: string;
+  scrollbarBgColor: string;
+  scrollbarIndexBgColor: string;
+  scrollbarIndexBdColor: string;
+  scrollbarIndexBgHoverColor: string;
 
-    cardbodyBgColor: string;
-    cardbodyBdColor: string;
-    cardbodyColor: string;
+  sidebarColor: string;
+  sidebarBgColor: string;
 
-    customhadowColor: string;
+  sidebarIndexColor: string;
+  sidebarIndexBgColor: string;
+  sidebarIndexBeforeColor: string;
+
+  cardbodyColor: string;
+  cardbodyBdColor: string;
+  cardbodyBgColor: string;
+
+  formLabelColor: string;
+  formLabelBgColor: string;
+
+  customhadowColor: string;
 }

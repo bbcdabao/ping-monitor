@@ -1,6 +1,6 @@
 <template>
-    <div class="this-page">
-        <div style="padding: 10px;">
+    <div>
+        <div>
             <el-card class="mgb20 custom-shadow" shadow="hover">
                 <template #header>
                     <div class="content-title">{{ $t('managerWelcome') }}</div>
@@ -24,7 +24,7 @@
                 </div>
             </el-card>
         </div>
-        <div style="padding: 10px;">
+        <div>
             <el-card class="mgb20 custom-shadow" shadow="hover">
                 <template #header>
                     <div class="content-title">{{ $t('terminalManagement') }}</div>
