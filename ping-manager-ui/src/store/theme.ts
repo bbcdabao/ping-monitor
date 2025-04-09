@@ -14,10 +14,10 @@ const dfltaThemeConfig: ThemeConfig = {
 
   headerColor: '#ffffff',
   headerBgColor: '#000000',
+  headerLineColor: '#4d4d4d',
 
   bodyColor: '#ffffff',
   bodyBgColor: '#4d4d4d',
-  bodyLineColor: '#4d4d4d',
 
   scrollbarBgColor: '#000000',
   scrollbarIndexBgColor: '#4d4d4d',
@@ -34,9 +34,6 @@ const dfltaThemeConfig: ThemeConfig = {
   cardbodyColor: '#FFFFFF',
   cardbodyBdColor: '#4d4d4d',
   cardbodyBgColor: '#000000',
-
-  formLabelColor: '#ffffff',
-  formLabelBgColor: '#4d4d4d',
 
   customhadowColor: '#000000'
 };

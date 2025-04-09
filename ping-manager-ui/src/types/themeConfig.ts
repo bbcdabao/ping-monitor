@@ -11,10 +11,10 @@ export interface ThemeConfig {
 
   headerColor: string;
   headerBgColor: string;
+  headerLineColor: string;
 
   bodyColor: string;
   bodyBgColor: string;
-  bodyLineColor: string;
 
   scrollbarBgColor: string;
   scrollbarIndexBgColor: string;
@@ -32,8 +32,9 @@ export interface ThemeConfig {
   cardbodyBdColor: string;
   cardbodyBgColor: string;
 
-  formLabelColor: string;
-  formLabelBgColor: string;
+  elementColor: string;
+  elementBgColor: string;
+  elementBdColor: string;
 
   customhadowColor: string;
 }

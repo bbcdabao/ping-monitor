@@ -1,7 +1,7 @@
 <template>
-  <div class="this-page">
+  <div class="sidebar-page">
     <el-menu
-      class="this-menu"
+      class="sidebar-page-menu"
       :default-active="onRoutes"
       :collapse="sidebar.collapse"
       :default-openeds="['1']"
@@ -16,7 +16,9 @@
         </el-menu-item>
         <el-sub-menu v-else :index="String(index)">
           <template #title>
-            <el-icon><Menu /></el-icon>
+            <el-icon>
+              <Menu />
+            </el-icon>
             <span>{{ menu.itemtitle }}</span>
           </template>
           <el-menu-item
@@ -34,13 +36,11 @@
     </el-menu>
   </div>
 </template>
-
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
-import { useThemeStore } from '@/store/theme';
-import { useRoute } from 'vue-router';
 import { ElMenu } from 'element-plus';
+import { useRoute } from 'vue-router';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
 const route = useRoute();
@@ -50,17 +50,17 @@ const onRoutes = computed(() => {
 
 const icons = ElementPlusIconsVue;
 const sidebar = useSidebarStore();
-const themeStore = useThemeStore();
 </script>
-
 <style scoped>
-.this-menu:not(.el-menu--collapse) {
-  width: 250px;
-  border-right: 1px solid var(--body-line-color);
+.sidebar-page {
+  width: auto;
+  height: 100%;
 }
-.this-menu {
+.sidebar-page-menu:not(.el-menu--collapse) {
+  width: auto;
+}
+.sidebar-page-menu {
   min-height: 100%;
-  border-right: 1px solid var(--body-line-color);
   background-color: var(--sidebar-bg-color);
 }
 .el-menu-item.is-active {
@@ -72,12 +72,12 @@ const themeStore = useThemeStore();
 .el-menu-item.is-active::before {
   content: '';
   position: absolute;
-  left: 0;
   top: 0;
-  width: 4px;
+  left: 0;
+  width: 8px;
   height: 100%;
   background-color: var(--sidebar-index-before-color);
-  border-radius: 0 2px 2px 0;
+  border-radius: 0 8px 8px 0;
 }
 .el-menu-item {
   font-size: 14px;

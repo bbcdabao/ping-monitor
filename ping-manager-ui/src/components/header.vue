@@ -11,7 +11,7 @@
         </el-icon>
       </div>
       <div class="collapse-img" v-if="!sidebar.collapse">
-        <img :src="cmdTerminal" alt="CMD.terminal" class="ping-monitor">
+        <img :src="pingMonitor" alt="PingMonitor" class="ping-monitor">
       </div>
     </div>
     <div>{{ header.titlesp }}</div>
@@ -24,11 +24,12 @@
         </div>
         <div class="btn-icon" @click="setFullScreen">
           <el-tooltip effect="dark" :content="$t('fullScreen')" placement="bottom">
-            <i class="el-icon-lx-full"></i>
+            <i v-if="isFullScreen" class="el-icon-lx-exit"></i>
+            <i v-else class="el-icon-lx-full"></i>
           </el-tooltip>
         </div>
         <!-- Language selection -->
-        <vLanguage style="margin-top: 6px;"/>
+        <vLanguage style="margin-top: 6px;" />
         <!-- User avatar -->
         <el-avatar class="user-avator" :size="32" :src="imgurl" />
         <!-- Username drop-down menu -->
@@ -41,7 +42,9 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item divided command="loginout">{{ $t('exitLogin') }}</el-dropdown-item>
+              <el-dropdown-item divided command="loginout">
+                {{ $t('exitLogin') }}
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -49,15 +52,14 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { useHeaderStore } from '@/store/header';
 import { useRouter } from 'vue-router';
 import vLanguage from '@/components/language.vue';
 import imgurl from '@/assets/img/user-logo.jpg';
-import cmdTerminal from '@/assets/img/pm-logo-title.png';
+import pingMonitor from '@/assets/img/pm-logo-title.png';
 
 const sidebar = useSidebarStore();
 const header = useHeaderStore();
@@ -65,34 +67,47 @@ const username: string | null = localStorage.getItem('vuems_name');
 
 const collapseChage = () => {
   sidebar.handleCollapse();
-}
+};
 
 onMounted(() => {
   if (document.body.clientWidth < 600) {
     collapseChage();
   }
-})
+});
 
 const router = useRouter();
 const handleCommand = (command: string) => {
-  if (command == 'loginout') {
+  if (command === 'loginout') {
     localStorage.removeItem('vuems_name');
     router.push('/login');
   }
-}
+};
 
-/**
- * Set full screen
- */
+const isFullScreen = ref(false);
+
+const updateFullScreenStatus = () => {
+  isFullScreen.value = !!document.fullscreenElement;
+};
+
+// 添加事件监听
+onMounted(() => {
+  document.addEventListener('fullscreenchange', updateFullScreenStatus);
+  updateFullScreenStatus(); // 初始化
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('fullscreenchange', updateFullScreenStatus);
+});
+
 const setFullScreen = () => {
   if (document.fullscreenElement) {
     document.exitFullscreen();
   } else {
     document.body.requestFullscreen.call(document.body);
   }
-}
-</script>
+};
 
+</script>
 <style scoped>
 .header {
   display: flex;
@@ -102,6 +117,7 @@ const setFullScreen = () => {
   width: 100%;
   height: var(--header-height);
   color: var(--header-color);
+  border-bottom: 1px solid var(--header-line-color);
   background-color: var(--header-bg-color);
 }
 .header-left {
@@ -138,7 +154,7 @@ const setFullScreen = () => {
 .ping-monitor {
   height: 32px;
   margin-left: 0px;
-  animation: slideInRight 0.3s ease-in-out; 
+  animation: slideInRight 0.3s ease-in-out;
 }
 @keyframes slideInRight {
   from {
