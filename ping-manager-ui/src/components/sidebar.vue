@@ -10,7 +10,7 @@
       <template v-for="(menu, index) in sidebar.sidemenu" :key="index">
         <el-menu-item v-if="menu.route" :index="menu.route">
           <el-icon v-if="menu.itemicon">
-            <component :is="icons[menu.itemicon]" />
+            <component :is="menu.itemicon" />
           </el-icon>
           <span>{{ menu.itemtitle }}</span>
         </el-menu-item>
@@ -27,7 +27,7 @@
             :index="child.route"
           >
             <el-icon v-if="child.itemicon">
-              <component :is="icons[child.itemicon]" />
+              <component :is="child.itemicon" />
             </el-icon>
             <span>{{ child.itemtitle }}</span>
           </el-menu-item>
@@ -37,23 +37,38 @@
   </div>
 </template>
 <script setup lang="ts">
+
+/**
+ * Copyright 2025 bbcdabao Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { ElMenu } from 'element-plus';
 import { useRoute } from 'vue-router';
-import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 
 const route = useRoute();
 const onRoutes = computed(() => {
   return route.path;
 });
 
-const icons = ElementPlusIconsVue;
 const sidebar = useSidebarStore();
 </script>
 <style scoped>
 .sidebar-page {
-  width: auto;
+  width: calc(var(--sidebar-width) + 1px);;
   height: 100%;
 }
 .sidebar-page-menu:not(.el-menu--collapse) {

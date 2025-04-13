@@ -2,7 +2,7 @@
   <div class="header">
     <!-- Collapse button -->
     <div class="header-left">
-      <div class="collapse-btn" @click="collapseChage">
+      <div class="collapse-btn" @click="collapseChange">
         <el-icon v-if="sidebar.collapse">
           <Expand />
         </el-icon>
@@ -19,7 +19,7 @@
       <div class="header-user-con">
         <div class="btn-icon" @click="router.push('/theme')">
           <el-tooltip effect="dark" :content="$t('setTheme')" placement="bottom">
-            <i class="el-icon-lx-skin"></i>
+            <Brush />
           </el-tooltip>
         </div>
         <div class="btn-icon" @click="setFullScreen">
@@ -31,7 +31,7 @@
         <!-- Language selection -->
         <vLanguage style="margin-top: 6px;" />
         <!-- User avatar -->
-        <el-avatar class="user-avator" :size="32" :src="imgurl" />
+        <el-avatar class="user-avator" :size="32" :src="avatarImage" />
         <!-- Username drop-down menu -->
         <el-dropdown trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
@@ -53,27 +53,38 @@
   </div>
 </template>
 <script setup lang="ts">
+
+/**
+ * Copyright 2025 bbcdabao Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { useHeaderStore } from '@/store/header';
 import { useRouter } from 'vue-router';
 import vLanguage from '@/components/language.vue';
-import imgurl from '@/assets/img/user-logo.jpg';
+import avatarImage from '@/assets/img/user-logo.jpg';
 import pingMonitor from '@/assets/img/pm-logo-title.png';
 
 const sidebar = useSidebarStore();
 const header = useHeaderStore();
 const username: string | null = localStorage.getItem('vuems_name');
 
-const collapseChage = () => {
+const collapseChange = () => {
   sidebar.handleCollapse();
 };
-
-onMounted(() => {
-  if (document.body.clientWidth < 600) {
-    collapseChage();
-  }
-});
 
 const router = useRouter();
 const handleCommand = (command: string) => {
@@ -89,10 +100,12 @@ const updateFullScreenStatus = () => {
   isFullScreen.value = !!document.fullscreenElement;
 };
 
-// 添加事件监听
 onMounted(() => {
+  if (document.body.clientWidth < 600) {
+    collapseChange();
+  }
   document.addEventListener('fullscreenchange', updateFullScreenStatus);
-  updateFullScreenStatus(); // 初始化
+  updateFullScreenStatus();
 });
 
 onBeforeUnmount(() => {
@@ -103,7 +116,7 @@ const setFullScreen = () => {
   if (document.fullscreenElement) {
     document.exitFullscreen();
   } else {
-    document.body.requestFullscreen.call(document.body);
+    document.documentElement.requestFullscreen();
   }
 };
 
@@ -167,7 +180,8 @@ const setFullScreen = () => {
   }
 }
 .header-right {
-  float: right;
+  display: flex;
+  justify-content: flex-end;
   padding-right: 50px;
 }
 .header-user-con {

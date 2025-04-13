@@ -10,6 +10,7 @@
           @click="setSystemTheme(value)"
           v-for="[key, value] in Object.entries(systemmap)"
           :key="key"
+          :style="{ backgroundColor: invertColor(value.headerBgColor) }"
         >
           <div
             :style="{
@@ -95,14 +96,10 @@
           </div>
         </div>
       </div>
-      <div class="flex-center">
-        <el-button type="primary" @click="resetSystemTheme">{{ $t('resetTheme') }}</el-button>
-      </div>
     </el-card>
   </div>
 </template>
 <script setup lang="ts">
-
 import { reactive } from 'vue';
 import { useThemeStore } from '@/store/theme';
 import { ThemeConfig } from '@/types/themeConfig';
@@ -111,54 +108,41 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 const themeStore = useThemeStore();
 
-const color = reactive({
-  primary: localStorage.getItem('theme-primary') || '#409eff',
-  success: localStorage.getItem('theme-success') || '#67c23a',
-  warning: localStorage.getItem('theme-warning') || '#e6a23c',
-  danger: localStorage.getItem('theme-danger') || '#f56c6c',
-  info: localStorage.getItem('theme-info') || '#909399',
-  headerBgColor: themeStore.themeConfig.headerBgColor,
-  headerTextColor: themeStore.themeConfig.headerColor
-});
-
-const themes = [
-  { name: 'primary', color: themeStore.themeConfig.primary || color.primary },
-  { name: 'success', color: themeStore.themeConfig.success || color.success },
-  { name: 'warning', color: themeStore.themeConfig.warning || color.warning },
-  { name: 'danger', color: themeStore.themeConfig.danger || color.danger },
-  { name: 'info', color: themeStore.themeConfig.info || color.info }
-];
-
-const changeColor = (name: string) => {
-  // themeStore.setPropertyColor(color[name], name)
+const setSystemTheme = (data: any) => {
+  console.info('theme:', data);
+  themeStore.saveThemeConfig(data);
 };
 
-const resetTheme = () => {
-  // themeStore.resetTheme()
-};
+const invertColor = (hex: string) =>{
+  hex = hex.replace(/^#/, '');
+  if (hex.length === 3) {
+    hex = hex.split('').map(char => char + char).join('');
+  }
+  const r = (255 - parseInt(hex.substring(0, 2), 16)).toString(16).padStart(2, '0');
+  const g = (255 - parseInt(hex.substring(2, 4), 16)).toString(16).padStart(2, '0');
+  const b = (255 - parseInt(hex.substring(4, 6), 16)).toString(16).padStart(2, '0');
+  return `#${r}${g}${b}`;
+}
 
-const getInverseColor = (color: string) => {
-  color = color.substring(1);
-  const r = parseInt(color.substring(0, 2), 16);
-  const g = parseInt(color.substring(2, 4), 16);
-  const b = parseInt(color.substring(4, 6), 16);
-  const inverseR = (255 - r).toString(16).padStart(2, '0');
-  const inverseG = (255 - g).toString(16).padStart(2, '0');
-  const inverseB = (255 - b).toString(16).padStart(2, '0');
-  return `#${inverseR}${inverseG}${inverseB}`;
-};
-
-const getGradientBackground = (color1: string, color2: string) => {
-  return `linear-gradient(to bottom, ${color1} 0%, ${color1} 30%, ${color2} 0%, ${color2} 70%)`;
+const getHighContrastColor = (hex: string): string => {
+  hex = hex.replace(/^#/, '');
+  if (hex.length === 3) {
+    hex = hex.split('').map(char => char + char).join('');
+  }
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance > 186 ? '#000000' : '#ffffff';
 };
 
 const systemmap: Record<string, ThemeConfig> = {
   '1': {
-    primary: '#ff0000',
-    success: '#ff0000',
-    warning: '#ff0000',
-    danger: '#ff0000"',
-    info: '#ff0000',
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
     nprogressBarColor: '#4d4d4d',
     nprogressSpinnerTopColor: '#4d4d4d',
     nprogressSpinnerleftColor: '#4d4d4d',
@@ -176,7 +160,7 @@ const systemmap: Record<string, ThemeConfig> = {
     sidebarIndexColor: '#ffffff',
     sidebarIndexBgColor: '#4d4d4d',
     sidebarIndexBeforeColor: '#336699',
-    cardbodyColor: '#FFFFFF',
+    cardbodyColor: '#ffffff',
     cardbodyBdColor: '#4d4d4d',
     cardbodyBgColor: '#000000',
     elementColor: '#ffffff',
@@ -185,11 +169,11 @@ const systemmap: Record<string, ThemeConfig> = {
     customhadowColor: '#000000'
   },
   '2': {
-    primary: '#ff3d00',
-    success: '#00e676',
-    warning: '#ffc400',
-    danger: '#f44336',
-    info: '#29b6f6',
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
     nprogressBarColor: '#ff3d00',
     nprogressSpinnerTopColor: '#ffc400',
     nprogressSpinnerleftColor: '#29b6f6',
@@ -216,42 +200,42 @@ const systemmap: Record<string, ThemeConfig> = {
     customhadowColor: '#ff3d00'
   },
   '3': {
-    primary: '#ff0000',
-    success: '#ff0000',
-    warning: '#ff0000',
-    danger: '#ff0000"',
-    info: '#ff0000',
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
     nprogressBarColor: '#4d4d4d',
     nprogressSpinnerTopColor: '#4d4d4d',
     nprogressSpinnerleftColor: '#4d4d4d',
     headerColor: '#ffffff',
-    headerBgColor: '#0099CC',
-    headerLineColor: '#99CCFF',
+    headerBgColor: '#0099cc',
+    headerLineColor: '#99ccff',
     bodyColor: '#000000',
-    bodyBgColor: '#99CCFF',
-    scrollbarBgColor: '#0099CC',
-    scrollbarIndexBgColor: '#99CCFF',
+    bodyBgColor: '#99ccff',
+    scrollbarBgColor: '#0099cc',
+    scrollbarIndexBgColor: '#99ccff',
     scrollbarIndexBdColor: '#000000',
     scrollbarIndexBgHoverColor: '#ffffff',
     sidebarColor: '#ffffff',
     sidebarBgColor: '#0099CC',
     sidebarIndexColor: '#ffffff',
-    sidebarIndexBgColor: '#99CCFF',
+    sidebarIndexBgColor: '#99ccff',
     sidebarIndexBeforeColor: '#006633',
     cardbodyColor: '#ffffff',
-    cardbodyBdColor: '#99CCFF',
-    cardbodyBgColor: '#0099CC',
+    cardbodyBdColor: '#99ccff',
+    cardbodyBgColor: '#0099cc',
     elementColor: '#ffffff',
     elementBgColor: '#ffffff',
     elementBdColor: '#ffffff',
     customhadowColor: '#000000'
   },
   '4': {
-    primary: '#ff5722',
-    success: '#ff9800',
-    warning: '#ffc107',
-    danger: '#d84315',
-    info: '#ff7043',
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
     nprogressBarColor: '#ff5722',
     nprogressSpinnerTopColor: '#ffc107',
     nprogressSpinnerleftColor: '#ff8f00',
@@ -278,11 +262,11 @@ const systemmap: Record<string, ThemeConfig> = {
     customhadowColor: '#ff8f00'
   },
   '5': {
-    primary: '#ff0000',
-    success: '#ff0000',
-    warning: '#ff0000',
-    danger: '#ff0000"',
-    info: '#ff0000',
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
     nprogressBarColor: '#4d4d4d',
     nprogressSpinnerTopColor: '#4d4d4d',
     nprogressSpinnerleftColor: '#4d4d4d',
@@ -292,7 +276,7 @@ const systemmap: Record<string, ThemeConfig> = {
     bodyColor: '#ffffff',
     bodyBgColor: '#003300',
     scrollbarBgColor: '#336666',
-    scrollbarIndexBgColor: '#336666',
+    scrollbarIndexBgColor: '#003300',
     scrollbarIndexBdColor: '#336666',
     scrollbarIndexBgHoverColor: '#336666',
     sidebarColor: '#ffffff',
@@ -309,11 +293,11 @@ const systemmap: Record<string, ThemeConfig> = {
     customhadowColor: '#993333'
   },
   '6': {
-    primary: '#00e5ff',
-    success: '#00ffaa',
-    warning: '#ffcc00',
-    danger: '#ff3d00',
-    info: '#7c4dff',
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
     nprogressBarColor: '#00e5ff',
     nprogressSpinnerTopColor: '#00e5ff',
     nprogressSpinnerleftColor: '#7c4dff',
@@ -340,137 +324,99 @@ const systemmap: Record<string, ThemeConfig> = {
     customhadowColor: '#00e5ff'
   },
   '7': {
-    primary: '#c11b17', // 明亮钢铁红
-  success: '#33ccff', // 反应堆蓝色，可作为成功高亮色
-  warning: '#f4c542', // 金色，用于强调
-  danger: '#9e1b1b', // 更沉稳的红色
-  info: '#ffffff', // 说明信息为白色高对比
-
-  nprogressBarColor: '#f4c542',
-  nprogressSpinnerTopColor: '#33ccff',
-  nprogressSpinnerleftColor: '#c11b17',
-
-  headerColor: '#ffffff',
-  headerBgColor: '#0d0d0d', // 炭黑
-  headerLineColor: '#2f2f2f',
-
-  bodyColor: '#ffffff',
-  bodyBgColor: '#1a1a1a', // 暗灰背景
-
-  scrollbarBgColor: '#2f2f2f',
-  scrollbarIndexBgColor: '#9e1b1b',
-  scrollbarIndexBdColor: '#f4c542',
-  scrollbarIndexBgHoverColor: '#ffffff',
-
-  sidebarColor: '#ffffff',
-  sidebarBgColor: '#0d0d0d',
-  sidebarIndexColor: '#f4c542',
-  sidebarIndexBgColor: '#9e1b1b',
-  sidebarIndexBeforeColor: '#33ccff',
-
-  cardbodyColor: '#ffffff',
-  cardbodyBdColor: '#2f2f2f',
-  cardbodyBgColor: '#1a1a1a',
-
-  elementColor: '#ffffff',
-  elementBgColor: '#9e1b1b',
-  elementBdColor: '#f4c542',
-
-  customhadowColor: '#000000'
-},
-'8': {
-  primary: '#8e44ad',
-  success: '#2ecc71',
-  warning: '#f39c12',
-  danger: '#e74c3c',
-  info: '#3498db',
-
-  nprogressBarColor: '#9b59b6',
-  nprogressSpinnerTopColor: '#ffffff',
-  nprogressSpinnerleftColor: '#8e44ad',
-
-  headerColor: '#ffffff',
-  headerBgColor: '#1a1a2e',
-  headerLineColor: '#6c3483',
-
-  bodyColor: '#ffffff',
-  bodyBgColor: '#1a1a2e',
-
-  scrollbarBgColor: '#2e2e3a',
-  scrollbarIndexBgColor: '#6c3483',
-  scrollbarIndexBdColor: '#8e44ad',
-  scrollbarIndexBgHoverColor: '#ffffff',
-
-  sidebarColor: '#ffffff',
-  sidebarBgColor: '#1a1a2e',
-  sidebarIndexColor: '#ffffff',
-  sidebarIndexBgColor: '#6c3483',
-  sidebarIndexBeforeColor: '#9b59b6',
-
-  cardbodyColor: '#ffffff',
-  cardbodyBdColor: '#6c3483',
-  cardbodyBgColor: '#2e2e3a',
-
-  elementColor: '#ffffff',
-  elementBgColor: '#8e44ad',
-  elementBdColor: '#9b59b6',
-
-  customhadowColor: '#000000',
-
-},
-'9': {
-  primary: '#f39c12', // 暖黄色，金色调的柔和亮色
-  success: '#2ecc71', // 清新绿色
-  warning: '#e67e22', // 橙色调
-  danger: '#e74c3c',  // 樱桃红
-  info: '#3498db',    // 清新的蓝色
-
-  nprogressBarColor: '#f1c40f',
-  nprogressSpinnerTopColor: '#ffffff',
-  nprogressSpinnerleftColor: '#f39c12',
-
-  headerColor: '#2c3e50', // 深灰色文字，提升可读性
-  headerBgColor: '#fdf2e9', // 浅米黄色背景
-  headerLineColor: '#f39c12', // 边框颜色
-
-  bodyColor: '#2c3e50', // 深灰色字体
-  bodyBgColor: '#fdf2e9', // 背景色
-
-  scrollbarBgColor: '#f7f1e1', // 浅米黄色
-  scrollbarIndexBgColor: '#f39c12',
-  scrollbarIndexBdColor: '#e67e22',
-  scrollbarIndexBgHoverColor: '#ffffff',
-
-  sidebarColor: '#2c3e50', // 深灰色文字
-  sidebarBgColor: '#fdf2e9',
-  sidebarIndexColor: '#f39c12',
-  sidebarIndexBgColor: '#e67e22',
-  sidebarIndexBeforeColor: '#2ecc71',
-
-  cardbodyColor: '#2c3e50', // 深灰色文字
-  cardbodyBdColor: '#f39c12',
-  cardbodyBgColor: '#f7f1e1', // 卡片背景
-
-  elementColor: '#ffffff',
-  elementBgColor: '#f39c12',
-  elementBdColor: '#f1c40f',
-
-  customhadowColor: '#000000'
-}
-
-
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
+    nprogressBarColor: '#f4c542',
+    nprogressSpinnerTopColor: '#33ccff',
+    nprogressSpinnerleftColor: '#c11b17',
+    headerColor: '#ffffff',
+    headerBgColor: '#0d0d0d',
+    headerLineColor: '#2f2f2f',
+    bodyColor: '#ffffff',
+    bodyBgColor: '#1a1a1a',
+    scrollbarBgColor: '#2f2f2f',
+    scrollbarIndexBgColor: '#9e1b1b',
+    scrollbarIndexBdColor: '#f4c542',
+    scrollbarIndexBgHoverColor: '#ffffff',
+    sidebarColor: '#ffffff',
+    sidebarBgColor: '#0d0d0d',
+    sidebarIndexColor: '#f4c542',
+    sidebarIndexBgColor: '#9e1b1b',
+    sidebarIndexBeforeColor: '#33ccff',
+    cardbodyColor: '#ffffff',
+    cardbodyBdColor: '#2f2f2f',
+    cardbodyBgColor: '#1a1a1a',
+    elementColor: '#ffffff',
+    elementBgColor: '#9e1b1b',
+    elementBdColor: '#f4c542',
+    customhadowColor: '#000000'
+  },
+  '8': {
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
+    nprogressBarColor: '#9b59b6',
+    nprogressSpinnerTopColor: '#ffffff',
+    nprogressSpinnerleftColor: '#8e44ad',
+    headerColor: '#ffffff',
+    headerBgColor: '#1a1a2e',
+    headerLineColor: '#6c3483',
+    bodyColor: '#ffffff',
+    bodyBgColor: '#1a1a2e',
+    scrollbarBgColor: '#2e2e3a',
+    scrollbarIndexBgColor: '#6c3483',
+    scrollbarIndexBdColor: '#8e44ad',
+    scrollbarIndexBgHoverColor: '#ffffff',
+    sidebarColor: '#ffffff',
+    sidebarBgColor: '#1a1a2e',
+    sidebarIndexColor: '#ffffff',
+    sidebarIndexBgColor: '#6c3483',
+    sidebarIndexBeforeColor: '#9b59b6',
+    cardbodyColor: '#ffffff',
+    cardbodyBdColor: '#6c3483',
+    cardbodyBgColor: '#2e2e3a',
+    elementColor: '#ffffff',
+    elementBgColor: '#8e44ad',
+    elementBdColor: '#9b59b6',
+    customhadowColor: '#000000'
+  },
+  '9': {
+    elColorPrimary: '#409EFF',
+    elColorSuccess: '#67C23A',
+    elColorWarning: '#E6A23C',
+    elColorDanger: '#F56C6C"',
+    elColorInfo: '#909399',
+    nprogressBarColor: '#f1c40f',
+    nprogressSpinnerTopColor: '#ffffff',
+    nprogressSpinnerleftColor: '#f39c12',
+    headerColor: '#2c3e50',
+    headerBgColor: '#fdf2e9',
+    headerLineColor: '#f39c12',
+    bodyColor: '#2c3e50',
+    bodyBgColor: '#fdf2e9',
+    scrollbarBgColor: '#f7f1e1',
+    scrollbarIndexBgColor: '#f39c12',
+    scrollbarIndexBdColor: '#e67e22',
+    scrollbarIndexBgHoverColor: '#ffffff',
+    sidebarColor: '#2c3e50',
+    sidebarBgColor: '#fdf2e9',
+    sidebarIndexColor: '#ffffff',
+    sidebarIndexBgColor: '#e67e22',
+    sidebarIndexBeforeColor: '#2ecc71',
+    cardbodyColor: '#2c3e50',
+    cardbodyBdColor: '#f39c12',
+    cardbodyBgColor: '#f7f1e1',
+    elementColor: '#ffffff',
+    elementBgColor: '#f39c12',
+    elementBdColor: '#f1c40f',
+    customhadowColor: '#000000'
+  }
 };
-
-const setSystemTheme = (data: any) => {
-  console.info('theme:', data);
-  themeStore.saveThemeConfig(data);
-};
-
-const resetSystemTheme = () => {
-  resetTheme();
-  location.reload();
-};
-
 </script>
 <style scoped>
 .theme-list {
@@ -487,7 +433,6 @@ const resetSystemTheme = () => {
   border-radius: 8px;
   text-align: center;
 }
-
 .theme-color {
   margin: 20px 0;
 }

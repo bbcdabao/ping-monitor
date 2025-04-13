@@ -1,9 +1,9 @@
 export interface ThemeConfig {
-  primary: string;
-  success: string;
-  warning: string;
-  danger: string;
-  info: string;
+  elColorPrimary: string;
+  elColorSuccess: string;
+  elColorWarning: string;
+  elColorDanger: string;
+  elColorInfo: string;
 
   nprogressBarColor: string;
   nprogressSpinnerTopColor: string;

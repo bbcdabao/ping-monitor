@@ -34,5 +34,14 @@
     "doubleFight": "Double fight",
     "clean": "Clean",
     "littlePink": "Little pink",
-    "bright": "Bright"
+    "bright": "Bright",
+    "pingallview": "Observation",
+    "taskmanager": "TaskManager",
+    "template": "TaskTemplate",
+    "taskinfo": "TaskList",
+    "taskrslt": "TaskResult",
+    "robotmanager": "SentinelManager",
+    "robotorganiza": "SentinelGroupInf",
+    "robotinstance": "SentinelInstance",
+    "thememanager": "ThemeManager"
 }
