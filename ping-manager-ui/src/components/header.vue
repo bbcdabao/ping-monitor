@@ -2,7 +2,7 @@
   <div class="header">
     <!-- Collapse button -->
     <div class="header-left">
-      <div class="collapse-btn" @click="collapseChange">
+      <div class="header-btn" @click="collapseChange">
         <el-icon v-if="sidebar.collapse">
           <Expand />
         </el-icon>
@@ -14,24 +14,34 @@
         <img :src="pingMonitor" alt="PingMonitor" class="ping-monitor">
       </div>
     </div>
+
     <div>{{ header.titlesp }}</div>
+
     <div class="header-right">
-      <div class="header-user-con">
-        <div class="btn-icon" @click="router.push('/theme')">
-          <el-tooltip effect="dark" :content="$t('setTheme')" placement="bottom">
+      <div class="header-btn">
+        <el-tooltip effect="dark" :content="$t('setTheme')" placement="bottom">
+          <el-icon @click="router.push('/theme')">
             <Brush />
-          </el-tooltip>
-        </div>
-        <div class="btn-icon" @click="setFullScreen">
-          <el-tooltip effect="dark" :content="$t('fullScreen')" placement="bottom">
-            <i v-if="isFullScreen" class="el-icon-lx-exit"></i>
-            <i v-else class="el-icon-lx-full"></i>
-          </el-tooltip>
-        </div>
+          </el-icon>
+        </el-tooltip>
+      </div>
+      <div class="header-btn">
+        <el-tooltip effect="dark" :content="$t('fullScreen')" placement="bottom">
+          <el-icon v-if="isFullScreen"  @click="setFullScreen">
+            <CloseBold />
+          </el-icon>
+          <el-icon v-else  @click="setFullScreen">
+            <FullScreen />
+          </el-icon>
+        </el-tooltip>
         <!-- Language selection -->
-        <vLanguage style="margin-top: 6px;" />
+      </div>
+      <div class="header-btn">
+        <vLanguage />
+      </div>
+      <div class="header-btn">
         <!-- User avatar -->
-        <el-avatar class="user-avator" :size="32" :src="avatarImage" />
+        <el-avatar style="margin-right: 4px;" :size="32" :src="avatarImage" />
         <!-- Username drop-down menu -->
         <el-dropdown trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
@@ -130,8 +140,8 @@ const setFullScreen = () => {
   width: 100%;
   height: var(--header-height);
   color: var(--header-color);
-  border-bottom: 1px solid var(--header-line-color);
   background-color: var(--header-bg-color);
+  border-bottom: 1px solid var(--header-line-color);
 }
 .header-left {
   display: flex;
@@ -139,22 +149,33 @@ const setFullScreen = () => {
   padding-left: 10px;
   height: 100%;
 }
-.collapse-btn {
+.header-right {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 50px;
+  height: 100%;
+}
+.header-btn {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-  padding: 0 12px;
+  margin: 0 12px;
   cursor: pointer;
-  opacity: 0.8;
+  opacity: 1;
   font-size: 22px;
 }
-.collapse-btn:hover {
+.header-btn:hover {
   opacity: 1;
 }
 .collapse-img {
-  margin-top: 5px;
+  margin-top: 10px;
   align-items: center;
+}
+.ping-monitor {
+  height: 32px;
+  margin-left: 0px;
+  animation: graduallyShow 0.5s ease-in-out;
 }
 @keyframes graduallyShow {
   0% {
@@ -163,11 +184,6 @@ const setFullScreen = () => {
   100% {
     opacity: 1;
   }
-}
-.ping-monitor {
-  height: 32px;
-  margin-left: 0px;
-  animation: slideInRight 0.3s ease-in-out;
 }
 @keyframes slideInRight {
   from {
@@ -178,31 +194,6 @@ const setFullScreen = () => {
     transform: translateX(0);
     opacity: 1;
   }
-}
-.header-right {
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 50px;
-}
-.header-user-con {
-  display: flex;
-  height: var(--header-height);
-  align-items: center;
-}
-.btn-icon {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  color: var(--header-color);
-  margin: 0 5px;
-  font-size: 20px;
-}
-.user-avator {
-  margin: 0 10px 0 20px;
 }
 .el-dropdown-link {
   color: var(--header-color);

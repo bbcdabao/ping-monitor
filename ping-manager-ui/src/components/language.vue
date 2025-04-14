@@ -1,27 +1,25 @@
 <!-- Language selection -->
 <template>
-  <div>
-    <el-dropdown trigger="click" @command="handleLangCommand">
-      <span class="el-dropdown-link">
-        {{ showLangs[idxLanguage] }}
-        <el-icon class="el-icon--right">
-          <arrow-down />
-        </el-icon>
-      </span>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item
-            v-for="(item, index) in showLangs"
-            divided
-            :command="index"
-            :key="index"
-          >
-            {{ item }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
-  </div>
+  <el-dropdown trigger="click" @command="handleLangCommand">
+    <span class="el-dropdown-link">
+      {{ showLangs[idxLanguage] }}
+      <el-icon class="el-icon--right">
+        <arrow-down />
+      </el-icon>
+    </span>
+    <template #dropdown>
+      <el-dropdown-menu>
+        <el-dropdown-item
+          v-for="(item, index) in showLangs"
+          divided
+          :command="index"
+          :key="index"
+        >
+          {{ item }}
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </template>
+  </el-dropdown>
 </template>
 <script setup lang="ts">
 
