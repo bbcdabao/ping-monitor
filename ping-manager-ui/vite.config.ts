@@ -30,21 +30,10 @@ export default defineConfig({
 	},
 	server: {
 		proxy: {
-			'/api': {
-				target: 'http://127.0.0.1:9090/api',
+			'/manager': {
+				target: 'http://127.0.0.1:9090/manager',
 				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, '')
-			},
-			'/bbcdabao': {
-				target: 'ws://127.0.0.1:9090/bbcdabao',
-				changeOrigin: true,
-				ws: true,
-				rewrite: (path) => path.replace(/^\/bbcdabao/, ''),
-				configure: (proxy, options) => {
-					proxy.on('proxyReq', (proxyReq, req, res) => {
-						console.log('>>>>>> request to:', req.url);
-					});
-				}
+				rewrite: (path) => path.replace(/^\/manager/, '')
 			}
 		}
 	}

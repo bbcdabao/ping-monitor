@@ -23,6 +23,15 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "dashboard" */ '../views/pages/manager.vue'),
             },
             {
+              path: '/robotorganiza',
+              name: 'robotorganiza',
+              meta: {
+                title: 'robotorganiza',
+                noAuth: false,
+              },
+              component: () => import('../views/pages/robotorganiza.vue'),
+            },
+            {
                 path: '/sshtelnet/:param',
                 name: 'sshtelnet',
                 meta: {

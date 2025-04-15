@@ -24,7 +24,7 @@ const dfltaThemeConfig: ThemeConfig = {
   elColorPrimary: '#0000ff',
   elColorSuccess: '#ff0000',
   elColorWarning: '#ff0000',
-  elColorDanger: '#ff0000"',
+  elColorDanger: '#ff0000',
   elColorInfo: '#ff0000',
   nprogressBarColor: '#4d4d4d',
   nprogressSpinnerTopColor: '#4d4d4d',
@@ -49,7 +49,9 @@ const dfltaThemeConfig: ThemeConfig = {
   elementColor: '#ffffff',
   elementBgColor: '#ffffff',
   elementBdColor: '#ffffff',
-  customhadowColor: '#000000'
+  elementIndexColor: '#ffffff',
+  elementIndexBgColor: '#ffffff',
+  customShadowColor: '#000000'
 };
 
 function toKebabCase(str: string): string {

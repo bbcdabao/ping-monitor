@@ -164,9 +164,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#4d4d4d',
     cardbodyBgColor: '#000000',
     elementColor: '#ffffff',
-    elementBgColor: '#ffffff',
-    elementBdColor: '#ffffff',
-    customhadowColor: '#000000'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#000000'
   },
   '2': {
     elColorPrimary: '#409EFF',
@@ -195,9 +197,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#2c2c2c',
     cardbodyBgColor: '#1b1b1b',
     elementColor: '#ffffff',
-    elementBgColor: '#2e2e2e',
-    elementBdColor: '#424242',
-    customhadowColor: '#ff3d00'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#ff3d00'
   },
   '3': {
     elColorPrimary: '#409EFF',
@@ -226,9 +230,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#99ccff',
     cardbodyBgColor: '#0099cc',
     elementColor: '#ffffff',
-    elementBgColor: '#ffffff',
-    elementBdColor: '#ffffff',
-    customhadowColor: '#000000'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#000000'
   },
   '4': {
     elColorPrimary: '#409EFF',
@@ -257,9 +263,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#5d4037',
     cardbodyBgColor: '#3e2723',
     elementColor: '#ffffff',
-    elementBgColor: '#ff7043',
-    elementBdColor: '#d84315',
-    customhadowColor: '#ff8f00'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#ff8f00'
   },
   '5': {
     elColorPrimary: '#409EFF',
@@ -288,9 +296,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#003300',
     cardbodyBgColor: '#336666',
     elementColor: '#ffffff',
-    elementBgColor: '#ffffff',
-    elementBdColor: '#ffffff',
-    customhadowColor: '#993333'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#993333'
   },
   '6': {
     elColorPrimary: '#409EFF',
@@ -319,9 +329,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#2a2a3d',
     cardbodyBgColor: '#1a1a2e',
     elementColor: '#ffffff',
-    elementBgColor: '#ffffff',
-    elementBdColor: '#ffffff',
-    customhadowColor: '#00e5ff'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#00e5ff'
   },
   '7': {
     elColorPrimary: '#409EFF',
@@ -350,9 +362,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#2f2f2f',
     cardbodyBgColor: '#1a1a1a',
     elementColor: '#ffffff',
-    elementBgColor: '#9e1b1b',
-    elementBdColor: '#f4c542',
-    customhadowColor: '#000000'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#000000'
   },
   '8': {
     elColorPrimary: '#409EFF',
@@ -381,9 +395,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#6c3483',
     cardbodyBgColor: '#2e2e3a',
     elementColor: '#ffffff',
-    elementBgColor: '#8e44ad',
-    elementBdColor: '#9b59b6',
-    customhadowColor: '#000000'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#000000'
   },
   '9': {
     elColorPrimary: '#409EFF',
@@ -412,9 +428,11 @@ const systemmap: Record<string, ThemeConfig> = {
     cardbodyBdColor: '#f39c12',
     cardbodyBgColor: '#f7f1e1',
     elementColor: '#ffffff',
-    elementBgColor: '#f39c12',
-    elementBdColor: '#f1c40f',
-    customhadowColor: '#000000'
+    elementBgColor: '#000000',
+    elementBdColor: '#4d4d4d',
+    elementIndexColor: '#ffffff',
+    elementIndexBgColor: '#4d4d4d',
+    customShadowColor: '#000000'
   }
 };
 </script>

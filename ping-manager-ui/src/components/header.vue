@@ -28,10 +28,10 @@
       <div class="header-btn">
         <el-tooltip effect="dark" :content="$t('fullScreen')" placement="bottom">
           <el-icon v-if="isFullScreen"  @click="setFullScreen">
-            <CloseBold />
+            <i class="el-icon-lx-exit"></i>
           </el-icon>
           <el-icon v-else  @click="setFullScreen">
-            <FullScreen />
+            <i class="el-icon-lx-full"></i>
           </el-icon>
         </el-tooltip>
         <!-- Language selection -->

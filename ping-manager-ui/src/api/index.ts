@@ -22,3 +22,10 @@ export const loginpost = (body : any = {}) => {
     });
 };
 
+export const robotGroupNames = () => {
+  return request({
+      url: '/manager/robot/robotGroupNames',
+      method: 'get'
+  });
+};
+

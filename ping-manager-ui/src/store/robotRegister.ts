@@ -1,16 +1,30 @@
 import { defineStore } from 'pinia';
+import { robotGroupNames } from '@/api'
 
-export const useHeaderStore = defineStore('header', {
+export const useRobotRegisterStore = defineStore('robotRegister', {
     state: () => {
         return {
+            robotGroupNames: [] as string[],
             messages: [] as string[],
             connected: false,
             eventSource: null as EventSource | null
         };
     },
     getters: {
+      robotGroups: (state) => {
+        return state.robotGroupNames.map(name => ({ name }));
+      }
     },
     actions: {
+      updateRobotGroupNames() {
+        robotGroupNames()
+        .then(res => {
+          this.robotGroupNames = res.data;
+        })
+        .catch(err => {
+          console.error('请求失败', err);
+        });
+      },
       metaInfoconnectToSSE() {
         if (this.eventSource) return // 已连接则不重复连接
         const source = new EventSource('http://your-server/sse-endpoint')

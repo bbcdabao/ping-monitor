@@ -69,6 +69,37 @@ body {
   background-color: var(--form-bg-label-color);
 }
 
+/* 表头单元格 */
+.el-table th.el-table__cell {
+  color: var(--element-index-color) !important;
+  background-color: var(--element-index-bg-color) !important;
+}
+
+/* 表格单元格 */
+.el-table td.el-table__cell {
+  color: var(--element-color) !important;
+  background-color: var(--element-bg-color) !important;
+}
+
+.el-table {
+  background-color: var(--element-bg-color) !important;
+}
+
+/* 表头单元格边框颜色 */
+.el-table th.el-table__cell {
+  border-bottom: 1px solid  var(--element-bd-color) !important;
+}
+
+/* 表体单元格边框颜色 */
+.el-table td.el-table__cell {
+  border-bottom: 1px solid var(--element-bd-color) !important;
+}
+
+.el-table__row:hover td {
+  color: var(--element-index-color) !important;
+  background-color: var(--element-index-bg-color) !important;
+}
+
 .el-card__header {
   font-size: 14px;
   font-weight: bold;
