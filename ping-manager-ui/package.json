@@ -20,6 +20,7 @@
 		"md-editor-v3": "^2.11.2",
 		"nprogress": "^0.2.0",
 		"pinia": "^2.1.7",
+		"pinia-plugin-persistedstate": "^4.2.0",
 		"vue": "^3.4.5",
 		"vue-cropper": "1.1.1",
 		"vue-echarts": "^6.6.9",
@@ -45,5 +46,4 @@
 		"last 2 versions",
 		"not dead"
 	]
-	
 }
