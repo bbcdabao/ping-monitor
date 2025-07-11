@@ -12,7 +12,7 @@
   </developers>
 
   <artifactId>ping-robot</artifactId>
-  <version>${project.version}</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <description>the ping pingrobot</description>
@@ -20,7 +20,7 @@
   <parent>
     <groupId>bbcdabao.pingmonitor</groupId>
     <artifactId>ping-monitor</artifactId>
-    <version>${project.version}</version>
+    <version>1.0.0</version>
   </parent>
 
   <modules>

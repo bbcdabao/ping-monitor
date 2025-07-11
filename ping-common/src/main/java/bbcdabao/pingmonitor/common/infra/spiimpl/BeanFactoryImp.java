@@ -16,27 +16,14 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.domain;
+package bbcdabao.pingmonitor.common.infra.spiimpl;
 
-import java.util.concurrent.atomic.AtomicReference;
+import bbcdabao.pingmonitor.common.domain.IBeanFactory;
+import bbcdabao.pingmonitor.common.infra.SpringFactoryImpl;
 
-/**
- * Global object factory
- */
-public abstract class FactoryBase {
-    private static AtomicReference<FactoryBase> INSTANCE = new AtomicReference<>();
-    public static void setInstance(FactoryBase factory) {
-        if (!INSTANCE.compareAndSet(null, factory)) {
-            throw new IllegalStateException("FactoryBase allready set!");
-        }
+public class BeanFactoryImp implements IBeanFactory {
+    @Override
+    public <T> T getBean(Class<T> clazz) {
+        return SpringFactoryImpl.getInstance().getBean(clazz);
     }
-    public static FactoryBase getFactory() {
-        FactoryBase factory = INSTANCE.get();
-        if (factory == null) {
-            throw new IllegalStateException("FactoryBase not set!");
-        }
-        return factory;
-    }
-
-    public abstract <T> T getBean(Class<T> clazz);
 }

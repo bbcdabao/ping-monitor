@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
-import bbcdabao.pingmonitor.common.domain.FactoryBase;
+import bbcdabao.pingmonitor.common.domain.BeanFactoryHolder;
 import bbcdabao.pingmonitor.common.domain.PingmonitorExecutor;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler.IRegister;
@@ -53,8 +53,8 @@ public class EventHandlerRegister implements IRegister {
     }
 
     private static IRegister getIRegister() {
-        ZkclientframeConfig config = FactoryBase
-                .getFactory().getBean(ZkclientframeConfig.class);
+        ZkclientframeConfig config =
+                BeanFactoryHolder.getInstance().getBean(ZkclientframeConfig.class);
         return new EventHandlerRegister(PingmonitorExecutor.getInstance(),
                 CuratorFrameworkInstance.getInstance(), config.getQeCapacity(), config.getScanCycle());
     }

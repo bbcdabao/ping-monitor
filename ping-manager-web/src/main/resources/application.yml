@@ -14,9 +14,14 @@
 # limitations under the License.
 
 server:
-  port: 9090
+  port: 8080
 
 spring:
   web:
     resources:
       add-mappings: true
+      cache:
+        cachecontrol:
+          max-age: 365d
+          cache-public: true
+          immutable: true

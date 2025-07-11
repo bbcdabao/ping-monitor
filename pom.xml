@@ -13,7 +13,7 @@
 
   <groupId>bbcdabao.pingmonitor</groupId>
   <artifactId>ping-monitor</artifactId>
-  <version>${project.version}</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <description>the ping monitor</description>
@@ -34,7 +34,6 @@
   </modules>
 
   <properties>
-    <project.version>1.0.0</project.version>
     <java.version>17</java.version>
     <javax.validation-api>2.0.1.Final</javax.validation-api>
   </properties>

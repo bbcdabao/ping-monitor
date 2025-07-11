@@ -28,7 +28,7 @@ import org.reflections.Reflections;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import bbcdabao.pingmonitor.common.domain.FactoryBase;
+import bbcdabao.pingmonitor.common.domain.BeanFactoryHolder;
 import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
@@ -46,9 +46,8 @@ public class TemplatesManager {
     private static TemplatesManager getTemplatesManagerInstance() {
         TemplatesManager templatesManager = new TemplatesManager();
         try {
-            String plugPath = FactoryBase
-                    .getFactory()
-                    .getBean(RobotConfig.class).getPlugsPath();
+            String plugPath =
+                    BeanFactoryHolder.getInstance().getBean(RobotConfig.class).getPlugsPath();
             if (ObjectUtils.isEmpty(plugPath)) {
                 throw new Exception("plugPath is isEmpty!");
             }

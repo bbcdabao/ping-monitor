@@ -38,8 +38,8 @@ public class PingmonitorExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(PingmonitorExecutor.class);
 
     private static ExecutorService getExecutorService() {
-        PingmonitorExecutorConfig config = FactoryBase
-                .getFactory().getBean(PingmonitorExecutorConfig.class);
+        PingmonitorExecutorConfig config =
+                BeanFactoryHolder.getInstance().getBean(PingmonitorExecutorConfig.class);
         ExecutorService executor = new ThreadPoolExecutor(
                 config.getCorePoolSize(),
                 config.getMaxPoolSize(),

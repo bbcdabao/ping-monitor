@@ -24,7 +24,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionStateListener;
 
-import bbcdabao.pingmonitor.common.domain.FactoryBase;
+import bbcdabao.pingmonitor.common.domain.BeanFactoryHolder;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.ZkclientframeConfig;
 
 
@@ -53,13 +53,13 @@ public class CuratorFrameworkInstance {
                 }
             }
         };
-        ZkclientframeConfig zkclientframeConfig = FactoryBase
-                .getFactory().getBean(ZkclientframeConfig.class);
+        ZkclientframeConfig zkclientframeConfig =
+                BeanFactoryHolder.getInstance().getBean(ZkclientframeConfig.class);
         if (null == zkclientframeConfig) {
             System.exit(1);
         }
-        ConnectionStateListener connectionStateListener = FactoryBase
-                .getFactory().getBean(ConnectionStateListener.class);
+        ConnectionStateListener connectionStateListener =
+                BeanFactoryHolder.getInstance().getBean(ConnectionStateListener.class);
 
         CuratorFramework curatorFramework = CuratorFrameworkFactory.builder()
                 .retryPolicy(retryPolicy)

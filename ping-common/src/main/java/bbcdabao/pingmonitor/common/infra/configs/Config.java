@@ -23,7 +23,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import bbcdabao.pingmonitor.common.domain.FactoryBase;
 import bbcdabao.pingmonitor.common.domain.PingmonitorExecutorConfig;
 import bbcdabao.pingmonitor.common.domain.zkclientframe.ZkclientframeConfig;
 import bbcdabao.pingmonitor.common.infra.SpringFactoryImpl;
@@ -44,8 +43,6 @@ public class Config {
     }
     @Bean
     SpringFactoryImpl getSpringFactoryImpl() {
-        SpringFactoryImpl springFactoryImpl = new SpringFactoryImpl();
-        FactoryBase.setInstance(springFactoryImpl);
-        return springFactoryImpl;
+        return SpringFactoryImpl.getInstance();
     }
 }

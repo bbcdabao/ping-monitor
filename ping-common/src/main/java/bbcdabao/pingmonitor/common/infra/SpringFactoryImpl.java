@@ -18,12 +18,25 @@
 
 package bbcdabao.pingmonitor.common.infra;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import bbcdabao.pingmonitor.common.domain.FactoryBase;
+import bbcdabao.pingmonitor.common.domain.IBeanFactory;
 
-public class SpringFactoryImpl extends FactoryBase implements ApplicationContextAware {
+public class SpringFactoryImpl implements IBeanFactory, ApplicationContextAware {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpringFactoryImpl.class);
+            
+    private static class Holder {
+        private static final SpringFactoryImpl INSTANCE = new SpringFactoryImpl();
+    }
+
+    public static SpringFactoryImpl getInstance() {
+        return Holder.INSTANCE;
+    }
+
     private static ApplicationContext context;
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -35,6 +48,7 @@ public class SpringFactoryImpl extends FactoryBase implements ApplicationContext
         try {
             bean = context.getBean(clazz);
         } catch (Exception e) {
+            LOGGER.error("getBean Exception:", e);
         }
         return bean;
     }
