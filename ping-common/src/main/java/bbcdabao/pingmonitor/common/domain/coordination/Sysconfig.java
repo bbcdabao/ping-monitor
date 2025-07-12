@@ -27,6 +27,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.Data;
 
+/**
+ * RsType is define the ping resoult to save where.
+ * 1 INNER type is in the zookeeper inner for path /result/...
+ * 2 REDIS type is in the redis for save the ping result
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Sysconfig {

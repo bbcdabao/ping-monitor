@@ -58,6 +58,11 @@ public class CuratorFrameworkInstance {
         if (null == zkclientframeConfig) {
             System.exit(1);
         }
+
+        /**
+         * The application layer can inject a subclass of ConnectionStateListener to listen
+         * for the business logic required after disconnection or successful connection.
+         */
         ConnectionStateListener connectionStateListener =
                 BeanFactoryHolder.getInstance().getBean(ConnectionStateListener.class);
 

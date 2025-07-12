@@ -48,7 +48,7 @@ public class SpringFactoryImpl implements IBeanFactory, ApplicationContextAware 
         try {
             bean = context.getBean(clazz);
         } catch (Exception e) {
-            LOGGER.error("getBean Exception:", e);
+            LOGGER.error("SpringFactoryImpl.getBean Exception:", e);
         }
         return bean;
     }

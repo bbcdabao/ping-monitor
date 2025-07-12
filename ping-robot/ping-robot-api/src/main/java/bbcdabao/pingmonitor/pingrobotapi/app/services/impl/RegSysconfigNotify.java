@@ -67,7 +67,8 @@ public class RegSysconfigNotify extends BaseEventHandler implements ISysconfig, 
         WeakReference<ISysconfigNotify> weakNotify = new WeakReference<>(notify);
         sysconfigNotifys.add(weakNotify);
     }
-    public synchronized void reg(ISysconfigNotify notify) {
+    @Override
+    public void reg(ISysconfigNotify notify) {
         sysconfigNotify(notify);
     }
     @Override

@@ -29,6 +29,9 @@ import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
 
 /**
  * Zookeeper monitoring processing, used for shared monitoring
+ * path format :
+ * (1)  format like  scope:path eg.  ALL:/test 
+ * (2)  ALL\CHILD\CHANGED\CREATE\DELETE\CREATEADNCHANGED\NODE
  */
 public abstract class BaseEventHandler extends GameOver {
     private static AtomicLong INDEX = new AtomicLong(0L);

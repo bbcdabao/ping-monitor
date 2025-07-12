@@ -29,6 +29,9 @@ import org.springframework.scheduling.support.CronTrigger;
 
 import bbcdabao.pingmonitor.pingrobotapi.app.services.ITimeWorker;
 
+/**
+ * For the timer encapsulation, supply the ITimeWorker implement.
+ */
 public abstract class TimeWorkerBase implements ITimeWorker {
 
     private final Logger logger = LoggerFactory.getLogger(TimeWorkerBase.class);
