@@ -22,7 +22,7 @@
     <div class="header-right">
       <div class="header-btn">
         <el-tooltip effect="dark" :content="$t('setTheme')" placement="bottom">
-          <el-icon @click="router.push('/main-theme')">
+          <el-icon @click="router.push('/theme-page')">
             <lucide-brush-cleaning />
           </el-icon>
         </el-tooltip>
@@ -47,7 +47,7 @@
         <!-- Username drop-down menu -->
         <el-dropdown trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
-            {{ 'aaaa' }}
+            {{ header.titlesp }}
             <el-icon class="el-icon--right">
               <lucide-chevron-down />
             </el-icon>

@@ -50,12 +50,12 @@ export default defineConfig(
     server: {
       proxy: {
         '/openapi': {
-          target: 'http://119.91.95.203:8080/openapi',
+          target: 'http://localhost:9090/openapi',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/openapi/, '')
         },
         '/api': {
-          target: 'http://119.91.95.203:8080/api',
+          target: 'http://localhost:9090/api',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         }

@@ -69,7 +69,7 @@ service.interceptors.response.use(
       handler();
     } else {
       const failInfo = i18n.global.t('failInfo');
-      const failInfoText = failInfo + (error.message || 'Unknown server error!');
+      const failInfoText = failInfo + (error.response.data || 'Unknown server error!');
       ElMessage.error(failInfoText);
     }
     console.log(error);

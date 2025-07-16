@@ -33,7 +33,6 @@ public class ZookeeperConnectionStateListener implements ConnectionStateListener
         logger.info("ZookeeperConnectionStateListener status:" + newState);
 
         if (newState == ConnectionState.LOST) {
-            System.err.println("⚠️ Zookeeper 连接丢失，进行降级处理...");
             logger.info("⚠️ Zookeeper connect lose! down process");
         }
 

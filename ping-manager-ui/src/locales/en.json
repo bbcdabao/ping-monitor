@@ -1,4 +1,10 @@
 {
+  "whiteTheme": "White theme",
+  "coolerTheme": "Cool blue",
+  "warmerTheme": "Warm theme",
+  "greentintTheme": "Green theme",
+  "grayscaleTheme": "Grayscale tones",
+  "failInfo": "Fail:",
   "formValidationFailed": "Form format error",
   "setTheme": "Set theme",
   "fullScreen": "Full screen",

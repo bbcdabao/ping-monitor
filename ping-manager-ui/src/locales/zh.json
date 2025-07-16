@@ -1,4 +1,10 @@
 {
+  "whiteTheme": "亮白主题",
+  "coolerTheme": "冷酷蓝色",
+  "warmerTheme": "暖色主题",
+  "greentintTheme": "绿色主题",
+  "grayscaleTheme": "灰度色调",
+  "failInfo": "失败:",
   "formValidationFailed": "表单格式错误",
   "setTheme": "设置主题",
   "fullScreen": "全屏",

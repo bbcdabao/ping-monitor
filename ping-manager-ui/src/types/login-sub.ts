@@ -8,4 +8,5 @@ export interface UsernameLoginPayload {
 }
 
 export interface LoginResponse {
+  id: string;
 }

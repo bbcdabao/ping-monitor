@@ -37,11 +37,11 @@ export interface ThemeConfig {
   cardbodyBgColor: string;
 
   elementColor: string;
-  elementBgColor: string;
   elementBdColor: string;
+  elementBgColor: string;
   elementIndexColor: string;
-  elementIndexBgColor: string;
   elementIndexBdColor: string;
+  elementIndexBgColor: string;
 
   customShadowColor: string;
 }

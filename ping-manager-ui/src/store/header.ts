@@ -10,10 +10,12 @@ export const useHeaderStore = defineStore('header', {
       titlesp: ''
     };
   },
-  getters: {},
+  getters: {
+  },
   actions: {
     setTitlesp(titlespSet: string) {
       this.titlesp = titlespSet;
     }
-  }
+  },
+  persist: true
 });

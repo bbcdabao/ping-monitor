@@ -1,31 +1,65 @@
+import type {
+  UsernameLoginPayload,
+  LoginResponse
+} from '@/types/login-sub';
+
 import request from '@/utils/request';
 
 /*
-url: The requested server URL. Just need to be specified in a separate request.
-method: Request method, the default is GET.
-baseURL: Concatenate baseURL and url into a complete URL. If url is an absolute URL, it will not be concatenated.
-headers: Custom HTTP headers.
-params: URL parameters will be spliced ​​to the end of the URL.
-data: Seeking volume data is only applicable to PUT, POST, PATCH and other methods.
-timeout: Specifies the request timeout in milliseconds.
-withCredentials: Whether credentials are required for cross-domain requests.
-responseType: The expected data type of the server response. Commonly used ones include json, text, blob, and arraybuffer.
-auth: HTTP Basic Authentication { username: '...', password: '...' }.
+url:
+  The requested server URL. Just need to be specified in a separate request.
+
+method:
+  Request method, the default is GET.
+  
+baseURL:
+  Concatenate baseURL and url into a complete URL. If url is an absolute URL,
+  it will not be concatenated.
+
+headers:
+  Custom HTTP headers.
+
+params:
+  URL parameters will be spliced ​​to the end of the URL.
+
+data:
+  Seeking volume data is only applicable to PUT, POST, PATCH and other methods.
+
+timeout:
+  Specifies the request timeout in milliseconds.
+
+withCredentials:
+  Whether credentials are required for cross-domain requests.
+
+responseType:
+  The expected data type of the server response. Commonly used ones include json,
+  text, blob, and arraybuffer.
+
+auth:
+  HTTP Basic Authentication { username: '...', password: '...' }.
+  
 proxy: 
 */
 
-export const loginpost = (body : any = {}) => {
-    return request({
-        url: '/api/login',
-        method: 'post',
-        data: body
-    });
+/**
+ * 用户登录
+ * @param body
+ * @returns 
+ */
+export const postUsernamelogin = (body: UsernameLoginPayload) : Promise<LoginResponse> => {
+  return request({
+    url: '/openapi/usernamelogin',
+    method: 'post',
+    data: body
+  });
 };
 
+/*
 export const robotGroupNames = () => {
   return request({
       url: '/manager/robot/robotGroupNames',
       method: 'get'
   });
 };
+*/
 

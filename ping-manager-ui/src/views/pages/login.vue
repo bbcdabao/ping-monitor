@@ -37,6 +37,7 @@
             v-model="usernameLogin.password"
             :placeholder="$t('password')"
             type="password"
+            show-password
             @keyup.enter="loginInfoSubmit()"
           >
             <template #prepend>
@@ -82,6 +83,12 @@ import type {
   FormRules
 } from 'element-plus';
 import {
+  postUsernamelogin
+} from '@/api';
+import {
+  useHeaderStore
+} from '@/store/header';
+import {
   runWithErrorMessage
 } from '@/utils';
 import type {
@@ -92,6 +99,7 @@ import vLanguage from '@/components/language.vue';
 
 const { t } = useI18n();
 const router = useRouter();
+const header = useHeaderStore();
 
 /**
  * UsernameLogin
@@ -127,6 +135,8 @@ const loginInfoSubmit = () => {
   runWithErrorMessage( async () => {
     const valid = await usernameLoginRef.value.validate();
     if (!valid) throw new Error(t('formValidationFailed'));
+    const response = await postUsernamelogin(toRaw(usernameLogin));
+    header.setTitlesp(response.id);
     if (usernameLoginChecked.value) {
       localStorage.setItem('username-login', JSON.stringify(toRaw(usernameLogin)));
     } else {
