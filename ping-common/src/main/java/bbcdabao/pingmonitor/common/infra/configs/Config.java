@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -23,9 +23,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import bbcdabao.pingmonitor.common.domain.PingmonitorExecutorConfig;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.ZkclientframeConfig;
-import bbcdabao.pingmonitor.common.infra.SpringFactoryImpl;
+import bbcdabao.pingmonitor.common.infra.PingmonitorExecutorConfig;
+import bbcdabao.pingmonitor.common.infra.SpringFactory;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.ZkclientframeConfig;
 
 @Configuration
 public class Config {
@@ -42,7 +42,7 @@ public class Config {
         return new ZkclientframeConfig();
     }
     @Bean
-    SpringFactoryImpl getSpringFactoryImpl() {
-        return SpringFactoryImpl.getInstance();
+    SpringFactory getSpringFactoryImpl() {
+        return new SpringFactory();
     }
 }

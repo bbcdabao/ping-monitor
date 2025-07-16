@@ -18,6 +18,11 @@ server:
   servlet:
     context-path: /manager
 
+token:
+  jwt:
+    secret: QQWWEERRTTYYUUIIOOPPAASSDDFFGG11
+    expiration: 1440
+
 # Built-in ZooKeeper configuration
 # mode config "single" and "cluster"
 # if mode config "none" is tun-off Built-in ZooKeeper
@@ -51,3 +56,7 @@ sysconfig:
   cron-main: 5/10 * * * * ?
   time-out-ms: 10000
   overwrite: true
+
+user-infos:
+  "admin": "123456"
+  "muser": "654321"

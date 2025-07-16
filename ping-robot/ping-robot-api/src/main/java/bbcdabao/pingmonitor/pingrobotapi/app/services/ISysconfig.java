@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,7 +18,7 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.app.services;
 
-import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
 
 public interface ISysconfig {
     void reg(ISysconfigNotify notify);

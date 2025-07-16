@@ -16,6 +16,10 @@
 server:
   port: 8080
 
+token:
+  jwt:
+    secret: QQWWEERRTTYYUUIIOOPPAASSDDFFGG11
+
 spring:
   web:
     resources:
@@ -25,3 +29,22 @@ spring:
           max-age: 365d
           cache-public: true
           immutable: true
+  cloud:
+    gateway:
+      routes:
+        - id: powertrading-api
+          uri: http://localhost:9090
+          predicates:
+            - Path=/api/**
+        - id: powertrading-openapi
+          uri: http://localhost:9090
+          predicates:
+            - Path=/openapi/**
+authorize:
+  open-paths:
+    - "/"
+    - "/index.html"
+    - "/favicon.ico"
+    - "/mock/**"
+    - "/assets/**"
+    - "/openapi/**"

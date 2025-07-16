@@ -1,17 +1,5 @@
 /**
  * Copyright 2025 bbcdabao Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 import { defineStore } from 'pinia';
@@ -22,10 +10,10 @@ export const useSidebarStore = defineStore('sidebar', {
     const t = i18n.global.t;
     return {
       collapse: false,
-      rawMenu: [
+      menuIndx: [
         {
           itemname: 'pingallview',
-          itemicon: 'Monitor',
+          itemicon: 'lucide-airplay',
           route: '/manager',
         },
         {
@@ -33,55 +21,45 @@ export const useSidebarStore = defineStore('sidebar', {
           children: [
             {
               itemname: 'template',
-              itemicon: 'Memo',
+              itemicon: 'lucide-scroll',
               route: '/template',
             },
             {
               itemname: 'taskinfo',
-              itemicon: 'Tickets',
+              itemicon: 'lucide-scroll-text',
               route: '/taskinfo',
             },
             {
               itemname: 'taskrslt',
-              itemicon: 'Ticket',
+              itemicon: 'lucide-list-tree',
               route: '/taskrslt',
             }
           ]
-        },        {
+        },
+        {
           itemname: 'robotmanager',
           children: [
             {
               itemname: 'robotorganiza',
-              itemicon: 'CollectionTag',
+              itemicon: 'lucide-grid',
               route: '/robotorganiza',
             },
             {
               itemname: 'robotinstance',
-              itemicon: 'PriceTag',
+              itemicon: 'lucide-land-plot',
               route: '/robotinstance',
             }
           ]
         },
         {
           itemname: 'thememanager',
-          itemicon: 'Brush',
-          route: '/theme',
+          itemicon: 'lucide-brush-cleaning',
+          route: '/theme-page',
         }
       ]
     };
   },
   getters: {
-    sidemenu: (state) => {
-      const t = i18n.global.t;
-      const processMenu = (menu) => {
-        return menu.map(item => ({
-          ...item,
-          itemtitle: t(item.itemname),
-          children: item.children ? processMenu(item.children) : undefined
-        }));
-      };
-      return processMenu(state.rawMenu);
-    }
   },
   actions: {
     handleCollapse() {

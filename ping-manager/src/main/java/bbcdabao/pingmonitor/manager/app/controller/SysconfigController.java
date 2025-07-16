@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
 import bbcdabao.pingmonitor.manager.app.services.ISysconfig;
 
 @Controller

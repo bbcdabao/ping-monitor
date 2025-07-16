@@ -1,3 +1,5 @@
+<!-- Copyright 2025 bbcdabao Team -->
+
 <template>
   <div class="wrapper">
     <v-header />
@@ -6,7 +8,7 @@
       <div class="content">
         <router-view v-slot="{ Component }" :key="$route.fullPath">
           <transition name="move" mode="out-in">
-            <component class="content-page pd10" :is="Component"></component>
+            <component class="content-page pd6" :is="Component"></component>
           </transition>
         </router-view>
       </div>
@@ -14,6 +16,7 @@
   </div>
 </template>
 <script setup lang="ts">
+
 import { useSidebarStore } from '@/store/sidebar';
 import vHeader from '@/components/header.vue';
 import vSidebar from '@/components/sidebar.vue';
@@ -50,7 +53,7 @@ const sidebar = useSidebarStore();
 }
 .content-page {
   width: auto;
-  height: 100%;
+  height: calc(100% - 10px);
   overflow-y: scroll;
   background: var(--body-bg-color);
   scrollbar-width: auto;

@@ -1,16 +1,18 @@
+<!-- Copyright 2025 bbcdabao Team -->
+
 <template>
-    <div class="error-page">
-        <div class="error-box">
-            <div class="error-code">404</div>
-            <div class="error-desc">{{ $t('pageNotExist') }}</div>
-            <div class="error-handle">
-                <router-link to="/">
-                    <el-button type="primary" size="large">{{ $t('backToMain') }}</el-button>
-                </router-link>
-                <el-button class="error-btn" size="large" @click="goBack">{{ $t('backToPrev') }}</el-button>
-            </div>
-        </div>
+  <div class="error-page">
+    <div class="error-box">
+      <div class="error-code">404</div>
+      <div class="error-desc">{{ $t('pageNotExist') }}</div>
+      <div class="error-handle">
+        <router-link to="/">
+          <el-button type="primary" size="large">{{ $t('backToMain') }}</el-button>
+        </router-link>
+        <el-button class="error-btn" size="large" @click="goBack">{{ $t('backToPrev') }}</el-button>
+      </div>
     </div>
+  </div>
 </template>
 <script setup lang="ts" name="404">
 import { useRouter } from 'vue-router';

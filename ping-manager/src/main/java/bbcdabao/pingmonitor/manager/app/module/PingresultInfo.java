@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,7 +18,7 @@
 
 package bbcdabao.pingmonitor.manager.app.module;
 
-import bbcdabao.pingmonitor.common.domain.coordination.Pingresult;
+import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
 import lombok.Data;
 
 @Data

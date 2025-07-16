@@ -1,3 +1,9 @@
+/**
+ * Copyright 2025 bbcdabao Team
+ */
+
+import { ElMessage } from 'element-plus';
+
 export const setProperty = (prop: string, val: any, dom = document.documentElement) => {
     dom.style.setProperty(prop, val);
 };
@@ -11,4 +17,21 @@ export const mix = (color1: string, color2: string, weight: number = 0.5): strin
         color += c.toString(16).padStart(2, '0');
     }
     return color;
+};
+
+/**
+ * Execute asynchronous functions and pop up a prompt when an error occurs
+ * @param fn Asynchronous function
+ * @param errorMessage Default prompt message (optional)
+ */
+export const runWithErrorMessage = async (
+  fn: () => Promise<void>,
+  errorMessage?: string
+): Promise<void> => {
+  try {
+    await fn();
+  } catch (error: any) {
+    const msg = errorMessage || error?.message;
+    ElMessage.warning(msg);
+  }
 };

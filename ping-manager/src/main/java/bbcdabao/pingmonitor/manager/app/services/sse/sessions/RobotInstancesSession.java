@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -20,11 +20,11 @@ package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
 import org.apache.curator.utils.ZKPaths;
 
-import bbcdabao.pingmonitor.common.domain.coordination.IPath;
-import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
+import bbcdabao.pingmonitor.common.infra.coordination.IPath;
+import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.EventType;

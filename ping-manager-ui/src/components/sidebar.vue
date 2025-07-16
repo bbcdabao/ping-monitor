@@ -1,13 +1,15 @@
+<!-- Copyright 2025 bbcdabao Team -->
+ 
 <template>
   <div class="sidebar-page">
     <el-menu
       class="sidebar-page-menu"
-      :default-active="onRoutes"
+      :default-active="activeMenuIndex"
       :collapse="sidebar.collapse"
       :default-openeds="['1']"
       router
     >
-      <template v-for="(menu, index) in sidebar.sidemenu" :key="index">
+      <template v-for="(menu, index) in sidemenu" :key="index">
         <el-menu-item v-if="menu.route" :index="menu.route">
           <el-icon v-if="menu.itemicon">
             <component :is="menu.itemicon" />
@@ -40,35 +42,49 @@
 
 /**
  * Copyright 2025 bbcdabao Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
-import { computed } from 'vue';
-import { useSidebarStore } from '@/store/sidebar';
-import { ElMenu } from 'element-plus';
-import { useRoute } from 'vue-router';
+import {
+  computed
+} from 'vue';
+import {
+  useI18n
+} from 'vue-i18n';
+import {
+  ElMenu
+} from 'element-plus';
+import {
+  useRoute
+} from 'vue-router';
+import {
+  useSidebarStore
+} from '@/store/sidebar';
+import type {
+  RouteLocationNormalizedLoaded
+} from 'vue-router';
 
+const { t } = useI18n();
 const route = useRoute();
-const onRoutes = computed(() => {
-  return route.path;
-});
+const activeMenuIndex = computed(() => route.path);
 
 const sidebar = useSidebarStore();
+
+const sidemenu = computed (() => {
+  const processMenu = (menu: any[]) => {
+  return menu
+    .map(item => ({
+      ...item,
+      itemtitle: t(item.itemname),
+      children: item.children ? processMenu(item.children) : undefined
+    }));
+  };
+  return processMenu(sidebar.menuIndx);
+});
+
 </script>
 <style scoped>
 .sidebar-page {
-  width: calc(var(--sidebar-width) + 1px);;
+  width: calc(var(--sidebar-width) + 1px);
   height: 100%;
 }
 .sidebar-page-menu:not(.el-menu--collapse) {
@@ -76,6 +92,7 @@ const sidebar = useSidebarStore();
 }
 .sidebar-page-menu {
   min-height: 100%;
+  width: calc(var(--sidebar-width-collapse) + 1px);
   background-color: var(--sidebar-bg-color);
 }
 .el-menu-item.is-active {

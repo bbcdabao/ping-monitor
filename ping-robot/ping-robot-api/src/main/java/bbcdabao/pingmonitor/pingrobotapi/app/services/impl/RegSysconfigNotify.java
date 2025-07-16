@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -29,14 +29,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
-import bbcdabao.pingmonitor.common.domain.coordination.IPath;
-import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
-import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.domain.json.JsonConvert;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.BaseEventHandler;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.ChangedEvent;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.CreatedEvent;
-import bbcdabao.pingmonitor.common.domain.zkclientframe.event.DeletedEvent;
+import bbcdabao.pingmonitor.common.infra.coordination.IPath;
+import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
+import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.BaseEventHandler;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.event.ChangedEvent;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfig;
 import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfigNotify;
 

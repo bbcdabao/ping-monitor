@@ -1,56 +1,46 @@
 /**
  * Copyright 2025 bbcdabao Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 import { defineStore } from 'pinia';
-import { ThemeConfig } from '@/types/themeConfig';
+import { ThemeConfig } from '@/types/theme-config';
+import { setProperty } from '@/utils';
 
 /**
  * Initial configuration
  */
 const dfltaThemeConfig: ThemeConfig = {
-  elColorPrimary: '#0000ff',
-  elColorSuccess: '#ff0000',
-  elColorWarning: '#ff0000',
-  elColorDanger: '#ff0000',
-  elColorInfo: '#ff0000',
-  nprogressBarColor: '#4d4d4d',
-  nprogressSpinnerTopColor: '#4d4d4d',
-  nprogressSpinnerleftColor: '#4d4d4d',
-  headerColor: '#ffffff',
-  headerBgColor: '#000000',
-  headerLineColor: '#4d4d4d',
-  bodyColor: '#ffffff',
-  bodyBgColor: '#4d4d4d',
-  scrollbarBgColor: '#000000',
-  scrollbarIndexBgColor: '#4d4d4d',
-  scrollbarIndexBdColor: '#000000',
-  scrollbarIndexBgHoverColor: '#ffffff',
-  sidebarColor: '#ffffff',
-  sidebarBgColor: '#000000',
-  sidebarIndexColor: '#ffffff',
-  sidebarIndexBgColor: '#4d4d4d',
-  sidebarIndexBeforeColor: '#336699',
-  cardbodyColor: '#FFFFFF',
-  cardbodyBdColor: '#4d4d4d',
-  cardbodyBgColor: '#000000',
-  elementColor: '#ffffff',
+  elColorPrimary: '#409eff',
+  elColorSuccess: '#67c23a',
+  elColorWarning: '#e6a23c',
+  elColorDanger: '#f56c6c',
+  elColorInfo: '#909399',
+  nprogressBarColor: '#cccccc',
+  nprogressSpinnerTopColor: '#cccccc',
+  nprogressSpinnerleftColor: '#cccccc',
+  headerColor: '#000000',
+  headerBgColor: '#ffffff',
+  headerLineColor: '#cccccc',
+  bodyColor: '#000000',
+  bodyBgColor: '#cccccc',
+  scrollbarBgColor: '#ffffff',
+  scrollbarIndexBgColor: '#cccccc',
+  scrollbarIndexBdColor: '#cccccc',
+  scrollbarIndexBgHoverColor: '#cccccc',
+  sidebarColor: '#000000',
+  sidebarBgColor: '#ffffff',
+  sidebarIndexColor: '#000000',
+  sidebarIndexBgColor: '#cccccc',
+  sidebarIndexBeforeColor: '#99cc00',
+  cardbodyColor: '#000000',
+  cardbodyBdColor: '#cccccc',
+  cardbodyBgColor: '#ffffff',
+  elementColor: '#000000',
   elementBgColor: '#ffffff',
   elementBdColor: '#ffffff',
-  elementIndexColor: '#ffffff',
-  elementIndexBgColor: '#ffffff',
+  elementIndexColor: '#000000',
+  elementIndexBgColor: '#cccccc',
+  elementIndexBdColor: '#cccccc',
   customShadowColor: '#000000'
 };
 
@@ -97,7 +87,7 @@ export const useThemeWatcher = () => {
     Object.entries(themeConfig).forEach(([key, value]) => {
       const colorset = toKebabCase(key);
       console.info(">>:", colorset);
-      document.documentElement.style.setProperty(colorset, value);
+      setProperty(colorset, value, document.documentElement);
     });
   }
 

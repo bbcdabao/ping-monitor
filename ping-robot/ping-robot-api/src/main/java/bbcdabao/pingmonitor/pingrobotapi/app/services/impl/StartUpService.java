@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -29,12 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.domain.extraction.TemplateField;
+import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
-import bbcdabao.pingmonitor.pingrobotapi.domain.RobotConfig;
-import bbcdabao.pingmonitor.pingrobotapi.domain.templates.TemplatesManager;
+import bbcdabao.pingmonitor.pingrobotapi.infra.RobotConfig;
+import bbcdabao.pingmonitor.pingrobotapi.infra.templates.TemplatesManager;
 
 public class StartUpService implements ApplicationRunner, ConnectionStateListener {
     

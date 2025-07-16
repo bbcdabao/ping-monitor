@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -26,8 +26,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+
+import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
 
 @Configuration
 public class LoadSysconfig implements ApplicationRunner {

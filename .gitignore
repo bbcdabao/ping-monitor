@@ -8,8 +8,9 @@ LOG_PATH_IS_UNDEFINED
 .DS_Store
 node_modules
 node
-/dist
-
+dist
+power-trading-version
+power-trading-version.tar.gz
 
 # local env files
 .env.local
@@ -29,7 +30,8 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-*.d.*
 *.log
 package-lock.json
+auto-imports.d.ts
+components.d.ts
 

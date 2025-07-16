@@ -1,3 +1,5 @@
+<!-- Copyright 2025 bbcdabao Team -->
+
 <template>
   <div class="header">
     <!-- Collapse button -->
@@ -11,27 +13,27 @@
         </el-icon>
       </div>
       <div class="collapse-img" v-if="!sidebar.collapse">
-        <img :src="pingMonitor" alt="PingMonitor" class="ping-monitor">
+        <img :src="logoTitle" alt="ElectricityMarket" class="logo-title">
       </div>
     </div>
-
-    <div>{{ header.titlesp }}</div>
-
+    <!--
+    <div v-if="userinfoStore.isadmin" style="font-weight: bold;"></div>
+    -->
     <div class="header-right">
       <div class="header-btn">
         <el-tooltip effect="dark" :content="$t('setTheme')" placement="bottom">
-          <el-icon @click="router.push('/theme')">
-            <Brush />
+          <el-icon @click="router.push('/main-theme')">
+            <lucide-brush-cleaning />
           </el-icon>
         </el-tooltip>
       </div>
       <div class="header-btn">
         <el-tooltip effect="dark" :content="$t('fullScreen')" placement="bottom">
           <el-icon v-if="isFullScreen"  @click="setFullScreen">
-            <i class="el-icon-lx-exit"></i>
+            <lucide-minimize />
           </el-icon>
           <el-icon v-else  @click="setFullScreen">
-            <i class="el-icon-lx-full"></i>
+            <lucide-maximize />
           </el-icon>
         </el-tooltip>
         <!-- Language selection -->
@@ -41,13 +43,13 @@
       </div>
       <div class="header-btn">
         <!-- User avatar -->
-        <el-avatar style="margin-right: 4px;" :size="32" :src="avatarImage" />
+        <el-avatar style="margin-right: 4px;" shape="square" :size="32" :src="avatarImage" />
         <!-- Username drop-down menu -->
         <el-dropdown trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
-            {{ username }}
+            {{ 'aaaa' }}
             <el-icon class="el-icon--right">
-              <arrow-down />
+              <lucide-chevron-down />
             </el-icon>
           </span>
           <template #dropdown>
@@ -66,31 +68,30 @@
 
 /**
  * Copyright 2025 bbcdabao Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
-import { onMounted, onBeforeUnmount, ref } from 'vue';
-import { useSidebarStore } from '@/store/sidebar';
-import { useHeaderStore } from '@/store/header';
-import { useRouter } from 'vue-router';
+import {
+  ref,
+  watch,
+  onMounted,
+  onBeforeUnmount
+} from 'vue';
+import {
+  useRouter
+} from 'vue-router';
+import {
+  useHeaderStore
+} from '@/store/header';
+import {
+  useSidebarStore
+} from '@/store/sidebar';
+
+import avatarImage from '@/assets/img/user-logo.png';
 import vLanguage from '@/components/language.vue';
-import avatarImage from '@/assets/img/user-logo.jpg';
-import pingMonitor from '@/assets/img/pm-logo-title.png';
+import logoTitle from '@/assets/img/title-logo.png';
 
 const sidebar = useSidebarStore();
 const header = useHeaderStore();
-const username: string | null = localStorage.getItem('vuems_name');
 
 const collapseChange = () => {
   sidebar.handleCollapse();
@@ -99,8 +100,7 @@ const collapseChange = () => {
 const router = useRouter();
 const handleCommand = (command: string) => {
   if (command === 'loginout') {
-    localStorage.removeItem('vuems_name');
-    router.push('/login');
+    router.replace('/login');
   }
 };
 
@@ -129,6 +129,13 @@ const setFullScreen = () => {
     document.documentElement.requestFullscreen();
   }
 };
+
+watch(
+  () => sidebar.collapse,
+  (newVal, oldVal) => {
+    window.dispatchEvent(new Event('resize'));
+  }
+);
 
 </script>
 <style scoped>
@@ -170,12 +177,13 @@ const setFullScreen = () => {
 }
 .collapse-img {
   margin-top: 10px;
+  margin-left: 0px;
   align-items: center;
 }
-.ping-monitor {
-  height: 32px;
+.logo-title {
+  height: 29px;
   margin-left: 0px;
-  animation: graduallyShow 0.5s ease-in-out;
+  animation: graduallyShow 2s ease-in-out;
 }
 @keyframes graduallyShow {
   0% {

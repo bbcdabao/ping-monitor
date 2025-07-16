@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,12 +18,11 @@
 
 package bbcdabao.pingmonitor.manager.app.services.impl;
 
-import bbcdabao.pingmonitor.manager.app.services.ISysconfig;
-
 import org.springframework.stereotype.Service;
 
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.domain.coordination.Sysconfig;
+import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
+import bbcdabao.pingmonitor.manager.app.services.ISysconfig;
 
 @Service
 public class SysconfigOpt implements ISysconfig {

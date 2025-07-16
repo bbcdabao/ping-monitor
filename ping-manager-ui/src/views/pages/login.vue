@@ -1,160 +1,186 @@
+<!-- Copyright 2025 bbcdabao Team -->
+
 <template>
-    <div class="login-bg">
-        <div class="login-container">
-            <div class="login-header">
-                <vLanguage style="margin-top: 10px; width: 80px;" />
-                <img class="logo mr10" src="@/assets/img/pm-logo.png" alt="" />
-                <div class="login-title">Ping Monitor</div>
-            </div>
-            <el-form :model="param" :rules="rules" ref="login" size="large">
-                <el-form-item prop="username">
-                    <el-input v-model="param.username" :placeholder="$t('userName')">
-                        <template #prepend>
-                            <el-icon>
-                                <User />
-                            </el-icon>
-                        </template>
-                    </el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input
-                        type="password"
-                        :placeholder="$t('password')"
-                        v-model="param.password"
-                        @keyup.enter="submitForm(login)"
-                    >
-                        <template #prepend>
-                            <el-icon>
-                                <Lock />
-                            </el-icon>
-                        </template>
-                    </el-input>
-                </el-form-item>
-                <div class="pwd-tips">
-                    <el-checkbox class="pwd-checkbox" v-model="checked" :label="$t('rememberPassword')" />
-                </div>
-                <el-button class="login-btn" type="primary" size="large" @click="submitForm(login)">{{ $t('login')}}</el-button>
-                <p class="login-tips">{{ $t('loginTip') }}</p>
-            </el-form>
+  <div class="login-bg">
+    <div class="login-bg-image" />
+    <div class="login-title" />
+    <div class="login-container">
+      <div class="login-header">
+        <lucide-languages />
+        <vLanguage style="margin-left: 6px; width: 80px;" />
+      </div>
+      <el-form
+        style="width: 100%;"
+        :model="usernameLogin"
+        :rules="usernameLoginRules"
+        ref="usernameLoginRef"
+        size="large"
+      >
+        <el-form-item
+          style="margin-bottom: 20px; width: 100%;"
+          prop="username"
+        >
+          <el-input
+            v-model="usernameLogin.username"
+            :placeholder="$t('userName')"
+          >
+            <template #prepend>
+              <i-material-symbols-person-outline-rounded />
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item
+          style="margin-bottom: 20px; width: 100%;"
+          prop="password"
+        >
+          <el-input
+            v-model="usernameLogin.password"
+            :placeholder="$t('password')"
+            type="password"
+            @keyup.enter="loginInfoSubmit()"
+          >
+            <template #prepend>
+              <i-material-symbols-lock-sharp />
+            </template>
+          </el-input>
+        </el-form-item>
+        <div>
+          <el-checkbox class="pwd-checkbox" v-model="usernameLoginChecked" :label="$t('rememberPassword')" />
         </div>
+        <div style="width: 100%;" >
+          <el-button
+            class="login-btn"
+            type="primary"
+            size="large"
+            @click="loginInfoSubmit()"
+          >
+            {{ $t('login') }}
+          </el-button>
+        </div>
+      </el-form>
     </div>
+  </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+
+import {
+  ref,
+  toRaw,
+  reactive
+} from 'vue';
+import {
+  useI18n
+} from 'vue-i18n';
+import {
+  useRouter
+} from 'vue-router';
+import {
+  ElMessage
+} from 'element-plus';
+import type {
+  FormInstance,
+  FormRules
+} from 'element-plus';
+import {
+  runWithErrorMessage
+} from '@/utils';
+import type {
+  UsernameLoginPayload,
+  LoginResponse
+} from '@/types/login-sub';
 import vLanguage from '@/components/language.vue';
-import type { FormInstance, FormRules } from 'element-plus';
-import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
-
-interface LoginInfo {
-    username: string;
-    password: string;
-}
-
-const lgStr = localStorage.getItem('login-param');
-const defParam = lgStr ? JSON.parse(lgStr) : null;
-const checked = ref(lgStr ? true : false);
-
 const router = useRouter();
-const param = reactive<LoginInfo>({
-    username: defParam ? defParam.username : '',
-    password: defParam ? defParam.password : '',
-});
 
-const rules: FormRules = {
-    username: [
-        {
-            required: true,
-            message: t('enterUserName'),
-            trigger: 'blur',
-        },
-    ],
-    password: [
-        {
-            required: true,
-            message: t('enterUserPassword'),
-            trigger: 'blur'
-        }
-    ],
+/**
+ * UsernameLogin
+ */
+const usernameLoginStr = localStorage.getItem('username-login');
+const usernameLoginChecked = ref(usernameLoginStr ? true : false);
+
+const usernameLogin = reactive<UsernameLoginPayload> (
+  usernameLoginStr ? JSON.parse(usernameLoginStr) : {
+    username: '',
+    password: ''
+  }
+);
+const usernameLoginRules: FormRules = {
+  username: [
+    {
+      required: true,
+      message: t('enterUserName'),
+      trigger: 'blur',
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: t('enterUserPassword'),
+      trigger: 'blur'
+    }
+  ],
 };
 
-const login = ref<FormInstance>();
-const submitForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return;
-    formEl.validate().then((valid: boolean) => {
-        if (valid) {
-            ElMessage.success(t('loginSuccess'));
-            localStorage.setItem('vuems_name', param.username);
-            router.push('/');
-            if (checked.value) {
-                localStorage.setItem('login-param', JSON.stringify(param));
-            } else {
-                localStorage.removeItem('login-param');
-            }
-        } else {
-            ElMessage.error(t('loginFail'));
-            return false;
-        }
-    });
+const usernameLoginRef = ref<FormInstance | null>(null);
+const loginInfoSubmit = () => {
+  runWithErrorMessage( async () => {
+    const valid = await usernameLoginRef.value.validate();
+    if (!valid) throw new Error(t('formValidationFailed'));
+    if (usernameLoginChecked.value) {
+      localStorage.setItem('username-login', JSON.stringify(toRaw(usernameLogin)));
+    } else {
+      localStorage.removeItem('username-login');
+    }
+    router.replace('/');
+    ElMessage.success(t('loginSuccess'));
+  });
 };
+
 </script>
 <style scoped>
 .login-bg {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100vh;
-    background: url(@/assets/img/login-bg.jpg) center/cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
 }
-.login-header {
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    margin-bottom: 20px;
-}
-.logo {
-    margin-left: 10px;
-    width: 42px;
+.login-bg-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background: url(/img/login-bg-view.png);
+  background-size: cover;
 }
 .login-title {
-    font-size: 22px;
-    color: var(--login-text-color);
-    font-weight: bold;
-    text-decoration: underline;
+  height: 90px;
+  width: 600px;
+  margin-bottom: 20px;
+  background: url(/img/login-bg-view-title.png);
+  background-size: cover;
+}
+.login-header {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  margin-bottom: 20px;
 }
 .login-container {
-    width: 360px;
-    margin-left: 8px;
-    border-radius: 4px;
-    background: var(--login-bg-color);
-    padding: 20px 50px 20px;
-    box-sizing: border-box;
-    border: 1px solid white;
-}
-.pwd-tips {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    margin: -10px 0 10px;
-    color: var(--login-text-color);
-}
-.pwd-checkbox {
-    margin-top: 15px;
-    height: auto;
-    color: var(--login-text-color);
+  width: 360px;
+  border-radius: 4px;
+  color: var(--header-color);
+  background: var(--header-bg-color);
+  padding: 20px 50px 20px;
+  box-sizing: border-box;
 }
 .login-btn {
-    display: block;
-    width: 100%;
-}
-.login-tips {
-    margin-top: 4px;
-    font-size: 12px;
-    color: var(--login-text-color);
+  display: block;
+  width: 100%;
 }
 </style>

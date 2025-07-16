@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -25,9 +25,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import bbcdabao.pingmonitor.common.domain.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.domain.coordination.IPath;
-import bbcdabao.pingmonitor.common.domain.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.infra.coordination.IPath;
+import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
 import bbcdabao.pingmonitor.manager.app.services.IRobotManager;
