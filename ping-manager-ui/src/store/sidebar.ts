@@ -22,12 +22,12 @@ export const useSidebarStore = defineStore('sidebar', {
             {
               itemname: 'template',
               itemicon: 'lucide-scroll',
-              route: '/template',
+              route: '/template-page',
             },
             {
               itemname: 'taskinfo',
               itemicon: 'lucide-scroll-text',
-              route: '/taskinfo',
+              route: '/taskinfo-page',
             },
             {
               itemname: 'taskrslt',

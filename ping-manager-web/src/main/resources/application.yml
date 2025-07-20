@@ -17,6 +17,7 @@ server:
   port: 8080
 
 token:
+  enable: true
   jwt:
     secret: QQWWEERRTTYYUUIIOOPPAASSDDFFGG11
 

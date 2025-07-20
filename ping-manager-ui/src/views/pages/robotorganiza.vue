@@ -9,7 +9,7 @@
           <el-table-column prop="name" label="Name" width="250" />
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button size="small" type="primary" @click="handleEdit(scope.row)">详情</el-button>
+              <el-button size="small" type="primary">详情</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -19,7 +19,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useRobotRegisterStore } from '@/store/robotRegister';
+import { useRobotRegisterStore } from '@/store/robot-register';
 
 const robotRegister = useRobotRegisterStore();
 onMounted(() => {

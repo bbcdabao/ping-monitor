@@ -25,9 +25,21 @@ const routes: RouteRecordRaw[] = [
         redirect: '/theme-page',
       },
       {
+        path: '/template-page',
+        name: 'template',
+        meta: {},
+        component: () => import('@/views/pages/template-page.vue'),
+      },
+      {
+        path: '/taskinfo-page',
+        name: 'taskinfo',
+        meta: {},
+        component: () => import('@/views/pages/taskinfo-page.vue'),
+      },
+      {
         path: '/theme-page',
         name: 'theme',
-        meta: { title: 'themesetup', noAuth: false },
+        meta: {},
         component: () => import('@/views/pages/theme-page.vue'),
       }
     ]

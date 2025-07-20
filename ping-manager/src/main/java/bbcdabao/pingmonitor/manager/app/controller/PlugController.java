@@ -29,38 +29,45 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.manager.app.module.PlugInfo;
+import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
+import bbcdabao.pingmonitor.manager.app.module.responses.PlugInfo;
 import bbcdabao.pingmonitor.manager.app.services.IPlugOpt;
 
 @Controller
-@RequestMapping("/plug")
+@RequestMapping("/api/plugs")
 public class PlugController {
 
     @Autowired
     private IPlugOpt plugOpt;
 
-    @GetMapping(value = "/{plugName}/pluginfos")
+    @GetMapping(value = "/{plugName}")
     @ResponseBody
-    public ResponseEntity<Collection<PlugInfo>> getPlugNamePlugInfos(
+    public ResponseEntity<ApiResponse<Collection<PlugInfo>>> getPlugNamePlugInfos(
             @PathVariable("plugName") String plugName) throws Exception {
-        ResponseEntity<Collection<PlugInfo>> response = ResponseEntity.ok(
-                plugOpt.getPlugInfos(plugName));
-        return response;
+        Collection<PlugInfo> plugInfos = plugOpt.getPlugInfos(plugName);
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(plugInfos));
     }
 
-    @GetMapping(value = "/pluginfos")
+    @GetMapping(value = "")
     @ResponseBody
-    public ResponseEntity<Collection<PlugInfo>> getPlugInfos() throws Exception {
-        ResponseEntity<Collection<PlugInfo>> response = ResponseEntity.ok(
-                plugOpt.getPlugInfos(null));
-        return response;
+    public ResponseEntity<ApiResponse<Collection<PlugInfo>>> getPlugInfos()
+            throws Exception {
+        Collection<PlugInfo> plugInfos = plugOpt.getPlugInfos(null);
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(plugInfos));
     }
     
     @DeleteMapping(value = "/{plugName}")
     @ResponseBody
-    public ResponseEntity<String> deletePlug(   
-            @PathVariable("plugName") String plugName) throws Exception {
+    public ResponseEntity<ApiResponse<String>> deletePlug(   
+            @PathVariable("plugName") String plugName)
+                    throws Exception {
         plugOpt.deletePlug(plugName);
-        return ResponseEntity.ok("success");
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok("success"));
     }
 }

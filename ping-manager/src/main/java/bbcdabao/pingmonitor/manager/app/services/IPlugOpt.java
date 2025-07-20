@@ -20,7 +20,7 @@ package bbcdabao.pingmonitor.manager.app.services;
 
 import java.util.Collection;
 
-import bbcdabao.pingmonitor.manager.app.module.PlugInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.PlugInfo;
 
 public interface IPlugOpt {
     Collection<PlugInfo> getPlugInfos(String plugName) throws Exception;

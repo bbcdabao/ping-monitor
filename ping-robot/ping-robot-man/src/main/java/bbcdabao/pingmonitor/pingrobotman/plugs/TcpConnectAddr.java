@@ -18,7 +18,7 @@
 
 package bbcdabao.pingmonitor.pingrobotman.plugs;
 
-import java.net.InetAddress;
+import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,26 +26,27 @@ import org.slf4j.LoggerFactory;
 import bbcdabao.pingmonitor.common.domain.extraction.annotation.ExtractionFieldMark;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 
-public class PingAddr implements IPingMoniterPlug {
+public class TcpConnectAddr implements IPingMoniterPlug {
 
-    private final Logger logger = LoggerFactory.getLogger(PingAddr.class);
+    private final Logger logger = LoggerFactory.getLogger(TcpConnectAddr.class);
 
-    @ExtractionFieldMark(descriptionCn = "Ping测试地址", descriptionEn = "Ping test addr")
+    @ExtractionFieldMark(descriptionCn = "链接测试地址", descriptionEn = "Link test addr")
     private String ipAddr;
+
+    @ExtractionFieldMark(descriptionCn = "链接测试端口", descriptionEn = "Link test port")
+    private Integer port;
 
     @Override
     public String doPingExecute(int timeOutMs) throws Exception {
-        boolean reachable = InetAddress.getByName(ipAddr).isReachable(timeOutMs);
         StringBuilder sb = new StringBuilder();
-        sb.append("ping:");
+        sb.append("connect:");
         sb.append(ipAddr);
         sb.append(":");
-        if (reachable) {
-            logger.info("PingAddr:{}:is ok", ipAddr);
-            sb.append("ok");
-            return sb.toString();
+        sb.append(port);
+        try (Socket socket = new Socket(ipAddr, port);) {
+            sb.append(":ok");
         }
-
-        throw new Exception("not reachable");
+        logger.info("TcpConnectAddr ok:{}", sb.toString());
+        return sb.toString();
     }
 }

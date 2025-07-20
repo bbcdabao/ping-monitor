@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.module;
+package bbcdabao.pingmonitor.manager.app.module.responses;
 
 import java.util.Map;
 

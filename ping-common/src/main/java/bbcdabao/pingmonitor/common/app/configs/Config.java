@@ -19,6 +19,7 @@
 package bbcdabao.pingmonitor.common.app.configs;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +28,7 @@ import bbcdabao.pingmonitor.common.app.services.impl.SecurityService;
 import jakarta.annotation.PostConstruct;
 
 @Configuration
+@ConditionalOnProperty(prefix = "token", name = "enable", havingValue = "true", matchIfMissing = false)
 public class Config {
 
     @Value("${token.jwt.secret}")

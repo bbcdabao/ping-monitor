@@ -67,7 +67,8 @@
 import {
   ref,
   toRaw,
-  reactive
+  reactive,
+  onMounted
 } from 'vue';
 import {
   useI18n
@@ -83,7 +84,8 @@ import type {
   FormRules
 } from 'element-plus';
 import {
-  postUsernamelogin
+  postUsernamelogin,
+  postLogout
 } from '@/api';
 import {
   useHeaderStore
@@ -146,6 +148,10 @@ const loginInfoSubmit = () => {
     ElMessage.success(t('loginSuccess'));
   });
 };
+
+onMounted( async () => {
+  await postLogout();
+});
 
 </script>
 <style scoped>

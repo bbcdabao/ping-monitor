@@ -2,6 +2,9 @@ import type {
   UsernameLoginPayload,
   LoginResponse
 } from '@/types/login-sub';
+import type {
+  PlugInfo
+} from '@/types/plug-sub';
 
 import request from '@/utils/request';
 
@@ -51,6 +54,24 @@ export const postUsernamelogin = (body: UsernameLoginPayload) : Promise<LoginRes
     url: '/openapi/usernamelogin',
     method: 'post',
     data: body
+  });
+};
+
+/**
+ * 退出登录
+ * @returns 
+ */
+export const postLogout = () : Promise<any> => {
+  return request({
+    url: '/openapi/logout',
+    method: 'post'
+  });
+};
+
+export const getPlugInfos = (plugName: string | null) : Promise<PlugInfo[]> => {
+  return request({
+    url: plugName ? `/api/plugs/${plugName}` : '/api/plugs',
+    method: 'get'
   });
 };
 

@@ -313,6 +313,18 @@ body {
   color: var(--el-color-info) !important;
 }
 
+.el-descriptions__label {
+  color: var(--element-color) !important;
+  border-color: var(--element-bd-color)  !important;
+  background-color: var(--element-bg-color) !important;
+}
+
+.el-descriptions__content  {
+  color: var(--element-index-color) !important;
+  border-color: var(--element-index-bd-color)  !important;
+  background-color: var(--element-index-bg-color) !important;
+}
+
 .content-title {
   width: 100%;
   display: flex;

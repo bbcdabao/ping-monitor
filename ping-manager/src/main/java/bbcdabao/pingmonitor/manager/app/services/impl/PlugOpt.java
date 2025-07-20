@@ -27,7 +27,7 @@ import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
-import bbcdabao.pingmonitor.manager.app.module.PlugInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.PlugInfo;
 import bbcdabao.pingmonitor.manager.app.services.IPlugOpt;
 
 @Service
@@ -42,7 +42,7 @@ public class PlugOpt implements IPlugOpt {
     @Override
     public Collection<PlugInfo> getPlugInfos(String plugName) throws Exception {
         Collection<PlugInfo> plugInfos = new ArrayList<>();
-        if (ObjectUtils.isEmpty(plugName)) {
+        if (!ObjectUtils.isEmpty(plugName)) {
             plugInfos.add(getPlugInfo(plugName));
             return plugInfos;
         }

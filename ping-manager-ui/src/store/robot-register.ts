@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { robotGroupNames } from '@/api'
 
 export const useRobotRegisterStore = defineStore('robotRegister', {
     state: () => {
@@ -17,6 +16,7 @@ export const useRobotRegisterStore = defineStore('robotRegister', {
     },
     actions: {
       updateRobotGroupNames() {
+        /*
         robotGroupNames()
         .then(res => {
           this.robotGroupNames = res.data;
@@ -24,6 +24,7 @@ export const useRobotRegisterStore = defineStore('robotRegister', {
         .catch(err => {
           console.error('请求失败', err);
         });
+        */
       },
       metaInfoconnectToSSE() {
         if (this.eventSource) return // 已连接则不重复连接
