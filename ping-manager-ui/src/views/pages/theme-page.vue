@@ -316,7 +316,7 @@ const systemmap: Record<string, ThemeConfig> = {
     elementBgColor: '#ffffff',
     elementIndexColor: '#409eff',
     elementIndexBdColor: '#e0e0e0',
-    elementIndexBgColor: '#f0f7ff',
+    elementIndexBgColor: '#cccccc',
     customShadowColor: '#000000'
   }
 };

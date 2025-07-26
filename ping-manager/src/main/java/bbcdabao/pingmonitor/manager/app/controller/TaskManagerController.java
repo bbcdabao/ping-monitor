@@ -19,6 +19,7 @@
 package bbcdabao.pingmonitor.manager.app.controller;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,56 +29,103 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import bbcdabao.pingmonitor.manager.app.module.TaskInfo;
+import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
+import bbcdabao.pingmonitor.manager.app.module.payloads.AddTaskPayload;
+import bbcdabao.pingmonitor.manager.app.module.payloads.AddTaskRobotGroupsPayload;
+import bbcdabao.pingmonitor.manager.app.module.responses.CheckRobotGroupInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.TaskInfo;
 import bbcdabao.pingmonitor.manager.app.services.ITaskManager;
 
 @Controller
-@RequestMapping("/task")
+@RequestMapping("/api/tasks")
 public class TaskManagerController {
 
     @Autowired
     private ITaskManager taskManager;
 
-    @PutMapping(value = "/{taskName}/plug/{plugName}")
-    @ResponseBody
-    public ResponseEntity<String> addTask(
-            @PathVariable("taskName") String taskName,
-            @PathVariable("plugName") String plugName,
-            @RequestBody Properties properties) throws Exception {
-        taskManager.addTask(taskName, plugName, properties);
-        return ResponseEntity.ok("success");
+    private Properties convertMapToProperties(Map<String, Object> map) {
+        Properties properties = new Properties();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value != null) {
+                properties.setProperty(key, value.toString());
+            }
+        }
+        return properties;
     }
-    @DeleteMapping(value = "/{taskName}")
-    @ResponseBody
-    public ResponseEntity<String> deleteTask(
-            @PathVariable("taskName") String taskName) throws Exception {
-        taskManager.deleteTask(taskName);
-        return ResponseEntity.ok("success");
-    }
+
     @PostMapping(value = "/{taskName}")
     @ResponseBody
-    public ResponseEntity<String> updateTask(
+    public ResponseEntity<ApiResponse<Void>> tasksForPost(
             @PathVariable("taskName") String taskName,
-            @RequestBody Properties properties) throws Exception {
-        taskManager.updateTask(taskName, properties);
-        return ResponseEntity.ok("success");
+            @RequestBody AddTaskPayload addTaskPayload) throws Exception {
+        taskManager.addTask(taskName, addTaskPayload.getPlugName(),
+        		convertMapToProperties(addTaskPayload.getProperties()));
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok());
     }
-    @GetMapping(value = "/{taskName}/taskInfos")
+
+    @DeleteMapping(value = "/{taskName}")
     @ResponseBody
-    public ResponseEntity<Collection<TaskInfo>> getOneTask(
+    public ResponseEntity<ApiResponse<Void>> tasksForDelete(
             @PathVariable("taskName") String taskName) throws Exception {
-        ResponseEntity<Collection<TaskInfo>> response = ResponseEntity.ok(taskManager.getTask(taskName));
-        return response;
+        taskManager.deleteTask(taskName);
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok());
     }
-    @GetMapping(value = "/taskInfos")
+
+    @GetMapping(value = "/{taskName}")
     @ResponseBody
-    public ResponseEntity<Collection<TaskInfo>> getTask() throws Exception {
-        ResponseEntity<Collection<TaskInfo>> response = ResponseEntity.ok(taskManager.getTask(null));
-        return response;
+    public ResponseEntity<ApiResponse<Collection<TaskInfo>>> tasksForGet(
+            @PathVariable("taskName") String taskName) throws Exception {
+        return ResponseEntity
+        		.ok()
+        		.body(ApiResponse.ok(taskManager.getTasks(taskName)));
     }
+
+    @GetMapping(value = "")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Collection<TaskInfo>>> tasksForGet() throws Exception {
+        return ResponseEntity
+        		.ok()
+        		.body(ApiResponse.ok(taskManager.getTasks(null)));
+    }
+
+    @GetMapping(value = "/{taskName}/robot-groups")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Collection<RobotGroupInfo>>> robotGroupsForGet(
+            @PathVariable("taskName") String taskName) throws Exception {
+        return ResponseEntity
+        		.ok()
+        		.body(ApiResponse.ok(taskManager.getRobotGroupInfos(taskName)));
+    }
+    
+    @GetMapping(value = "/{taskName}/check-robot-groups")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Collection<CheckRobotGroupInfo>>> checkRobotGroupsForGet(
+            @PathVariable("taskName") String taskName) throws Exception {
+        return ResponseEntity
+        		.ok()
+        		.body(ApiResponse.ok(taskManager.getCheckRobotGroupInfos(taskName)));
+    }
+    
+    @PostMapping(value = "/{taskName}/robot-groups")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Void>> robotGroupsForPost(
+            @PathVariable("taskName") String taskName,
+            @RequestBody AddTaskRobotGroupsPayload addTaskRobotGroupsPayload) throws Exception {
+    		taskManager.setRobotGroupInfos(taskName, addTaskRobotGroupsPayload.getRobotGroups());
+    		return ResponseEntity
+        		.ok()
+        		.body(ApiResponse.ok());
+    }
+
 }

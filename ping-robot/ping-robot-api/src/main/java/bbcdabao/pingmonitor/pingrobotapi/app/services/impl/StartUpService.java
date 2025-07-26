@@ -18,6 +18,7 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.curator.framework.CuratorFramework;
@@ -32,17 +33,24 @@ import org.springframework.boot.ApplicationRunner;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.domain.extraction.TemplateField;
 import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.infra.coordination.IPath;
+import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.dataconver.IConvertToByte;
+import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
 import bbcdabao.pingmonitor.pingrobotapi.infra.RobotConfig;
 import bbcdabao.pingmonitor.pingrobotapi.infra.templates.TemplatesManager;
 
+/**
+ * 
+ */
 public class StartUpService implements ApplicationRunner, ConnectionStateListener {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StartUpService.class);
-    
+
     @Autowired
     private RobotConfig robotConfig;
-    
+
     private void regTemplatesInfo() throws Exception {
         TemplatesManager
         .getInstance()
@@ -51,14 +59,16 @@ public class StartUpService implements ApplicationRunner, ConnectionStateListene
                     .getInstance().getPingMoniterPlug(plugName);
             Map<String, TemplateField> plugTemplate = ExtractionField
                     .getInstance().extractionTemplateMapFromObject(plug);
-            CoordinationManager.getInstance().setPlugTemplate(plugName, plugTemplate);
+        	CoordinationManager cm = CoordinationManager.getInstance();
+            cm.setPlugTemplate(plugName, plugTemplate);
         });
     }
-    
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         regTemplatesInfo();
     }
+
     @Override
     public void stateChanged(CuratorFramework client, ConnectionState newState) {
         String robotGroupName = robotConfig.getRobotGroupName();
@@ -66,11 +76,21 @@ public class StartUpService implements ApplicationRunner, ConnectionStateListene
         case CONNECTED:
         case RECONNECTED:
             try {
-                CoordinationManager
-                .getInstance()
+            	CoordinationManager cm = CoordinationManager.getInstance();
+            	cm
                 .regRobotInstance(robotGroupName);
+            	
+                Map<String, String> descriptionMap = new HashMap<>(3);
+                descriptionMap.put("descriptionCn", robotConfig.getDescriptionCn());
+                descriptionMap.put("descriptionEn", robotConfig.getDescriptionEn());
+                
+                IPath robotRegisterPathGroup = IPath.robotRegisterPathGroup(robotGroupName);
+            	IConvertToByte<String> convertToByte = ByteDataConver.getInstance().getConvertToByteForString();
+            	JsonConvert jc = JsonConvert.getInstance();
+                cm.setData(robotRegisterPathGroup, convertToByte.getData(jc.tobeJson(descriptionMap)));
+                
             } catch (Exception e) {
-                LOGGER.info("StartUpService Exception:{}", e.getMessage());
+                LOGGER.info("StartUpService Exception:{}", robotConfig.getDescriptionCn());
             }
             break;
         default:

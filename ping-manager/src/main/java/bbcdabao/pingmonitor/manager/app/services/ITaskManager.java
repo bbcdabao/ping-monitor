@@ -20,12 +20,18 @@ package bbcdabao.pingmonitor.manager.app.services;
 
 import java.util.Collection;
 import java.util.Properties;
+import java.util.Set;
 
-import bbcdabao.pingmonitor.manager.app.module.TaskInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.CheckRobotGroupInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.TaskInfo;
 
 public interface ITaskManager {
     void addTask(String taskName, String plugName, Properties properties) throws Exception;
     void deleteTask(String taskName) throws Exception;
     void updateTask(String taskName, Properties properties) throws Exception;
-    Collection<TaskInfo> getTask(String taskName) throws Exception;
+    Collection<TaskInfo> getTasks(String taskName) throws Exception;
+    Collection<RobotGroupInfo> getRobotGroupInfos(String taskName) throws Exception;
+    Collection<CheckRobotGroupInfo> getCheckRobotGroupInfos(String taskName) throws Exception;
+    void setRobotGroupInfos(String taskName, Set<String> robotGroupNameSet) throws Exception;
 }

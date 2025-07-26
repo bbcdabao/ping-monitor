@@ -16,14 +16,13 @@
  *
  */
 
-package bbcdabao.pingmonitor.pingrobotapi.infra;
+package bbcdabao.pingmonitor.manager.app.module.payloads;
+
+import java.util.Set;
 
 import lombok.Data;
 
 @Data
-public class RobotConfig {
-    private String plugsPath = "bbcdabao.pingmonitor.pingrobotman.plugs";
-    private String robotGroupName = "robot-group";
-    private String descriptionCn = "none";
-    private String descriptionEn = "none";
+public class AddTaskRobotGroupsPayload {
+	private Set<String> robotGroups;
 }

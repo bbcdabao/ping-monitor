@@ -1,4 +1,12 @@
 {
+  "addTaskSuccessJump": "添加任务成功，跳转到任务列表?",
+  "confirm": "确认",
+  "cancel": "取消",
+  "confirmRobotGroup": "确认机器人组",
+  "taskCount": "任务个数",
+  "optSuccess": "成功",
+  "taskNameRequired": "请输入任务名称",
+  "createTask": "创建任务",
   "templateCount": "模板个数",
   "whiteTheme": "亮白主题",
   "coolerTheme": "冷酷蓝色",
@@ -51,5 +59,6 @@
   "robotmanager": "哨兵管理",
   "robotorganiza": "哨兵组织",
   "robotinstance": "哨兵实例",
-  "thememanager": "主题设置"
+  "thememanager": "主题设置",
+  "systemConfig": "系统配置"
 }

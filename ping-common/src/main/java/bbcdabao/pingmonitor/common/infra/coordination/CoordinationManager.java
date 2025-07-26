@@ -135,6 +135,14 @@ public class CoordinationManager {
         .withMode(mode)
         .forPath(path.get(), data);
     }
+    public void createData(IPath path, CreateMode mode) throws Exception {
+        CuratorFrameworkInstance
+        .getInstance()
+        .create()
+        .creatingParentsIfNeeded()
+        .withMode(mode)
+        .forPath(path.get());
+    }
 
     @FunctionalInterface
     public static interface IExists {
@@ -193,19 +201,19 @@ public class CoordinationManager {
 
     @FunctionalInterface
     public static interface IChildOnly {
-        void onData(IPath childPath, String child);
+        void onData(IPath childPath, String child) throws Exception;
     }
     @FunctionalInterface
     public static interface IChildGetStat {
-        void onData(IPath childPath, String child, Stat stat);
+        void onData(IPath childPath, String child, Stat stat) throws Exception;
     }
     @FunctionalInterface
     public static interface IChildGetData {
-        void onData(IPath childPath, String child, byte[] data);
+        void onData(IPath childPath, String child, byte[] data) throws Exception;
     }
     @FunctionalInterface
     public static interface IChildGetDataStat {
-        void onData(IPath childPath, String child, byte[] data, Stat stat);
+        void onData(IPath childPath, String child, byte[] data, Stat stat) throws Exception;
     }
     public List<String> getChildren(IPath path) throws Exception {
         List<String> children = CuratorFrameworkInstance
@@ -416,22 +424,41 @@ public class CoordinationManager {
             }
         }
 
+        /*
+	        IPath taskPath = IPath.taskPath(taskName);
+	        CuratorFramework cf = CuratorFrameworkInstance.getInstance();
+	        CuratorOp createTask = cf.transactionOp().create().forPath(taskPath.get());
+	        byte[] propertiesData = ByteDataConver
+	                .getInstance()
+	                .getConvertToByteForProperties()
+	                .getData(properties);
+	        IPath taskConfigPath = IPath.taskConfigPath(taskName);
+	        CuratorOp createTaskConfig = cf.transactionOp().create().forPath(taskConfigPath.get(), propertiesData);
+	        
+	        List<CuratorTransactionResult> results = cf.transaction().forOperations(createTask, createTaskConfig);
+
+	        results.forEach(result -> {
+	            LOGGER.info("createTask--------------------");
+	            LOGGER.info("type:{}", result.getType());
+	            LOGGER.info("forPath:{}", result.getForPath());
+	            LOGGER.info("error:{}", result.getError());
+	        });
+	    */
+        ByteDataConver bd = ByteDataConver.getInstance();
+        
         IPath taskPath = IPath.taskPath(taskName);
-        CuratorFramework cf = CuratorFrameworkInstance.getInstance();
-        CuratorOp createTask = cf.transactionOp().create().forPath(taskPath.get());
-        byte[] propertiesData = ByteDataConver
-                .getInstance()
+        byte[] plugNameData = bd
+                .getConvertToByteForString()
+                .getData(plugName);
+        createData(taskPath, CreateMode.PERSISTENT, plugNameData);
+
+        IPath taskConfigPath = IPath.taskConfigPath(taskName);
+        byte[] propertiesData = bd
                 .getConvertToByteForProperties()
                 .getData(properties);
-        IPath taskConfigPath = IPath.taskConfigPath(taskName);
-        CuratorOp createTaskConfig = cf.transactionOp().create().forPath(taskConfigPath.get(), propertiesData);
-        
-        List<CuratorTransactionResult> results = cf.transaction().forOperations(createTask, createTaskConfig);
-        results.forEach(result -> {
-            LOGGER.info("createTask--------------------");
-            LOGGER.info("type:{}", result.getType());
-            LOGGER.info("forPath:{}", result.getForPath());
-            LOGGER.info("error:{}", result.getError());
-        });
+        createData(taskConfigPath, CreateMode.PERSISTENT, propertiesData);
+
+        LOGGER.info("createTask--------------------");
+        LOGGER.info("taskName:{}", taskName);
     }
 }

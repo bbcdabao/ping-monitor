@@ -22,4 +22,6 @@ executor-config:
   enable: true
 
 robot:
-  robot-group-name: myrobot
+  robot-group-name: huananteam
+  description-cn: 华南区
+  description-en: Hua nan

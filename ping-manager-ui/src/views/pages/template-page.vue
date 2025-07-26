@@ -1,81 +1,122 @@
-<!-- Copyright 2025 bbcdabao Team -->
+<!--
+  Copyright 2025 bbcdabao Team
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 
 <template>
   <div>
-    <el-card class="custom-shadow mgb20" shadow="hover">
+    <el-card class="custom-shadow mgb6" shadow="hover">
       <template #header>
         <div class="content-title">任务模板</div>
       </template>
       <div class="this-card">
         <el-descriptions
-          style="min-width: 500px; width: 100%;"
-          :column="2"
+          style="width: 100%;"
+          :column="1"
           border
         >
+          <el-descriptions-item
+            :label="'选择创建'"
+            label-align="right"
+            align="left"
+            width="200px"
+          >
+            <el-select
+              v-model="selectedPlugName"
+              placeholder="选择插件可创建任务"
+              clearable
+              filterable
+            >
+              <el-option
+                v-for="plugInfo in plugInfos"
+                :key="plugInfo.plugName"
+                :label="plugInfo.plugName"
+                :value="plugInfo.plugName"
+              />
+            </el-select>
+          </el-descriptions-item>
           <el-descriptions-item
             :label="$t('templateCount')"
             label-align="right"
             align="left"
             width="200px"
           >
-            8
+            {{ plugInfos.length }}
           </el-descriptions-item>
-          <el-descriptions-item
-            :label="'过滤操作'"
-            label-align="right"
-            align="left"
-            width="200px"
-          >
-            
-          </el-descriptions-item>
+
         </el-descriptions>
-        <div class="interval-line" />
-        <div class="template-composition">
+        <div
+          class="interval-line"
+        />
+        <div
+          class="template-composition"
+        >
           <div
             class="template-item-style"
-            v-for="(plugInfo, index) in plugInfos"
+            v-for="(plugInfo, index) in nowshowPlugInfos"
             :key="plugInfo.plugName"
           >
-            <div class="template-item-inner-style">
-              <div class="template-item-inner-name">
-                {{'模板名称'}} : {{ plugInfo.plugName }}
+            <div
+              class="template-item-inner-style"
+            >
+              <div
+                class="template-item-inner-name"
+              >
+                {{ '模板名称' }} : {{ plugInfo.plugName }}
               </div>
-              <div class="template-node-container">
-                <div class="template-node-frame">
-                  <div style="
-                    margin-top: 20px;
-                      display: flex;
-                        text-align: center;
-  flex-direction: column; /* 垂直排列 */
-                  ">
-
-                      <el-button circle size="small" type="primary">
-                        <lucide-view class="icon-style" />
-                      </el-button> 
-        
-                  </div>
-                </div>
-                <div class="template-node-style">
+              <div
+                class="template-node-container"
+              >
+                <div
+                  class="template-node-frame"
+                />
+                <div
+                  class="template-node-style"
+                >
                   <div
                     class="template-node-property"
                     v-for="(field, fieldKey) in plugInfo.plugTemp"
                     :key="fieldKey"
                   >
-                    <div class="template-node-sub0">
+                    <div
+                      class="template-node-sub0"
+                    >
                       {{ '参数' }}:{{ fieldKey }}
                     </div>
-                    <div class="template-node-sub1">
+                    <div
+                      class="template-node-sub1"
+                    >
                       {{ '类型' }}:{{ field.type }}
                     </div>
                     <el-tooltip
-                      :content="getDesc(field)"
+                      v-if="selectedPlugInfo != null"
+                      :content="getDescs(field)"
                       placement="top"
                       effect="dark"
                     >
-                      <div class="template-node-sub3">
-                         {{ getDesc(field) }}
+                      <div
+                        class="template-node-sub3"
+                      >
+                        {{ getDescs(field) }}
                       </div>
                     </el-tooltip>
+                    <div
+                      v-else
+                      class="template-node-sub3"
+                    >
+                      {{ getDescs(field) }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -85,44 +126,202 @@
         <div class="interval-line" />
       </div>
     </el-card>
+
+    <transition name="fade-slide" appear>
+    <el-card class="custom-shadow mgb20" shadow="hover" v-if="selectedPlugInfo != null">
+      <template #header>
+        <div class="content-title">创建任务</div>
+      </template>
+      <div class="this-card">
+        <el-descriptions
+          style="width: 100%;"
+          :column="1"
+          border
+        >
+          <el-descriptions-item
+            label-align="right"
+            align="left"
+            width="200px"
+            :label="'任务名称:'"
+          >
+            <el-input
+              placeholder="请输入任务名称"
+              v-model="addTaskName"
+            />
+          </el-descriptions-item>
+          <el-descriptions-item
+            v-for="(field, key) in selectedPlugInfo.plugTemp"
+            label-align="right"
+            align="left"
+            width="200px"
+            :key="key"
+            :label="getTitle(field)"
+          >
+            <el-input-number
+              v-if="['BYTE', 'SHORT', 'INT', 'LONG', 'FLOAT', 'DOUBLE'].includes(field.type)"
+              controls-position="right"
+              v-model="addTaskData[key]"
+            />
+            <el-switch
+              v-else-if="field.type === 'BOOLEAN'"
+              v-model="addTaskData[key]"
+            />
+            <el-input
+              v-else-if="field.type === 'STRING'"
+              placeholder="请输入"
+              v-model="addTaskData[key]"
+            />
+            <span v-else>不支持的类型：{{ field.type }}</span>
+          </el-descriptions-item>
+          <el-descriptions-item
+            label-align="right"
+            align="left"
+            width="200px"
+            :label="'操作:'"
+          >
+            <el-button
+              class="bottom-style"
+              type="primary"
+              size="small"
+              @click="createTaskSubmit"
+            >
+              <lucide-calendar-plus style="width: 18px;" />&nbsp;
+              {{ t('confirm') }}
+            </el-button>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </el-card>
+    </transition>
+
   </div>
 </template>
+
 <script setup lang="ts">
-import { 
+import {
   ref,
   toRaw,
   watch,
-  reactive,
+  computed,
   onMounted
 } from 'vue';
 import {
   useI18n
 } from 'vue-i18n';
 import {
-  getPlugInfos
+  ElMessage
+} from 'element-plus';
+import {
+  useRouter
+} from 'vue-router';
+import {
+  getPlugInfos,
+  postAddTask
 } from '@/api';
+import {
+  promptYesOrNo
+} from '@/utils/dialog-inputs';
 import type {
-  PlugInfo
+  PlugInfo,
+  TemplateField
 } from '@/types/plug-sub';
+import type {
+  AddTaskPayload
+} from '@/types/task-sub';
 
 const { t, locale } = useI18n();
+const router = useRouter();
 
-const getDesc = (field: any) => {
+const getDescs = (field: TemplateField) => {
   return '说明: ' + (locale.value === 'zh' ? field.desCn : field.desEn);
 };
 
-const plugInfos = ref<PlugInfo[]>([]);
-
-const loadPlugInfos = async () => {
-  const resData : PlugInfo[] = await getPlugInfos(null);
-  plugInfos.value = resData;
+const getTitle = (field: TemplateField) => {
+  return (locale.value === 'zh' ? field.desCn : field.desEn) + ':';
 };
 
-onMounted( async () => {
-  await loadPlugInfos();
+let plugInfoMap: Record<string, PlugInfo> = {};
+const plugInfos = ref<PlugInfo[]>([]);
+const selectedPlugName = ref<string | null>(null);
+const selectedPlugInfo = computed(() => {
+  return selectedPlugName.value ? plugInfoMap[selectedPlugName.value] || null : null;
+});
+const nowshowPlugInfos = computed(() => {
+  return selectedPlugInfo.value ? [selectedPlugInfo.value] : plugInfos.value;
 });
 
+const addTaskName = ref('');
+const addTaskData = ref<Record<string, any>>({});
+watch(selectedPlugInfo, (newVal) => {
+  if (newVal) {
+    const temp: Record<string, any> = {};
+    for (const key in newVal.plugTemp) {
+      const field = newVal.plugTemp[key];
+      switch (field.type) {
+        case 'BOOLEAN':
+          temp[key] = false;
+          break;
+        case 'BYTE':
+        case 'SHORT':
+        case 'INT':
+        case 'LONG':
+        case 'FLOAT':
+        case 'DOUBLE':
+          temp[key] = 0;
+          break;
+        case 'STRING':
+          temp[key] = '';
+          break;
+        default:
+          temp[key] = null;
+      }
+    }
+    addTaskData.value = temp;
+  } else {
+    addTaskData.value = {};
+  }
+});
+
+const createTaskSubmit = async () => {
+  if (addTaskName.value.trim() === '') {
+    ElMessage.warning(t('taskNameRequired'));
+    return;
+  }
+  const taskData = toRaw(addTaskData.value);
+  const plugName = selectedPlugInfo.value?.plugName || '';
+  const addTaskPayload : AddTaskPayload = {
+    plugName: plugName,
+    properties: taskData
+  };
+  await postAddTask(addTaskName.value, addTaskPayload);
+  const confirmed = await promptYesOrNo(t, t('addTaskSuccessJump'));
+  if (confirmed) {
+    router.push({
+      path: '/taskinfo-page',
+      query: {
+        taskName: addTaskName.value
+      }
+    });
+  }
+};
+
+const loadPlugInfos = async () => {
+  const resData: PlugInfo[] = await getPlugInfos(null);
+
+  const indexPlugInfoMap: Record<string, PlugInfo> = {};
+  resData.forEach(item => {
+    indexPlugInfoMap[item.plugName] = item;
+  });
+  plugInfoMap = indexPlugInfoMap;
+
+  plugInfos.value = resData
+};
+
+onMounted(async () => {
+  await loadPlugInfos();
+});
 </script>
+
 <style scoped>
 .this-card {
   display: flex;
@@ -139,11 +338,11 @@ onMounted( async () => {
 }
 .template-item-style {
   border: 1px solid var(--element-index-bd-color);
-  color:  var(--element-index-color);
+  color: var(--element-index-color);
   background-color: var(--element-index-bg-color);
   font-weight: bold;
   width: 100%;
-  min-width: 300px;
+  min-width: 266px;
   height: 100%;
   border-radius: 4px;
   text-align: left;
@@ -183,8 +382,8 @@ onMounted( async () => {
 .template-node-frame {
   color: var(--el-text-color-regular);
   background-color: var(--el-color-success-light-5);
-  width: 40px;
-  flex: 0 0 40px;
+  width: 20px;
+  flex: 0 0 20px;
   text-align: center;
   margin-top: -10px;
   border-radius: 4px;
@@ -199,7 +398,7 @@ onMounted( async () => {
   border: 2px solid var(--el-color-primary);
   border-radius: 2px;
   font-size: 12px;
-  font-weight: bold;  
+  font-weight: bold;
   height: 80px;
   text-align: left;
   line-height: 24px;
@@ -210,8 +409,7 @@ onMounted( async () => {
   color: var(--el-text-color-regular);
   background-color: var(--el-color-primary-light-7);
   padding: 0 8px;
-
-  width: 150px;
+  width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -221,8 +419,7 @@ onMounted( async () => {
   color: var(--el-text-color-regular);
   background-color: var(--el-color-warning-light-7);
   padding: 0 8px;
-
-  width: 150px;
+  width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -232,8 +429,7 @@ onMounted( async () => {
   color: var(--el-text-color-regular);
   background-color: var(--el-color-info-light-7);
   padding: 0 8px;
-
-  width: 150px;
+  width: 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -248,5 +444,23 @@ onMounted( async () => {
   height: 1px;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+.bottom-style {
+  margin-left: 0px;
+  width: 120px;
+  font-size: 14px;
+  height: 28px;
+}
+
+.fade-slide-enter-active {
+  transition: all 1s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(100px);
+}
+.fade-slide-enter-to {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

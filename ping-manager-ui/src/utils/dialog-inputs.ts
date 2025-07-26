@@ -15,6 +15,38 @@ import {
 } from 'element-plus';
 
 /**
+ * 是否对话框，选择“否”返回 false，选择“是”返回 true，关闭抛出异常
+ * @param t 国际化函数
+ * @param title 对话框标题
+ * @returns true | false
+ */
+export const promptYesOrNo = async (
+  t: (key: string) => string,
+  title: string
+): Promise<boolean> => {
+  const result = await ElMessageBox({
+    title: '',
+    message: title,
+    showCancelButton: true,
+    confirmButtonText: t('confirm'),
+    cancelButtonText: t('cancel'),
+    closeOnClickModal: false,
+    distinguishCancelAndClose: true,
+  }).catch((e) => {
+    // 用户关闭弹窗
+    throw new Error('User closed');
+  });
+
+  if (result === 'confirm') {
+    return true;
+  } else if (result === 'cancel') {
+    return false;
+  } else {
+    throw new Error('Unexpected result');
+  }
+};
+
+/**
  * 手机号输入校验对话框，返回正确的手机号
  * @returns 
  */

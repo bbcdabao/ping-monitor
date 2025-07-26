@@ -52,6 +52,11 @@ export const useSidebarStore = defineStore('sidebar', {
           ]
         },
         {
+          itemname: 'systemConfig',
+          itemicon: 'lucide-settings',
+          route: '/system-config-page',
+        },
+        {
           itemname: 'thememanager',
           itemicon: 'lucide-brush-cleaning',
           route: '/theme-page',

@@ -86,7 +86,10 @@ const lucideIconNames = [
   'Languages',
   'Linkedin',
   'FolderTree',
-  'View'
+  'View',
+  'CalendarPlus',
+  'Settings',
+  'Bot'
 ]
 for (const name of lucideIconNames) {
   const component = Lucide[name]

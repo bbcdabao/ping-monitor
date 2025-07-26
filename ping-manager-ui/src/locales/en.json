@@ -1,4 +1,12 @@
 {
+  "addTaskSuccessJump": "Add task success jump task list?",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "confirmRobotGroup": "Confirm robot group",
+  "taskCount": "Task count",
+  "optSuccess": "success",
+  "taskNameRequired": "Task name is required",
+  "createTask": "Create task",
   "templateCount": "Template count",
   "whiteTheme": "White theme",
   "coolerTheme": "Cool blue",
@@ -51,5 +59,6 @@
   "robotmanager": "SentinelManager",
   "robotorganiza": "SentinelGroupInf",
   "robotinstance": "SentinelInstance",
-  "thememanager": "ThemeManager"
+  "thememanager": "ThemeManager",
+  "systemConfig": "Sys config"
 }

@@ -31,8 +31,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
 import bbcdabao.pingmonitor.manager.app.services.IRobotManager;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotInstancesSession;
@@ -40,14 +42,50 @@ import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotMasterInstanc
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
-@RequestMapping("/robot")
+@RequestMapping("/api/robot")
 public class RobotManagerController {
 
     private final Logger logger = LoggerFactory.getLogger(RobotManagerController.class);
 
     @Autowired
     private IRobotManager robotManager;
+    
+    @GetMapping(value = "/groups")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Collection<RobotGroupInfo>>> robotGroupsForGet() throws Exception {
+        return ResponseEntity
+        		.ok()
+        		.body(ApiResponse.ok(robotManager.getRobotGroupInfos(null)));
+    }
+    
+    @GetMapping(value = "/groups/{robotGroupName}")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<Collection<RobotGroupInfo>>> robotGroupsForGet(
+            @PathVariable("robotGroupName") String robotGroupName) throws Exception {
+        return ResponseEntity
+        		.ok()
+        		.body(ApiResponse.ok(robotManager.getRobotGroupInfos(robotGroupName)));
+    }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     @GetMapping(value = "/{robotGroupName}/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
     public void getRobotGroupNameInstancesForSse (

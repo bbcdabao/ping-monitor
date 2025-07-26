@@ -22,14 +22,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.zookeeper.data.Stat;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
 import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
+import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
 import bbcdabao.pingmonitor.manager.app.services.IRobotManager;
 
 @Service
@@ -53,6 +57,31 @@ public class RobotManager implements IRobotManager {
                     robotInstanceInfos.add(robotInstanceInfo);
                 });
         return robotInstanceInfos;
+    }
+
+    @Override
+    public Collection<RobotGroupInfo> getRobotGroupInfos(String robotGroupName) throws Exception {
+    	Collection<RobotGroupInfo> robotGroupInfos = new ArrayList<>();
+    	IConvertFromByte<String> convertFromByte = ByteDataConver.getInstance().getConvertFromByteForString();
+    	CoordinationManager cm = CoordinationManager.getInstance();
+    	if (null != robotGroupName) {
+    		IPath childPath = IPath.robotRegisterPathGroup(robotGroupName);
+    		byte[] data = cm.getData(childPath);
+    		String infoJson = convertFromByte.getValue(data);
+    		RobotGroupInfo robotGroupInfo = JsonConvert.getInstance()
+    				.fromJson(infoJson, RobotGroupInfo.class);
+    		robotGroupInfo.setRobotGroupName(robotGroupName);
+    		robotGroupInfos.add(robotGroupInfo);
+    		return robotGroupInfos;
+    	}
+    	cm.getChildren(IPath.robotRegisterPath(), (IPath childPath, String child, byte[] data) -> {
+    		String infoJson = convertFromByte.getValue(data);
+    		RobotGroupInfo robotGroupInfo = JsonConvert.getInstance()
+    				.fromJson(infoJson, RobotGroupInfo.class);
+    		robotGroupInfo.setRobotGroupName(child);
+    		robotGroupInfos.add(robotGroupInfo);
+    	});
+    	return robotGroupInfos;
     }
 
     @Override

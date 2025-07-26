@@ -115,6 +115,9 @@ public interface IPath {
     static IPath robotRegisterPath() {
         return () -> "/robot/register";
     }
+    static IPath robotRegisterPathGroup(String robotGroupName) {
+    	return () -> String.format("/robot/register/%s", robotGroupName);
+    }
 
     static IPath robotMetaInfoPath(String robotGroupName) {
         return () -> String.format("/robot/register/%s/meta-info", robotGroupName);

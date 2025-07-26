@@ -16,14 +16,14 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.module;
-
-import java.util.Properties;
+package bbcdabao.pingmonitor.manager.app.module.responses;
 
 import lombok.Data;
 
 @Data
-public class TaskInfo {
-    private String plugName;
-    private Properties config;
+public class RobotGroupInfo {
+	private String robotGroupName;
+	private String descriptionCn;
+	private String descriptionEn;
+
 }

@@ -22,8 +22,15 @@ import java.util.Collection;
 
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
 
 public interface IRobotManager {
+
+	/**
+	 * 哨兵组相关
+	 */
+    Collection<RobotGroupInfo> getRobotGroupInfos(String robotGroupName) throws Exception;
+
     Collection<RobotInstanceInfo> getInstances(String robotGroupName) throws Exception;
     Collection<RobotTaskInfo> getTasks(String robotGroupName) throws Exception;
 }

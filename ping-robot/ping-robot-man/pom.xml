@@ -27,6 +27,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+    </dependency>
+    <dependency>
       <groupId>bbcdabao.pingmonitor</groupId>
       <artifactId>ping-robot-api</artifactId>
     </dependency>

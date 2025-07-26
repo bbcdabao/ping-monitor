@@ -177,7 +177,7 @@ body {
   font-size: 14px;
   font-weight: bold;
   height: 28px !important;
-  padding: 2px 30px !important;
+  padding: 2px 2px !important;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -204,11 +204,16 @@ body {
   border: 1px solid var(--cardbody-bd-color) !important;
 }
 
-.el-card__header {
-  background-image: url(@/assets/img/card-point.svg);
-  background-size: 26px;
-  background-position: left;
-  background-repeat: no-repeat;
+.el-card__header::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: currentColor;
+  mask: url('@/assets/img/card-point.svg') no-repeat center / contain;
+  -webkit-mask: url('@/assets/img/card-point.svg') no-repeat center / contain;
+  margin-right: 2px;
+  vertical-align: middle;
 }
 
 /**
@@ -323,6 +328,31 @@ body {
   color: var(--element-index-color) !important;
   border-color: var(--element-index-bd-color)  !important;
   background-color: var(--element-index-bg-color) !important;
+}
+
+.el-select-dropdown {
+  background-color: var(--element-bg-color) !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--element-color) !important;
+}
+
+.el-select-dropdown__item:hover,
+.el-select-dropdown__item.is-selected {
+  background-color: var(--element-index-bg-color) !important;
+  color: var(--element-index-color) !important;
+}
+
+.el-select-dropdown__item {
+  background-color: transparent !important;
+  color: var(--element-index-color) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.el-checkbox__label {
+  color: var(--element-color) !important;
+  font-weight: bold !important;
 }
 
 .content-title {

@@ -5,6 +5,15 @@ import type {
 import type {
   PlugInfo
 } from '@/types/plug-sub';
+import type {
+  AddTaskRobotGroupsPayload,
+  AddTaskPayload,
+  TaskInfo
+} from '@/types/task-sub';
+import type {
+  CheckRobotGroupInfo,
+  RobotGroupInfo
+} from '@/types/robot-sub';
 
 import request from '@/utils/request';
 
@@ -68,10 +77,104 @@ export const postLogout = () : Promise<any> => {
   });
 };
 
+/**
+ * 获取插件
+ * @param plugName 
+ * @returns 
+ */
 export const getPlugInfos = (plugName: string | null) : Promise<PlugInfo[]> => {
   return request({
     url: plugName ? `/api/plugs/${plugName}` : '/api/plugs',
     method: 'get'
+  });
+};
+
+/**
+ * 添加任务
+ * @param taskName 
+ * @param body 
+ * @returns 
+ */
+export const postAddTask = (taskName: string, body: AddTaskPayload) : Promise<any> => {
+  return request({
+    url: `/api/tasks/${taskName}`,
+    method: 'post',
+    data: body
+  });
+};
+
+/**
+ * 删除任务
+ * @param taskName 
+ * @returns 
+ */
+export const deleteAddTask = (taskName: string) : Promise<any> => {
+  return request({
+    url: `/api/tasks/${taskName}`,
+    method: 'delete'
+  });
+};
+
+/**
+ * 获取任务
+ * @param taskName 
+ * @returns 
+ */
+export const getTaskInfos = (taskName: string | null) : Promise<TaskInfo[]> => {
+  return request({
+    url: taskName ? `/api/tasks/${taskName}` : '/api/tasks',
+    method: 'get',
+  });
+};
+
+/**
+ * 获取任务对应的机器人组
+ * @param taskName 
+ * @returns 
+ */
+export const getRobotGroupsByTaskName = (taskName: string) : Promise<RobotGroupInfo[]> => {
+  return request({
+    url: `/api/tasks/${taskName}/robot-groups`,
+    method: 'get',
+  });
+};
+
+/**
+ * 获取任务对应的机器人组
+ * @param taskName 
+ * @returns 
+ */
+export const getCheckRobotGroupInfoByTaskName = (taskName: string) : Promise<CheckRobotGroupInfo[]> => {
+  return request({
+    url: `/api/tasks/${taskName}/check-robot-groups`,
+    method: 'get',
+  });
+};
+
+
+/**
+ * 添加任务对应的机器人组
+ * @param taskName 
+ * @param body 
+ * @returns 
+ */
+export const postRobotGroupsByTaskName = (taskName: string, body: AddTaskRobotGroupsPayload) : Promise<any> => {
+  return request({
+    url: `/api/tasks/${taskName}/robot-groups`,
+    method: 'post',
+    data: body
+  });
+};
+
+/**
+ * 获取机器人组信息
+ * @param robotGroupName 
+ * @returns 
+ */
+export const getRobotGroups = (robotGroupName: string | null) : Promise<RobotGroupInfo[]> => {
+  return request({
+    url: robotGroupName ? `/api/robot/groups/${robotGroupName}` : '/api/robot/groups',
+    method: 'get',
   });
 };
 
