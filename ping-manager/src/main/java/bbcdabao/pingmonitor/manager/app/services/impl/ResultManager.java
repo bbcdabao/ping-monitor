@@ -18,25 +18,14 @@
 
 package bbcdabao.pingmonitor.manager.app.services.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Properties;
-import java.util.Set;
 
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
-import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.infra.coordination.IPath;
-import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
-import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
-import bbcdabao.pingmonitor.manager.app.module.responses.CheckRobotGroupInfo;
 import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
+import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 
 @Service
 public class ResultManager implements IResultManager {
@@ -45,6 +34,6 @@ public class ResultManager implements IResultManager {
 
 	@Override
     public Collection<PingresultInfo> getResults(String taskName) throws Exception {
-    	
+    	return null;
     }
 }
