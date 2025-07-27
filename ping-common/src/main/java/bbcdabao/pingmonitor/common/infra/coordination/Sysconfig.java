@@ -76,20 +76,34 @@ public class Sysconfig {
         private int timeout;
     }
 
+    /**
+     * Currently only the results are considered to be saved in Zookeeper
+     * 目前只考虑结果保存在zookeeper里面
+     */
     private RsType rsType = RsType.INNER;
     private RedisConfig redisConfig = null;
+
     /**
-     * ping test cycle
+     * Ping test cycle
+     * 拨测周期
      */
     private String cronTask;
+
     /**
-     * master assign task detection cycle
+     * Master assign task detection cycle
+     * 选主周期
      */
     private String cronMain;
+
     /**
-     * ping time out
+     * Ping time out
+     * 拨测超时
      */
     private int timeOutMs;
-    
+
+    /**
+     * Whether to overwrite the configuration in zookeeper
+     * 是否覆盖zookeeper里面的配置
+     */
     private boolean isOverwrite = false;
 }

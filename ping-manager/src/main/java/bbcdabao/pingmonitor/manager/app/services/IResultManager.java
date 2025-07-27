@@ -27,5 +27,5 @@ import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
  * 拨测结果操作接口相关
  */
 public interface IResultManager {
-    Collection<PingresultInfo> getResults(String taskName) throws Exception;
+    Collection<PingresultInfo> getResults(String taskName, long durationTime) throws Exception;
 }

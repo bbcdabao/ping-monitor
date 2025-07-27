@@ -202,18 +202,15 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
             LOGGER.info("PingWorkerService-doPing Exception:{}", info);
         }
         try {
-        		CoordinationManager cm = CoordinationManager.getInstance();
-        		IConvertToByte<String> convertToByteForString =
-        				ByteDataConver.getInstance().getConvertToByteForString();
+            CoordinationManager cm = CoordinationManager.getInstance();
+            IConvertToByte<String> convertToByteForString = ByteDataConver.getInstance().getConvertToByteForString();
             cm
-            .setOrCreateData(IPath.resultPath(taskName,
-            			robotGroupName),
+            .setOrCreateData(IPath.resultPath(taskName, robotGroupName),
                     CreateMode.PERSISTENT,
                     convertToByteForString
                     .getData(JsonConvert.getInstance().tobeJson(pingresult)));
             if (!pingresult.isSuccess()) {
-            	    cm.setData(IPath.resultPath(taskName),
-            	    		convertToByteForString.getData(robotGroupName));
+                cm.setData(IPath.resultPath(taskName), convertToByteForString.getData(robotGroupName));
             }
         } catch (Exception e) {
             LOGGER.info("PingWorkerService-write resultException:{}", e.getMessage());

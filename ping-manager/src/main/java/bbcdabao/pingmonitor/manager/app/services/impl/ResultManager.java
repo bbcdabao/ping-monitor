@@ -18,12 +18,17 @@
 
 package bbcdabao.pingmonitor.manager.app.services.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
+import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
+import bbcdabao.pingmonitor.common.infra.coordination.IPath;
 import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
 import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 
@@ -31,9 +36,38 @@ import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 public class ResultManager implements IResultManager {
 
 	private final Logger logger = LoggerFactory.getLogger(ResultManager.class);
+	
+	private PingresultInfo getOnePingresultInfo(String taskName, long durationTime) throws Exception {
+        CoordinationManager cm = CoordinationManager.getInstance();
+        IPath taskPath = IPath.taskPath(taskName);
+        Stat stat = new Stat();
+        byte[] data = cm.getData(taskPath, stat);
+        long currentTimeMs = System.currentTimeMillis();
+        boolean success = true;
+        if (data != null && data.length > 0) {
+            long elapsedMillis = currentTimeMs - stat.getMtime();
+            if (elapsedMillis < durationTime) {
+                success = false;
+            }
+        }
+        PingresultInfo pingresultInfo = new PingresultInfo();
+        pingresultInfo.setTaskName(taskName);
+        pingresultInfo.setSuccess(success);
+        return pingresultInfo;
+	}
 
 	@Override
-    public Collection<PingresultInfo> getResults(String taskName) throws Exception {
+    public Collection<PingresultInfo> getResults(String taskName, long durationTime) throws Exception {
+	    Collection<PingresultInfo> pingresultInfos = new ArrayList<>();
+	    if (!ObjectUtils.isEmpty(taskName)) {
+	        pingresultInfos.add(getOnePingresultInfo(taskName, durationTime));
+	        return pingresultInfos;
+	    }
+        CoordinationManager cm = CoordinationManager.getInstance();
+        IPath taskPath = IPath.taskPath();
+        cm.getChildren(taskPath, (IPath childPath, String child, byte[] data, Stat stat) -> {
+            
+        });
     	return null;
     }
 }
