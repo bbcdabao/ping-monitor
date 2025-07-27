@@ -40,6 +40,7 @@ import bbcdabao.pingmonitor.common.infra.coordination.IPath;
 import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
 import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
 import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.dataconver.IConvertToByte;
 import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.BaseEventHandler;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.ChangedEvent;
@@ -99,10 +100,6 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
          * system update
          */
         private long stime = 0;
-        /**
-         * task config update
-         */
-        private long mtime = 0;
         private IPingMoniterPlug plug = null;
     }
 
@@ -130,6 +127,7 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
             }).stime = stime;
         });
     }
+
     private void assignUpdate() throws Exception {
         CoordinationManager cm = CoordinationManager.getInstance();
         Iterator<Map.Entry<String, PlugInfo>> iterator = plugInfoMap.entrySet().iterator();
@@ -142,27 +140,19 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
                     iterator.remove();
                     continue;
                 }
+        			IPath indexPath = IPath.robotMetaInfoTaskPath(robotConfig.getRobotGroupName(), taskName);
+                Stat statGet = cm.getStat(IPath.taskPath(taskName));
+                if (null == statGet) {
+                    LOGGER.info("assignUpdate: task not had : delete: {}", indexPath.get());
+                	    cm.deleteData(indexPath);
+                	    continue;
+                }
                 if (null == plugInfo.plug) {
-                    try {
-                        Stat stat = new Stat();
-                        plugInfo.plug = TemplatesManager.getInstance().getPingMoniterPlugUsedTaskName(taskName, stat);
-                        plugInfo.mtime = stat.getMtime();
-                    } catch (Exception e) {
-                        LOGGER.info("PingWorkerService-assignUpdate.create task Exception:{}", e.getMessage());
-                    }
+                		plugInfo.plug = TemplatesManager.getInstance().getPingMoniterPlugUsedTaskName(taskName);
                     continue;
                 }
-                Stat statGet = cm.getStat(IPath.taskConfigPath(taskName));
-                if (statGet.getMtime() != plugInfo.mtime) {
-                    try {
-                        plugInfo.plug = TemplatesManager.getInstance().getPingMoniterPlugUsedTaskName(taskName);
-                        plugInfo.mtime = statGet.getMtime();
-                    } catch (Exception e) {
-                        LOGGER.info("PingWorkerService-assignUpdate.update task Exception:{}", e.getMessage());
-                    }
-                }
             } catch (Exception e) {
-                LOGGER.info("PingWorkerService-assignUpdate Exception:{}", e.getMessage());
+                LOGGER.info("assignUpdate: Exception:{}", e.getMessage());
             }
         }
     }
@@ -190,6 +180,7 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
         if (null == plug) {
             return;
         }
+		String robotGroupName = robotConfig.getRobotGroupName();
         Pingresult pingresult = new Pingresult();
         long beg = System.currentTimeMillis();
         try {
@@ -211,17 +202,19 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
             LOGGER.info("PingWorkerService-doPing Exception:{}", info);
         }
         try {
-            CoordinationManager
-            .getInstance()
+        		CoordinationManager cm = CoordinationManager.getInstance();
+        		IConvertToByte<String> convertToByteForString =
+        				ByteDataConver.getInstance().getConvertToByteForString();
+            cm
             .setOrCreateData(IPath.resultPath(taskName,
-                    robotConfig.getRobotGroupName()),
+            			robotGroupName),
                     CreateMode.PERSISTENT,
-                    ByteDataConver
-                    .getInstance()
-                    .getConvertToByteForString()
-                    .getData(JsonConvert
-                            .getInstance()
-                            .tobeJson(pingresult)));
+                    convertToByteForString
+                    .getData(JsonConvert.getInstance().tobeJson(pingresult)));
+            if (!pingresult.isSuccess()) {
+            	    cm.setData(IPath.resultPath(taskName),
+            	    		convertToByteForString.getData(robotGroupName));
+            }
         } catch (Exception e) {
             LOGGER.info("PingWorkerService-write resultException:{}", e.getMessage());
         }

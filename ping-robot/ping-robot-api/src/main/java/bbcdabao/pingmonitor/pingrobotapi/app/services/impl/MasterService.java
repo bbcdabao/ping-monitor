@@ -86,6 +86,7 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
     private AtomicBoolean isMaster = new AtomicBoolean(false);
 
     private IPath robotMetaInfoTaskPath;
+    private IPath robotMetaInfoInstancePath;
     private IPath robotRunInfoTaskPath;
     private IPath robotMetaInfoPath;
     private IPath robotRunInfoElectionPath;
@@ -118,7 +119,7 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         CoordinationManager cm = CoordinationManager.getInstance();
         List<String> robots = null;
         try {
-            robots = cm.getChildren(robotMetaInfoTaskPath);
+            robots = cm.getChildren(robotMetaInfoInstancePath);
         } catch (Exception e) {
             LOGGER.info("MasterService-getRobots Exception:{}", e.getMessage());
         }
@@ -213,7 +214,10 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         regSysconfigNotify.reg(this);
         String robotGroupName = robotConfig.getRobotGroupName();
         robotMetaInfoTaskPath = IPath.robotMetaInfoTaskPath(robotGroupName);
+        robotMetaInfoInstancePath = IPath.robotMetaInfoInstancePath(robotGroupName);
+        
         robotRunInfoTaskPath = IPath.robotRunInfoTaskPath(robotGroupName);
+        
         robotMetaInfoPath = IPath.robotMetaInfoPath(robotGroupName);
         robotRunInfoElectionPath = IPath.robotRunInfoElectionPath(robotGroupName);
         robotRunInfoMasterInstanceIdPath = IPath.robotRunInfoMasterInstanceIdPath(robotGroupName);

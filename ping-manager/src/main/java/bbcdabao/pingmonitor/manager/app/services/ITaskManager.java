@@ -26,6 +26,10 @@ import bbcdabao.pingmonitor.manager.app.module.responses.CheckRobotGroupInfo;
 import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
 import bbcdabao.pingmonitor.manager.app.module.responses.TaskInfo;
 
+/**
+ * Task Opt Interface
+ * 任务操作接口相关
+ */
 public interface ITaskManager {
     void addTask(String taskName, String plugName, Properties properties) throws Exception;
     void deleteTask(String taskName) throws Exception;

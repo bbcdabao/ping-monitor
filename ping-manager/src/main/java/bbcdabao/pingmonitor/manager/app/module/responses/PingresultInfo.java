@@ -16,13 +16,12 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.module;
+package bbcdabao.pingmonitor.manager.app.module.responses;
 
-import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
 import lombok.Data;
 
 @Data
 public class PingresultInfo {
     private String taskName;
-    private Pingresult result;
+    private boolean success;
 }

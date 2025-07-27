@@ -76,19 +76,16 @@ public class StartUpService implements ApplicationRunner, ConnectionStateListene
         case CONNECTED:
         case RECONNECTED:
             try {
-            	CoordinationManager cm = CoordinationManager.getInstance();
-            	cm
-                .regRobotInstance(robotGroupName);
+	            	CoordinationManager cm = CoordinationManager.getInstance();
+	            	cm.regRobotInstance(robotGroupName);
             	
                 Map<String, String> descriptionMap = new HashMap<>(3);
                 descriptionMap.put("descriptionCn", robotConfig.getDescriptionCn());
                 descriptionMap.put("descriptionEn", robotConfig.getDescriptionEn());
-                
                 IPath robotRegisterPathGroup = IPath.robotRegisterPathGroup(robotGroupName);
-            	IConvertToByte<String> convertToByte = ByteDataConver.getInstance().getConvertToByteForString();
-            	JsonConvert jc = JsonConvert.getInstance();
+	            	IConvertToByte<String> convertToByte = ByteDataConver.getInstance().getConvertToByteForString();
+	            	JsonConvert jc = JsonConvert.getInstance();
                 cm.setData(robotRegisterPathGroup, convertToByte.getData(jc.tobeJson(descriptionMap)));
-                
             } catch (Exception e) {
                 LOGGER.info("StartUpService Exception:{}", robotConfig.getDescriptionCn());
             }

@@ -22,6 +22,6 @@ executor-config:
   enable: true
 
 robot:
-  robot-group-name: huananteam
-  description-cn: 华南区
-  description-en: Hua nan
+  robot-group-name: robots-xinjiapo
+  description-cn: 海外新加坡
+  description-en: Overseas Singapore
