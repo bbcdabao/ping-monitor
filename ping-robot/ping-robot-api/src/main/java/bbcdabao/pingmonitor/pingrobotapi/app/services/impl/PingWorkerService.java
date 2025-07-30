@@ -209,9 +209,6 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
                     CreateMode.PERSISTENT,
                     convertToByteForString
                     .getData(JsonConvert.getInstance().tobeJson(pingresult)));
-            if (!pingresult.isSuccess()) {
-                cm.setData(IPath.resultPath(taskName), convertToByteForString.getData(robotGroupName));
-            }
         } catch (Exception e) {
             LOGGER.info("PingWorkerService-write resultException:{}", e.getMessage());
         }

@@ -35,13 +35,15 @@ import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 @Service
 public class ResultManager implements IResultManager {
 
-	private final Logger logger = LoggerFactory.getLogger(ResultManager.class);
-	
-	private PingresultInfo getOnePingresultInfo(String taskName, long durationTime) throws Exception {
+    private final Logger logger = LoggerFactory.getLogger(ResultManager.class);
+
+    private PingresultInfo getOnePingresultInfo(String taskName, long durationTime) throws Exception {
+
         CoordinationManager cm = CoordinationManager.getInstance();
         IPath taskPath = IPath.taskPath(taskName);
         Stat stat = new Stat();
         byte[] data = cm.getData(taskPath, stat);
+
         long currentTimeMs = System.currentTimeMillis();
         boolean success = true;
         if (data != null && data.length > 0) {
@@ -54,20 +56,32 @@ public class ResultManager implements IResultManager {
         pingresultInfo.setTaskName(taskName);
         pingresultInfo.setSuccess(success);
         return pingresultInfo;
-	}
+    }
 
-	@Override
+    @Override
     public Collection<PingresultInfo> getResults(String taskName, long durationTime) throws Exception {
-	    Collection<PingresultInfo> pingresultInfos = new ArrayList<>();
-	    if (!ObjectUtils.isEmpty(taskName)) {
-	        pingresultInfos.add(getOnePingresultInfo(taskName, durationTime));
-	        return pingresultInfos;
-	    }
+        logger.info("ResultManager.getResults:enter:{}:{}", taskName, durationTime);
+        Collection<PingresultInfo> pingresultInfos = new ArrayList<>();
+        if (!ObjectUtils.isEmpty(taskName)) {
+            pingresultInfos.add(getOnePingresultInfo(taskName, durationTime));
+            return pingresultInfos;
+        }
+        long currentTimeMs = System.currentTimeMillis();
         CoordinationManager cm = CoordinationManager.getInstance();
         IPath taskPath = IPath.taskPath();
         cm.getChildren(taskPath, (IPath childPath, String child, byte[] data, Stat stat) -> {
-            
+            boolean success = true;
+            if (data != null && data.length > 0) {
+                long elapsedMillis = currentTimeMs - stat.getMtime();
+                if (elapsedMillis < durationTime) {
+                    success = false;
+                }
+            }
+            PingresultInfo pingresultInfo = new PingresultInfo();
+            pingresultInfo.setTaskName(child);
+            pingresultInfo.setSuccess(success);
+            pingresultInfos.add(pingresultInfo);
         });
-    	return null;
+        return pingresultInfos;
     }
 }

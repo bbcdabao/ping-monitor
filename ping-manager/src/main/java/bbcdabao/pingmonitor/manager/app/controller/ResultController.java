@@ -20,15 +20,19 @@ package bbcdabao.pingmonitor.manager.app.controller;
 
 import java.util.Collection;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
 import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
+import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.sessions.PingresultinfosSession;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,35 +41,43 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping("/api/results")
 public class ResultController {
 
+    @Autowired
+    private IResultManager resultManager;
+
     @GetMapping(value = "/{taskName}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public void getTaskNamePingresultinfosForSse (
-            @PathVariable("taskName") String taskName,
+    public void getTaskNamePingresultinfosForSse(@PathVariable("taskName") String taskName,
             HttpServletResponse response) throws Exception {
         BaseSseSession.startProcess(() -> {
-            return new PingresultinfosSession(taskName, response);
+            return new PingresultinfosSession(response);
         });
     }
 
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public void pingresultinfosForSse (
-            HttpServletResponse response) throws Exception {
+    public void pingresultinfosForSse(HttpServletResponse response) throws Exception {
         BaseSseSession.startProcess(() -> {
-            return new PingresultinfosSession(null, response);
+            return new PingresultinfosSession(response);
         });
     }
 
     @GetMapping(value = "/{taskName}")
     @ResponseBody
-    ResponseEntity<Collection<PingresultInfo>> getTaskNamePingresultinfos(
-            @PathVariable("taskName") String taskName) throws Exception {
-        return null;
+    ResponseEntity<ApiResponse<Collection<PingresultInfo>>> getTaskNamePingresultinfos(
+            @PathVariable("taskName") String taskName,
+            @RequestParam(name = "durationTime") long durationTime)
+            throws Exception {
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(resultManager.getResults(taskName, durationTime)));
     }
 
     @GetMapping(value = "")
     @ResponseBody
-    ResponseEntity<Collection<PingresultInfo>> getPingresultinfos() throws Exception {
-        return null;
+    ResponseEntity<ApiResponse<Collection<PingresultInfo>>> getPingresultinfos(
+            @RequestParam(name = "durationTime") long durationTime) throws Exception {
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(resultManager.getResults(null, durationTime)));
     }
 }
