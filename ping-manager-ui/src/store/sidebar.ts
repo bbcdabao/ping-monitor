@@ -32,7 +32,7 @@ export const useSidebarStore = defineStore('sidebar', {
             {
               itemname: 'taskrslt',
               itemicon: 'lucide-list-tree',
-              route: '/taskrslt',
+              route: '/resultinfo-page',
             }
           ]
         },

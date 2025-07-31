@@ -32,7 +32,8 @@ public abstract class BaseSseSession extends BaseEventHandler {
         factoryGet.get().doProcess();
     }
 
-    private static final String SSE_SEP = "\n\n";
+    private static final String SSE_SEP = "\r\n\r\n";
+    private static final String SSE_SCP = "\r\n";
 
     private ServletOutputStream outputStream;
 
@@ -49,12 +50,20 @@ public abstract class BaseSseSession extends BaseEventHandler {
         }
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(String message, SSEvent eventType) {
         String msgSend = null;
         if (null == message) {
-            msgSend = SSE_SEP;
+            msgSend = new StringBuilder()
+                    .append("event: ")
+                    .append(eventType.toString())
+                    .append(SSE_SEP)
+                    .toString();
         } else {
             msgSend = new StringBuilder()
+                    .append("event: ")
+                    .append(eventType.toString())
+                    .append(SSE_SCP)
+                    .append("data: ")
                     .append(message)
                     .append(SSE_SEP)
                     .toString();
@@ -69,7 +78,7 @@ public abstract class BaseSseSession extends BaseEventHandler {
 
     public void onIdl() throws Exception {
         try {
-            sendMessage(null);
+            sendMessage(null, SSEvent.HEARTBEAT);
         } catch (Exception e) {
             gameOver();
         }

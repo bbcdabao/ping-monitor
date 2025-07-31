@@ -18,39 +18,31 @@
 
 package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
+import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
 import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
 import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
 import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.DeletedEvent;
+import bbcdabao.pingmonitor.manager.app.module.sse.PingresultInfo;
 import bbcdabao.pingmonitor.manager.app.module.sse.ResultInfo;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
-import bbcdabao.pingmonitor.manager.app.services.sse.EventType;
+import bbcdabao.pingmonitor.manager.app.services.sse.SSEvent;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
 
 public class PingresultinfosSession extends BaseSseSession {
 
     private final Logger logger = LoggerFactory.getLogger(PingresultinfosSession.class);
 
-    @Data
-    private static class PingresultinfoEvent {
-        private EventType eventType;
-        private ResultInfo resultInfo = new ResultInfo();
-    }
-
     private IPath path;
 
-    private void doEvent(ChildData childData, EventType eventType) throws Exception {
+    private void doEvent(ChildData childData, SSEvent eventType) throws Exception {
         if (childData == null) {
             return;
         }
@@ -62,20 +54,33 @@ public class PingresultinfosSession extends BaseSseSession {
         if (paths.length < 3) {
             return;
         }
+
+        JsonConvert jsonConvert = JsonConvert.getInstance();
+
         String taskName = paths[2];
-        PingresultinfoEvent event = new PingresultinfoEvent();
-        event.setEventType(eventType);
-        event.getResultInfo().setTaskName(taskName);
+        ResultInfo resultInfo = new ResultInfo();
+        resultInfo.setTaskName(taskName);
         if (paths.length == 3) {
-            sendMessage(JsonConvert.getInstance().tobeJson(event));
+            sendMessage(jsonConvert.tobeJson(resultInfo), eventType);
+            logger.info("PingresultinfosSession.doEvent:{}:{}", eventType.toString(), taskName);
             return;
         }
+
         String robotGroupName = paths[3];
-        Map<String, String> pingresultMap = new HashMap<>();
-        IConvertFromByte<String> convertFromByteForString = ByteDataConver.getInstance().getConvertFromByteForString();
-        pingresultMap.put(robotGroupName, convertFromByteForString.getValue(childData.getData()));
-        event.getResultInfo().setPingresultMap(pingresultMap);
-        sendMessage(JsonConvert.getInstance().tobeJson(event));
+
+        IConvertFromByte<String> convertFromByteForString =
+                ByteDataConver.getInstance().getConvertFromByteForString();
+
+        Pingresult pingresult = jsonConvert
+                .fromJson(convertFromByteForString.getValue(childData.getData()), Pingresult.class);
+
+        PingresultInfo pingresultInfo = new PingresultInfo();
+        pingresultInfo.setRobotGroupName(robotGroupName);
+        pingresultInfo.setPingresult(pingresult);
+
+        resultInfo.setPingresultInfo(pingresultInfo);
+        sendMessage(jsonConvert.tobeJson(resultInfo), eventType);
+        logger.info("PingresultinfosSession.doEvent:{}:{}:{}", eventType.toString(), taskName, pingresultInfo.toString());
     }
 
     public PingresultinfosSession(HttpServletResponse response) {
@@ -91,16 +96,16 @@ public class PingresultinfosSession extends BaseSseSession {
 
     @Override
     public void onEvent(CreatedEvent data) throws Exception {
-        doEvent(data.getData(), EventType.CREATE);
+        doEvent(data.getData(), SSEvent.CREATE);
     }
 
     @Override
     public void onEvent(DeletedEvent data) throws Exception {
-        doEvent(data.getData(), EventType.DELETE);
+        doEvent(data.getData(), SSEvent.DELETE);
     }
 
     @Override
     public void onEvent(ChangedEvent data) throws Exception {
-        doEvent(data.getData(), EventType.UPDATE);
+        doEvent(data.getData(), SSEvent.UPDATE);
     }
 }

@@ -16,12 +16,28 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.module.sse;
+package bbcdabao.pingmonitor.manager.app.services.sse;
 
-import lombok.Data;
+public enum SSEvent {
+    CREATE("create"),
+    UPDATE("update"),
+    DELETE("delete"),
+    MESSAGE("message"),
+    HEARTBEAT("heartbeat"),
+    COMPLETE("complete");
 
-@Data
-public class ResultInfo {
-    private String taskName;
-    private PingresultInfo pingresultInfo = null;
+    private final String eventName;
+
+    SSEvent(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    @Override
+    public String toString() {
+        return eventName;
+    }
 }

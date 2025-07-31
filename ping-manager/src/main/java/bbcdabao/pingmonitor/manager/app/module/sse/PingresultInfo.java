@@ -16,23 +16,13 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.services.sse;
+package bbcdabao.pingmonitor.manager.app.module.sse;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
+import lombok.Data;
 
-public enum EventType {
-    CREATE(1),
-    UPDATE(2),
-    DELETE(3);
-
-    private final int value;
-
-    EventType(int value) {
-        this.value = value;
-    }
-
-    @JsonValue
-    public int getValue() {
-        return value;
-    }
+@Data
+public class PingresultInfo {
+    private String robotGroupName;
+    private Pingresult pingresult;
 }

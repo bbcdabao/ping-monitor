@@ -20,12 +20,10 @@ package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
 import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
-import bbcdabao.pingmonitor.manager.app.services.sse.EventType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 
@@ -33,7 +31,6 @@ public class RobotMasterInstancesSession extends BaseSseSession {
 
     @Data
     private static class RobotMasterInstanceInfoEvent {
-        private EventType eventType;
         private String masterRobotInfo;
     }
 
@@ -55,9 +52,7 @@ public class RobotMasterInstancesSession extends BaseSseSession {
         String masterRobotInfo = ByteDataConver.getInstance()
                 .getConvertFromByteForString().getValue(data.getData().getData());
         RobotMasterInstanceInfoEvent event = new RobotMasterInstanceInfoEvent();
-        event.setEventType(EventType.CREATE);
         event.setMasterRobotInfo(masterRobotInfo);
-        sendMessage(JsonConvert.getInstance().tobeJson(event));
     }
 
     @Override
@@ -65,9 +60,7 @@ public class RobotMasterInstancesSession extends BaseSseSession {
         String masterRobotInfo = ByteDataConver.getInstance()
                 .getConvertFromByteForString().getValue(data.getData().getData());
         RobotMasterInstanceInfoEvent event = new RobotMasterInstanceInfoEvent();
-        event.setEventType(EventType.DELETE);
         event.setMasterRobotInfo(masterRobotInfo);
-        sendMessage(JsonConvert.getInstance().tobeJson(event)); 
     }
 
     @Override
@@ -75,8 +68,6 @@ public class RobotMasterInstancesSession extends BaseSseSession {
         String masterRobotInfo = ByteDataConver.getInstance()
                 .getConvertFromByteForString().getValue(data.getData().getData());
         RobotMasterInstanceInfoEvent event = new RobotMasterInstanceInfoEvent();
-        event.setEventType(EventType.UPDATE);
         event.setMasterRobotInfo(masterRobotInfo);
-        sendMessage(JsonConvert.getInstance().tobeJson(event)); 
     }
 }

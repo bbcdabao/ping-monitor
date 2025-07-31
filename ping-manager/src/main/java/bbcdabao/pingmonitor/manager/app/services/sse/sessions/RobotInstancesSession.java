@@ -22,12 +22,10 @@ import org.apache.curator.utils.ZKPaths;
 
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
 import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.DeletedEvent;
 import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
-import bbcdabao.pingmonitor.manager.app.services.sse.EventType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 
@@ -35,7 +33,6 @@ public class RobotInstancesSession extends BaseSseSession {
 
     @Data
     private static class RobotInstanceInfoEvent {
-        private EventType eventType;
         private RobotInstanceInfo robotInstanceInfo = new RobotInstanceInfo();
     }
 
@@ -58,17 +55,13 @@ public class RobotInstancesSession extends BaseSseSession {
                 .getConvertFromByteForString().getValue(data.getData().getData());
 
         RobotInstanceInfoEvent event = new RobotInstanceInfoEvent();
-        event.setEventType(EventType.CREATE);
         event.robotInstanceInfo.setRobotUUID(ZKPaths.getNodeFromPath(data.getData().getPath()));
         event.robotInstanceInfo.setRobotInfo(instanceInfo);
-        sendMessage(JsonConvert.getInstance().tobeJson(event));
     }
 
     @Override
     public void onEvent(DeletedEvent data) throws Exception {
         RobotInstanceInfoEvent event = new RobotInstanceInfoEvent();
-        event.setEventType(EventType.DELETE);
         event.robotInstanceInfo.setRobotUUID(ZKPaths.getNodeFromPath(data.getData().getPath()));
-        sendMessage(JsonConvert.getInstance().tobeJson(event));  
     }
 }

@@ -37,6 +37,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/pages/taskinfo-page.vue'),
       },
       {
+        path: '/resultinfo-page',
+        name: 'resultinfo',
+        meta: {},
+        component: () => import('@/views/pages/resultinfo-page.vue'),
+      },
+      {
         path: '/theme-page',
         name: 'theme',
         meta: {},
