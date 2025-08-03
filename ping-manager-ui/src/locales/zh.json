@@ -1,4 +1,7 @@
 {
+  "nameSub": "名称",
+  "delaySub": "延迟",
+  "timeSub": "时间",
   "addTaskSuccessJump": "添加任务成功，跳转到任务列表?",
   "confirm": "确认",
   "cancel": "取消",

@@ -19,6 +19,7 @@
 package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
 import org.apache.curator.framework.recipes.cache.ChildData;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,9 +74,13 @@ public class PingresultinfosSession extends BaseSseSession {
 
         Pingresult pingresult = jsonConvert
                 .fromJson(convertFromByteForString.getValue(childData.getData()), Pingresult.class);
+        
+        Stat stat = childData.getStat();
+        long lastModifiedTime = stat.getMtime();
 
         PingresultInfo pingresultInfo = new PingresultInfo();
         pingresultInfo.setRobotGroupName(robotGroupName);
+        pingresultInfo.setTimestamp(lastModifiedTime);
         pingresultInfo.setPingresult(pingresult);
 
         resultInfo.setPingresultInfo(pingresultInfo);

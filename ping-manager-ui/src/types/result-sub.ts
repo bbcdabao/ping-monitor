@@ -21,6 +21,7 @@ export interface Pingresult {
 
 export interface PingresultInfo {
   robotGroupName: string;
+  timestamp: number;
   pingresult: Pingresult;
 }
 
@@ -31,5 +32,5 @@ export interface ResultInfo {
 
 export interface ResultInfoRecord {
   taskName: string;
-  pingresults: Record<string, Pingresult>;
+  pingresults: Record<string, PingresultInfo>;
 }

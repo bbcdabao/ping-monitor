@@ -16,40 +16,31 @@ export const useSidebarStore = defineStore('sidebar', {
           itemicon: 'lucide-airplay',
           route: '/manager',
         },
+   
         {
-          itemname: 'taskmanager',
-          children: [
-            {
-              itemname: 'template',
-              itemicon: 'lucide-scroll',
-              route: '/template-page',
-            },
-            {
-              itemname: 'taskinfo',
-              itemicon: 'lucide-scroll-text',
-              route: '/taskinfo-page',
-            },
-            {
-              itemname: 'taskrslt',
-              itemicon: 'lucide-list-tree',
-              route: '/resultinfo-page',
-            }
-          ]
+          itemname: 'template',
+          itemicon: 'lucide-scroll',
+          route: '/template-page',
         },
         {
-          itemname: 'robotmanager',
-          children: [
-            {
-              itemname: 'robotorganiza',
-              itemicon: 'lucide-grid',
-              route: '/robotorganiza',
-            },
-            {
-              itemname: 'robotinstance',
-              itemicon: 'lucide-land-plot',
-              route: '/robotinstance',
-            }
-          ]
+          itemname: 'taskinfo',
+          itemicon: 'lucide-scroll-text',
+          route: '/taskinfo-page',
+        },
+        {
+          itemname: 'taskrslt',
+          itemicon: 'lucide-list-tree',
+          route: '/resultinfo-page',
+        },
+        {
+          itemname: 'robotorganiza',
+          itemicon: 'lucide-grid',
+          route: '/robotorganiza',
+        },
+        {
+          itemname: 'robotinstance',
+          itemicon: 'lucide-land-plot',
+          route: '/robotinstance',
         },
         {
           itemname: 'systemConfig',

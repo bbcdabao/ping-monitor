@@ -4,23 +4,86 @@
   <div>
     <el-card class="custom-shadow mgb6" shadow="hover">
       <template #header>
-        <div class="content-title">结果监控</div>
+        <div class="content-title">
+          结果监控
+          <div class="title-right"> 
+            拨测散点:
+            <el-switch
+              v-model="showScatter"
+              size="small"
+            />
+            风格:
+            <el-select
+              style="width: 70px;"
+              size="small"
+              v-model="resultStyle"
+              placeholder="none"
+            >
+              <el-option
+                v-for="item in resultStyleOpt"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div>
+        </div>
       </template>
       <div class="this-card">
-        <div class="task-list">
+        <resultinfo-scatter v-if="showScatter" />
+        <div
+          :class="getResultinfoListClass()"
+        >
           <div
             v-for="(record, taskName) in resultinfo.results"
             :key="taskName"
-            class="task-item"
+            :class="getResultinfoItem()"
           >
-            {{ taskName }}
             <div
-              v-for="(result, robotGroupName) in record.pingresults"
-              :key="robotGroupName"
-              style="font-size: 14px;"
-            >
-              {{ robotGroupName }} --- {{ result.success }} --- {{ result.delay }} --- {{ result.info }}
+              :class="getPieClass()"
+              :style="getPieStyle(record.pingresults)"
+            />
+            <div v-if="resultStyle==='MID'">
+              <div class="resultinfo-item-taskname">
+                <div style="font-size: 12px; font-weight: bold;">
+                  TaskName
+                </div>
+                <div class="interval-line" />
+                <div style="font-size: 10px; font-weight: normal; text-align: left;">
+                  {{ taskName }}
+                </div>
+              </div>
             </div>
+            <div v-else-if="resultStyle==='MAX'">
+              <div class="resultinfo-item-taskname">
+                <div style="font-size: 12px; font-weight: bold;">
+                  TaskName
+                </div>
+                <div class="interval-line" />
+                <div style="font-size: 10px; font-weight: normal; text-align: left;">
+                  {{ taskName }}
+                </div>
+              </div>
+              <div class="resultinfo-item-task-group">
+                <div style="font-size: 12px; font-weight: bold;">
+                  Sentinel Group
+                </div>
+                <div class="interval-line" />
+                  <div
+                    v-for="(result, robotGroupName) in record.pingresults"
+                    :key="robotGroupName"
+                    :class="result.pingresult.success?
+                    'resultinfo-item-task-group-success' : 'resultinfo-item-task-group-fail'"
+                  >
+                    {{ getGroupDesc(result.robotGroupName) }}
+                    <div class="interval-line" />
+                    delay: {{ result.pingresult.delay }} ms
+                    <div class="interval-line" />
+                    update: {{ dayjs(result.timestamp).format('YYYY-MM-DD HH:mm:ss') }}
+                  </div>
+              </div>
+            </div>
+      
           </div>
         </div>
       </div>
@@ -29,23 +92,120 @@
 </template>
 <script setup lang="ts">
 import {
+  ref,
+  watch,
   onMounted,
-  onUnmounted
+  onBeforeUnmount
 } from 'vue';
 import {
   useI18n
 } from 'vue-i18n';
 import {
+  throttle
+} from 'lodash';
+import {
   useResultinfoStore
 } from '@/store/resultinfo';
+import {
+  useRobotgroupinfoStore
+} from '@/store/robotgroupinfo';
+import type {
+  PingresultInfo
+} from '@/types/result-sub';
+import dayjs from 'dayjs';
 
-const { t } = useI18n();
+import ResultinfoScatter from '@/components/resultinfo-scatter.vue';
+import { StickerIcon } from 'lucide-vue-next';
+
+const { t, locale } = useI18n();
 const resultinfo = useResultinfoStore();
+const robotgroupinfo = useRobotgroupinfoStore();
+
+const minWidth = ref(150);
+
+const isChartMin = ref(false);
+
+const DEFAULT_RESULT_STYLE = "MAX";
+const resultStyle = ref(localStorage.getItem('resultStyle') || DEFAULT_RESULT_STYLE);
+watch(resultStyle, (newVal) => {
+  localStorage.setItem('resultStyle', String(newVal));
+})
+const resultStyleOpt = [
+  {
+    value: 'MIN',
+    label: 'Min',
+  },
+  {
+    value: 'MID',
+    label: 'Mid',
+  },
+  {
+    value: 'MAX',
+    label: 'Max',
+  }
+]
+
+const showScatter = ref(
+  localStorage.getItem('showScatter') !== 'false'
+)
+watch(showScatter, (newVal) => {
+  localStorage.setItem('showScatter', String(newVal))
+})
+
+const getGroupDesc = (groupDesc: string) => {
+  const groupInfo = robotgroupinfo.robotGroups[groupDesc];
+  let retGroupDesc = groupDesc;
+  if (groupInfo) {
+    retGroupDesc = locale.value === 'zh' ? groupInfo.descriptionCn : groupInfo.descriptionEn;
+  }
+  return retGroupDesc;
+}
+
+const getResultinfoListClass = () => {
+  switch (resultStyle.value) {
+    case 'MIN': return 'resultinfo-list-min';
+    case 'MID': return 'resultinfo-list-mid';
+    case 'MAX': return 'resultinfo-list-max';
+  }
+  throw new Error('unknow resultStyle');
+};
+const getResultinfoItem = () => {
+  switch (resultStyle.value) {
+    case 'MIN': return '';
+    case 'MID': return 'resultinfo-item-mid';
+    case 'MAX': return 'resultinfo-item-max';
+  }
+  throw new Error('unknow resultStyle');
+};
+const getPieClass = () => {
+  switch (resultStyle.value) {
+    case 'MIN': return 'pie-chart-min';
+    case 'MID': return 'pie-chart-mid';
+    case 'MAX': return 'pie-chart-mid';
+  }
+  throw new Error('unknow resultStyle');
+};
+const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
+  const entries = Object.values(pingresults);
+  const total = entries.length;
+  let failureRate = 0;
+  if (total > 0) {
+    const failureCount = entries.filter(item => !item.pingresult.success).length;
+    failureRate = Math.round((failureCount / total) * 100);
+  }
+  return {
+    background: `conic-gradient(
+      var(--el-color-danger) 0% ${failureRate}%,
+      var(--el-color-success-light-5) ${failureRate}% 100%
+    )`
+  };
+};
 
 onMounted(() => {
+  robotgroupinfo.updateRobotgroups();
   resultinfo.beginSource();
 });
-onUnmounted(() => {
+onBeforeUnmount(() => {
   resultinfo.closeSource();
 });
 </script>
@@ -55,21 +215,160 @@ onUnmounted(() => {
   flex-wrap: wrap;
   justify-content: center;
 }
+.title-right {
+  width: 300px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .bottom-style {
   margin-left: 0px;
   width: 120;
   font-size: 14px;
   height: 28px;
 }
-.task-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+
+.resultinfo-list-min {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+  justify-content: center;
 }
-.task-item {
-  padding: 6px 12px;
-  font-size: 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.resultinfo-list-mid {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  justify-content: center;
+}
+.resultinfo-list-max {
+  display: grid;
+  width: 100%;
+  row-gap: 20px;
+  column-gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  justify-content: center;
+}
+
+.resultinfo-item-mid {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border: 2px solid var(--el-color-success);
+  color: var(--el-text-color-primary);
+  background-color: var(--el-color-primary-light-9);
+  font-weight: bold;
+  height: calc(100% - 10px);
+  border-radius: 6px;
+  padding: 6px 6px;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.resultinfo-item-max {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border: 2px solid var(--el-color-success);
+  color: var(--el-text-color-primary);
+  background-color: var(--el-color-primary-light-9);
+  font-weight: bold;
+  height: calc(100% - 10px);
+  border-radius: 6px;
+  padding: 6px 6px;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultinfo-item-taskname {
+  border: 1px solid var(--el-color-primary);
+  color: var(--el-text-color-primary);
+  background-color: var(--el-color-primary-light-7);
+  padding: 4px;
+  border-radius: 6px;
+  width: 180px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.resultinfo-item-taskdelay {
+  border: 1px solid var(--el-color-warning);
+  color: var(--el-text-color-primary);
+  background-color: var(--el-color-warning-light-7);
+  padding: 4px;
+  border-radius: 6px;
+  width: 180px;
+  height: 32px;
+  margin-bottom: 4px;
+}
+
+.resultinfo-item-task-group {
+  border: 1px solid var(--el-color-info);
+  color: var(--el-text-color-primary);
+  background-color: var(--el-color-info-light-7);
+  padding: 4px;
+  border-radius: 6px;
+  width: 180px;
+  height: calc(100% - 50px);
+}
+
+.resultinfo-item-task-group-success {
+  border: 1px solid var(--el-color-success);
+  color: var(--el-text-color-primary);
+  background-color: var(--el-color-success-light-7);
+  padding: 4px;
+  border-radius: 6px;
+  width: 172px;
+  height: 44px;
+  font-size: 10px;
+  font-weight: normal;
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.resultinfo-item-task-group-fail {
+  border: 1px solid var(--el-color-danger);
+  color: var(--el-text-color-primary);
+  background-color: var(--el-color-danger-light-7);
+  padding: 4px;
+  border-radius: 6px;
+  width: 172px;
+  height: 44px;
+  font-size: 10px;
+  font-weight: normal;
+  text-align: left;
+  margin-bottom: 4px;
+}
+
+.pie-chart-min {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--el-color-success);
+}
+.pie-chart-mid {
+  margin-bottom: 10px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid var(--el-color-success);
+}
+
+.interval-line {
+  background-color: var(--el-color-primary);
+  width: 100%;
+  height: 1px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 </style>

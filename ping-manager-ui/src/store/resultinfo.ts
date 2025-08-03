@@ -1,7 +1,7 @@
 import {
   defineStore
 } from 'pinia';
-import {
+import type {
   ResultInfo,
   ResultInfoRecord
 } from '@/types/result-sub';
@@ -9,7 +9,8 @@ import {
 export const useResultinfoStore = defineStore('resultinfo', {
     state: () => ({
       _source: null as EventSource | null,
-      results: {} as Record<string, ResultInfoRecord>
+      results: {} as Record<string, ResultInfoRecord>,
+      resultInfo: {} as ResultInfo
     }),
     getters: {
     },
@@ -32,43 +33,47 @@ export const useResultinfoStore = defineStore('resultinfo', {
         };
         this._source.addEventListener('create', (e) => {
           console.log('resultinfo:create:', e.data);
-          const pesultInfo = JSON.parse(e.data) as ResultInfo;
-          const taskName = pesultInfo.taskName;
+          const resultInfo = JSON.parse(e.data) as ResultInfo;
+          const taskName = resultInfo.taskName;
           if (!this.results[taskName]) {
             this.results[taskName] = {
               taskName: taskName,
               pingresults: {}
             };
           }
-          const pingresultInfo = pesultInfo.pingresultInfo;
+          const pingresultInfo = resultInfo.pingresultInfo;
           if (!pingresultInfo) {
             return;
           }
           const resultInfoRecord = this.results[taskName];
-          resultInfoRecord.pingresults[pingresultInfo.robotGroupName] = pingresultInfo.pingresult;
+          resultInfoRecord.pingresults[pingresultInfo.robotGroupName] = pingresultInfo;
+
+          this.resultInfo = resultInfo;
         });
         this._source.addEventListener('update', (e) => {
           console.log('resultinfo:update:', e.data);
-          const pesultInfo = JSON.parse(e.data) as ResultInfo;
-          const taskName = pesultInfo.taskName;
+          const resultInfo = JSON.parse(e.data) as ResultInfo;
+          const taskName = resultInfo.taskName;
           if (!this.results[taskName]) {
             this.results[taskName] = {
               taskName: taskName,
               pingresults: {}
             };
           }
-          const pingresultInfo = pesultInfo.pingresultInfo;
+          const pingresultInfo = resultInfo.pingresultInfo;
           if (!pingresultInfo) {
             return;
           }
           const resultInfoRecord = this.results[taskName];
-          resultInfoRecord.pingresults[pingresultInfo.robotGroupName] = pingresultInfo.pingresult;
+          resultInfoRecord.pingresults[pingresultInfo.robotGroupName] = pingresultInfo;
+
+          this.resultInfo = resultInfo;
         });
         this._source.addEventListener('delete', (e) => {
           console.log('resultinfo:delete:', e.data);
-          const pesultInfo = JSON.parse(e.data) as ResultInfo;
-          const taskName = pesultInfo.taskName;
-          const pingresultInfo = pesultInfo.pingresultInfo;
+          const resultInfo = JSON.parse(e.data) as ResultInfo;
+          const taskName = resultInfo.taskName;
+          const pingresultInfo = resultInfo.pingresultInfo;
           if (!pingresultInfo) {
             delete this.results[taskName];
             return;

@@ -24,5 +24,6 @@ import lombok.Data;
 @Data
 public class PingresultInfo {
     private String robotGroupName;
+    private long timestamp;
     private Pingresult pingresult;
 }

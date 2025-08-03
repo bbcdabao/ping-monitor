@@ -1,4 +1,7 @@
 {
+  "nameSub": "Name",
+  "delaySub": "Delay",
+  "timeSub": "Time",
   "addTaskSuccessJump": "Add task success jump task list?",
   "confirm": "Confirm",
   "cancel": "Cancel",
