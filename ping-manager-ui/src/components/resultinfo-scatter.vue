@@ -1,4 +1,17 @@
-<!-- Copyright 2025 bbcdabao Team -->
+<!--
+  Licensed to the bbcdabao Team under one or more contributor license agreements.
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. The bbcdabao Team licenses this file to you under
+  the Apache License, Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License. You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License.
+-->
 
 <template>
   <div
@@ -6,11 +19,11 @@
     ref="chartRef"
   />
   <el-slider
-    style="width: 100%; margin-bottom: 10px;"
+    style="width: 100%; margin-bottom: 0px;"
     v-model="winSize"
-    :min="10"
-    :max="90"
-    :step="10"
+    :min="1"
+    :max="20"
+    :step="1"
     show-stops
     :format-tooltip="sliderTooltip"
   />
@@ -42,7 +55,7 @@ const { t, locale } = useI18n();
 const resultinfo = useResultinfoStore();
 const robotgroupinfo = useRobotgroupinfoStore();
 
-const DEFAULT_WIN_SIZE = 10
+const DEFAULT_WIN_SIZE = 5;
 const winSize = ref(
   Number(localStorage.getItem('winSize') || DEFAULT_WIN_SIZE)
 );
@@ -50,14 +63,14 @@ watch(winSize, (newVal) => {
   localStorage.setItem('winSize', String(newVal));
 })
 const sliderTooltip = (value: number) => {
-  return `最近：${value} 分钟`
+  return `${t('nearLy')} : ${value} ${t('timeMinute')}`
 };
 
 const elementColor = getComputedStyle(document.documentElement).getPropertyValue('--element-color').trim();
 const chartOption = {
   animation: false,
   title: {
-    text: '流动窗口拨测散点',
+    text: t('windowScatter'),
     left: 'left',
     textStyle: {
       fontSize: 12,
@@ -82,7 +95,7 @@ const chartOption = {
   },
   xAxis: {
     type: 'time',
-    name: '时间轴',
+    name: t('timeLine'),
     nameLocation: 'start',
     nameGap: 10,
     axisLabel: {
@@ -100,7 +113,7 @@ const chartOption = {
   },
   yAxis: {
     type: 'value',
-    name: '延迟 (ms)',
+    name: t('delayLine'),
     min: 0,
     max: 10,
     position: 'right',
@@ -128,7 +141,7 @@ const chartOption = {
     {
       type: 'scatter',
       data: [],
-      symbolSize: 7,
+      symbolSize: 9,
       itemStyle: {
         opacity: 0.6
       }
@@ -161,7 +174,7 @@ const clseChart = async () => {
   window.removeEventListener('resize', resizeHandler);
 };
 
-const MAX_POINTS = 1500;
+const MAX_POINTS = 3000;
 const resultInfos: Array<any> = [];
 let firstTimestamp: number = Date.now();
 let lastTimestamp: number = Date.now();

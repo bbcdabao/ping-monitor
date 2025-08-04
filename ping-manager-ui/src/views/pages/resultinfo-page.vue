@@ -1,23 +1,36 @@
-<!-- Copyright 2025 bbcdabao Team -->
+<!--
+  Licensed to the bbcdabao Team under one or more contributor license agreements.
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. The bbcdabao Team licenses this file to you under
+  the Apache License, Version 2.0 (the "License"); you may not use this file except
+  in compliance with the License. You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+  OF ANY KIND, either express or implied. See the License for the specific language
+  governing permissions and limitations under the License.
+-->
 
 <template>
   <div>
     <el-card class="custom-shadow mgb6" shadow="hover">
       <template #header>
         <div class="content-title">
-          结果监控
+          {{ t('resultMonitor') }}
           <div class="title-right">
-            控制:
+            {{ t('control') }} :
             <el-switch
               v-model="showControl"
               size="small"
             />
-            散点:
+            {{ t('scatter') }} :
             <el-switch
               v-model="showScatter"
               size="small"
             />
-            风格:
+            {{ t('style') }} :
             <el-select
               style="width: 70px;"
               size="small"
@@ -45,23 +58,15 @@
           border
         >
           <el-descriptions-item
-            :label="'选择关注'"
+            :label="getControlTitle()"
             label-align="right"
             align="left"
             width="200px"
           >
           </el-descriptions-item>
-          <el-descriptions-item
-            :label="'结果总数'"
-            label-align="right"
-            align="left"
-            width="200px"
-          >
-            {{ Object.keys(resultinfo.results).length }} 
-          </el-descriptions-item>
-
         </el-descriptions>
         <div
+          v-if="initShow"
           :class="getResultinfoListClass()"
         >
           <div
@@ -76,18 +81,18 @@
             <div v-if="resultStyle==='MID'">
               <div class="resultinfo-item-taskname">
                 <div style="font-size: 12px; font-weight: bold;">
-                  TaskName
+                  {{ t('taskPingName') }}
                 </div>
                 <div class="interval-line-primary" />
                 <div style="font-size: 10px; font-weight: normal; text-align: left;">
                   {{ taskName }}
-                </div>
+                </div> 
               </div>
             </div>
             <div v-else-if="resultStyle==='MAX'">
               <div class="resultinfo-item-taskname">
                 <div style="font-size: 12px; font-weight: bold;">
-                  TaskName
+                  {{ t('taskPingName') }}
                 </div>
                 <div class="interval-line-primary" />
                 <div style="font-size: 10px; font-weight: normal; text-align: left;">
@@ -96,7 +101,7 @@
               </div>
               <div class="resultinfo-item-task-group">
                 <div style="font-size: 12px; font-weight: bold;">
-                  Sentinel Group
+                  {{ t('sentinelGroup') }}
                 </div>
                 <div class="interval-line-info" />
                 <div
@@ -107,14 +112,16 @@
                 >
                   {{ getGroupDesc(result.robotGroupName) }}
                   <div class="interval-line-info" />
-                  delay: {{ result.pingresult.delay }} ms
+                  {{ t('delayTitle') }} : {{ result.pingresult.delay }} ms
                   <div class="interval-line-info" />
-                  update: {{ dayjs(result.timestamp).format('YYYY-MM-DD HH:mm:ss') }}
+                  {{ t('updateTime')}} : {{ dayjs(result.timestamp).format('YYYY-MM-DD HH:mm:ss') }}
                 </div>
               </div>
             </div>
-      
           </div>
+        </div>
+        <div v-else style="width: 100%; margin-top: 20px">
+          <el-skeleton :rows="10" animated />
         </div>
       </div>
     </el-card>
@@ -151,6 +158,8 @@ const { t, locale } = useI18n();
 const resultinfo = useResultinfoStore();
 const robotgroupinfo = useRobotgroupinfoStore();
 
+const initShow = ref(false);
+
 const minWidth = ref(150);
 
 const isChartMin = ref(false);
@@ -175,13 +184,15 @@ const resultStyleOpt = [
   }
 ]
 
-
 const showControl = ref(
   localStorage.getItem('showControl') !== 'false'
 )
 watch(showControl, (newVal) => {
   localStorage.setItem('showControl', String(newVal))
 })
+const getControlTitle = () => {
+  return `( ${t('total')}:${Object.keys(resultinfo.results).length} ) ${t('selectShow')}:`;
+};
 
 const showScatter = ref(
   localStorage.getItem('showScatter') !== 'false'
@@ -242,6 +253,9 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
 onMounted(() => {
   robotgroupinfo.updateRobotgroups();
   resultinfo.beginSource();
+  setTimeout(() => {
+    initShow.value = true;
+  }, 3000);
 });
 onBeforeUnmount(() => {
   resultinfo.closeSource();
@@ -254,7 +268,7 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 .title-right {
-  width: 300px;
+  width: 330px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -274,9 +288,9 @@ onBeforeUnmount(() => {
   margin-top: 10PX;
   display: grid;
   width: 100%;
-  row-gap: 6px;
+  row-gap: 16px;
   column-gap: 6px;
-  grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
   justify-content: center;
 }
 .resultinfo-list-mid {
@@ -380,6 +394,17 @@ onBeforeUnmount(() => {
   margin-bottom: 4px;
 }
 
+@keyframes borderPulse {
+  0% {
+    background-color: var(--el-color-danger-light-9);
+  }
+  50% {
+    background-color: var(--el-color-danger-light-7);
+  }
+  100% {
+    background-color: var(--el-color-danger-light-9);
+  }
+}
 .resultinfo-item-task-group-fail {
   border: 1px solid var(--el-color-danger);
   color: var(--el-text-color-primary);
@@ -396,8 +421,8 @@ onBeforeUnmount(() => {
 }
 
 .pie-chart-min {
-  width: 20px;
-  height: 20px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 2px solid var(--el-color-success);
 }
