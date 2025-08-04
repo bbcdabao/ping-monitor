@@ -54,7 +54,6 @@
           >
             {{ plugInfos.length }}
           </el-descriptions-item>
-
         </el-descriptions>
         <div
           class="interval-line"

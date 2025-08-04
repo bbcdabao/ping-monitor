@@ -6,8 +6,13 @@
       <template #header>
         <div class="content-title">
           结果监控
-          <div class="title-right"> 
-            拨测散点:
+          <div class="title-right">
+            控制:
+            <el-switch
+              v-model="showControl"
+              size="small"
+            />
+            散点:
             <el-switch
               v-model="showScatter"
               size="small"
@@ -30,7 +35,32 @@
         </div>
       </template>
       <div class="this-card">
-        <resultinfo-scatter v-if="showScatter" />
+        <resultinfo-scatter
+          v-if="showScatter"
+        />
+        <el-descriptions
+          v-if="showControl"
+          style="width: 100%;"
+          :column="1"
+          border
+        >
+          <el-descriptions-item
+            :label="'选择关注'"
+            label-align="right"
+            align="left"
+            width="200px"
+          >
+          </el-descriptions-item>
+          <el-descriptions-item
+            :label="'结果总数'"
+            label-align="right"
+            align="left"
+            width="200px"
+          >
+            {{ Object.keys(resultinfo.results).length }} 
+          </el-descriptions-item>
+
+        </el-descriptions>
         <div
           :class="getResultinfoListClass()"
         >
@@ -48,7 +78,7 @@
                 <div style="font-size: 12px; font-weight: bold;">
                   TaskName
                 </div>
-                <div class="interval-line" />
+                <div class="interval-line-primary" />
                 <div style="font-size: 10px; font-weight: normal; text-align: left;">
                   {{ taskName }}
                 </div>
@@ -59,7 +89,7 @@
                 <div style="font-size: 12px; font-weight: bold;">
                   TaskName
                 </div>
-                <div class="interval-line" />
+                <div class="interval-line-primary" />
                 <div style="font-size: 10px; font-weight: normal; text-align: left;">
                   {{ taskName }}
                 </div>
@@ -68,19 +98,19 @@
                 <div style="font-size: 12px; font-weight: bold;">
                   Sentinel Group
                 </div>
-                <div class="interval-line" />
-                  <div
-                    v-for="(result, robotGroupName) in record.pingresults"
-                    :key="robotGroupName"
-                    :class="result.pingresult.success?
-                    'resultinfo-item-task-group-success' : 'resultinfo-item-task-group-fail'"
-                  >
-                    {{ getGroupDesc(result.robotGroupName) }}
-                    <div class="interval-line" />
-                    delay: {{ result.pingresult.delay }} ms
-                    <div class="interval-line" />
-                    update: {{ dayjs(result.timestamp).format('YYYY-MM-DD HH:mm:ss') }}
-                  </div>
+                <div class="interval-line-info" />
+                <div
+                  v-for="(result, robotGroupName) in record.pingresults"
+                  :key="robotGroupName"
+                  :class="result.pingresult.success?
+                  'resultinfo-item-task-group-success' : 'resultinfo-item-task-group-fail'"
+                >
+                  {{ getGroupDesc(result.robotGroupName) }}
+                  <div class="interval-line-info" />
+                  delay: {{ result.pingresult.delay }} ms
+                  <div class="interval-line-info" />
+                  update: {{ dayjs(result.timestamp).format('YYYY-MM-DD HH:mm:ss') }}
+                </div>
               </div>
             </div>
       
@@ -144,6 +174,14 @@ const resultStyleOpt = [
     label: 'Max',
   }
 ]
+
+
+const showControl = ref(
+  localStorage.getItem('showControl') !== 'false'
+)
+watch(showControl, (newVal) => {
+  localStorage.setItem('showControl', String(newVal))
+})
 
 const showScatter = ref(
   localStorage.getItem('showScatter') !== 'false'
@@ -233,23 +271,28 @@ onBeforeUnmount(() => {
 }
 
 .resultinfo-list-min {
+  margin-top: 10PX;
   display: grid;
   width: 100%;
-  gap: 10px;
+  row-gap: 6px;
+  column-gap: 6px;
   grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
   justify-content: center;
 }
 .resultinfo-list-mid {
+  margin-top: 10PX;
   display: grid;
   width: 100%;
-  gap: 10px;
+  row-gap: 6px;
+  column-gap: 6px;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   justify-content: center;
 }
 .resultinfo-list-max {
+  margin-top: 10PX;
   display: grid;
   width: 100%;
-  row-gap: 20px;
+  row-gap: 6px;
   column-gap: 6px;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   justify-content: center;
@@ -263,7 +306,7 @@ onBeforeUnmount(() => {
   color: var(--el-text-color-primary);
   background-color: var(--el-color-primary-light-9);
   font-weight: bold;
-  height: calc(100% - 10px);
+  height: calc(100% - 16px);
   border-radius: 6px;
   padding: 6px 6px;
   text-align: center;
@@ -280,7 +323,7 @@ onBeforeUnmount(() => {
   color: var(--el-text-color-primary);
   background-color: var(--el-color-primary-light-9);
   font-weight: bold;
-  height: calc(100% - 10px);
+  height: calc(100% - 16px);
   border-radius: 6px;
   padding: 6px 6px;
   text-align: center;
@@ -319,7 +362,7 @@ onBeforeUnmount(() => {
   padding: 4px;
   border-radius: 6px;
   width: 180px;
-  height: calc(100% - 50px);
+  height: calc(100% - 56px);
 }
 
 .resultinfo-item-task-group-success {
@@ -329,10 +372,11 @@ onBeforeUnmount(() => {
   padding: 4px;
   border-radius: 6px;
   width: 172px;
-  height: 44px;
+  height: 48px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
+  margin-top: 4px;
   margin-bottom: 4px;
 }
 
@@ -343,10 +387,11 @@ onBeforeUnmount(() => {
   padding: 4px;
   border-radius: 6px;
   width: 172px;
-  height: 44px;
+  height: 48px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
+  margin-top: 4px;
   margin-bottom: 4px;
 }
 
@@ -358,16 +403,25 @@ onBeforeUnmount(() => {
 }
 .pie-chart-mid {
   margin-bottom: 10px;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border: 2px solid var(--el-color-success);
 }
 
-.interval-line {
+.interval-line-primary {
   background-color: var(--el-color-primary);
   width: 100%;
-  height: 1px;
+  height: 2px;
+  transform: scaleY(0.5);
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+.interval-line-info {
+  background-color: var(--el-color-info);
+  width: 100%;
+  height: 2px;
+  transform: scaleY(0.5);
   margin-top: 2px;
   margin-bottom: 2px;
 }
