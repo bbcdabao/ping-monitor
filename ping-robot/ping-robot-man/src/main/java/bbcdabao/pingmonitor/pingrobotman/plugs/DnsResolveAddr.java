@@ -1,28 +1,14 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 package bbcdabao.pingmonitor.pingrobotman.plugs;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.Type;
 
 import bbcdabao.pingmonitor.common.domain.extraction.annotation.ExtractionFieldMark;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
@@ -39,17 +25,31 @@ public class DnsResolveAddr implements IPingMoniterPlug {
         StringBuilder sb = new StringBuilder();
         sb.append("dns:");
         sb.append(domainName);
+
         try {
-            InetAddress[] addresses = InetAddress.getAllByName(domainName);
-            sb.append(":ok");
-            for (InetAddress address : addresses) {
-                sb.append(":").append(address.getHostAddress());
+            Lookup lookup = new Lookup(domainName, Type.SOA);
+            // 使用阿里 DNS，更适合在中国运行
+            Resolver resolver = new SimpleResolver("223.5.5.5");
+            resolver.setTimeout(Duration.ofMillis(timeOutMs / 2));
+            lookup.setResolver(resolver);
+            lookup.setCache(null);
+
+            Record[] records = lookup.run();
+            if (lookup.getResult() != Lookup.SUCCESSFUL) {
+                logger.warn("DnsResolveAddr: [{}] DNS lookup failed: {}", domainName, lookup.getErrorString());
+                throw new Exception("Domain may not be valid: no SOA record.");
             }
-            logger.info("DnsResolveAddr:{} resolved successfully", domainName);
+
+            sb.append(":ok");
+            for (Record record : records) {
+                sb.append(":").append(record.rdataToString());
+            }
+
+            logger.info("DnsResolveAddr: [{}] resolved successfully", domainName);
             return sb.toString();
-        } catch (UnknownHostException e) {
-            logger.warn("DnsResolveAddr:{} could not resolve", domainName);
-            throw new Exception("Domain name resolution failed for: " + domainName, e);
+        } catch (Exception e) {
+            logger.warn("DnsResolveAddr: [{}] resolution error", domainName, e);
+            throw new Exception("DNS resolution failed for domain: " + domainName, e);
         }
     }
 }

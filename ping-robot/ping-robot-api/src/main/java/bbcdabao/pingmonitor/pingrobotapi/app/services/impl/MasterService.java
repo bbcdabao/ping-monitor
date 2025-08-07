@@ -170,10 +170,8 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         MasterRobotInfo masterRobotInfo = new MasterRobotInfo();
         if (0 == tsAssign.get()) {
             masterRobotInfo.setAct(true);
-            LOGGER.info("ffffffffffffffffffffffffffffffffffffffffff");
         } else {
             masterRobotInfo.setAct(false);
-            LOGGER.info("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         }
         masterRobotInfo.setInfo("success");
         long beg = System.currentTimeMillis();

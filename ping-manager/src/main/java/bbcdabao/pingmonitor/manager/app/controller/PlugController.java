@@ -18,8 +18,12 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.zookeeper.KeeperException.NoNodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -37,6 +41,8 @@ import bbcdabao.pingmonitor.manager.app.services.IPlugOpt;
 @RequestMapping("/api/plugs")
 public class PlugController {
 
+    private final Logger logger = LoggerFactory.getLogger(PlugController.class);
+
     @Autowired
     private IPlugOpt plugOpt;
 
@@ -44,7 +50,12 @@ public class PlugController {
     @ResponseBody
     public ResponseEntity<ApiResponse<Collection<PlugInfo>>> plugsForGet(
             @PathVariable("plugName") String plugName) throws Exception {
-        Collection<PlugInfo> plugInfos = plugOpt.getPlugInfos(plugName);
+        Collection<PlugInfo> plugInfos = new ArrayList<>();
+        try {
+            plugInfos = plugOpt.getPlugInfos(plugName);
+        } catch (NoNodeException e) {
+            logger.info("plugsForGet: no plugs! please start robot!");
+        }
         return ResponseEntity
                 .ok()
                 .body(ApiResponse.ok(plugInfos));
@@ -54,7 +65,12 @@ public class PlugController {
     @ResponseBody
     public ResponseEntity<ApiResponse<Collection<PlugInfo>>> plugsForGet()
             throws Exception {
-        Collection<PlugInfo> plugInfos = plugOpt.getPlugInfos(null);
+        Collection<PlugInfo> plugInfos = new ArrayList<>();
+        try {
+            plugInfos = plugOpt.getPlugInfos(null);
+        } catch (NoNodeException e) {
+            logger.info("plugsForGet: no plugs! please start robot!");
+        }
         return ResponseEntity
                 .ok()
                 .body(ApiResponse.ok(plugInfos));

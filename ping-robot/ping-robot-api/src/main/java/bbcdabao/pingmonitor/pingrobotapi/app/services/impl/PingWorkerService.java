@@ -103,16 +103,14 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
         private IPingMoniterPlug plug = null;
     }
 
-
-    private List<String> rtasks = new ArrayList<>();
     private long stime = System.currentTimeMillis();
     private void assignTasks() throws Exception {
         if(0 != tsAssign.getAndIncrement()) {
             return;
         }
         stime = System.currentTimeMillis();
-        LOGGER.info("PingWorkerService-doReMake Enter");
         CoordinationManager cm = CoordinationManager.getInstance();
+        List<String> rtasks = new ArrayList<>();
         try {
             rtasks = cm.getChildren(robotRunInfoTaskPath);
         } catch (Exception e) {
@@ -145,9 +143,15 @@ public class PingWorkerService extends TimeWorkerBase implements ApplicationRunn
                 if (null == statGet) {
                     LOGGER.info("assignUpdate: task not had : delete: {}", indexPath.get());
                 	    cm.deleteData(indexPath);
+                	    try {
+                	        cm.deleteData(IPath.resultPath(taskName));
+                	    } catch (Exception e) {
+                	        LOGGER.info("delete resultPath Exception:{}", e.getMessage());
+                	    }
+                	    iterator.remove();
                 	    continue;
                 }
-                if (null == plugInfo.plug) {
+                if (null == plugInfo.plug) {    
                 		plugInfo.plug = TemplatesManager.getInstance().getPingMoniterPlugUsedTaskName(taskName);
                     continue;
                 }

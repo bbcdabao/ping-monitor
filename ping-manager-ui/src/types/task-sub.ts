@@ -24,6 +24,7 @@ export interface AddTaskRobotGroupsPayload {
 }
 
 export interface TaskInfo {
+  isSelect: boolean;
   taskName: string;
   plugName: string;
   properties: Record<string, string>;

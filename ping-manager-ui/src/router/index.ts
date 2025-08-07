@@ -34,7 +34,13 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'home-default',
-        redirect: '/theme-page',
+        redirect: '/pingmonitor-page',
+      },
+      {
+        path: '/pingmonitor-page',
+        name: 'pingmonitor',
+        meta: {},
+        component: () => import('@/views/pages/pingmonitor-page.vue'),
       },
       {
         path: '/template-page',

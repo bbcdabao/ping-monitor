@@ -17,7 +17,7 @@
   <div>
     <el-card class="custom-shadow mgb6" shadow="hover">
       <template #header>
-        <div class="content-title">任务列表</div>
+        <div class="content-title">{{ t('taskList') }}</div>
       </template>
       <div class="this-card">
         <el-descriptions
@@ -26,14 +26,14 @@
           border
         >
           <el-descriptions-item
-            :label="'选择分配'"
+            :label="t('selectAllocation')"
             label-align="right"
             align="left"
             width="200px"
           >
             <el-select
               v-model="selectedTaskName"
-              placeholder="选择插件可创建任务"
+              :placeholder="t('selectPlugForCreateTask')"
               clearable
               filterable
             >
@@ -58,19 +58,27 @@
           :data="nowshowTaskInfos"
           style="width: 100%; margin-top: 10px;"
         >
-          <el-table-column prop="taskName" label="任务名称" sortable />
-          <el-table-column prop="plugName" label="插件名称" sortable />
-          <el-table-column label="操作" width="100">
-            <template #default="{ row }">
+          <el-table-column prop="taskName" :label="t('taskName')" sortable />
+          <el-table-column prop="plugName" :label="t('plugName')" sortable />
+          <el-table-column width="150">
+            <template #header>
+              <span>{{ t('operation') }}:</span>
               <el-button
                 type="danger"
                 size="small"
-                @click="handleDelete(row)"
+                @click="handleBatchDelete"
+                style="margin-left: 8px"
               >
                 <el-icon>
                   <Delete />
                 </el-icon>
               </el-button>
+            </template>
+            <template #default="{ row }">
+              <el-checkbox
+                v-model="row.isSelect"
+                size="small"
+              />
             </template>
           </el-table-column>
         </el-table>
@@ -79,7 +87,7 @@
     <transition name="fade-slide" appear>
     <el-card class="custom-shadow mgb20" shadow="hover" v-if="selectedTaskInfo != null">
       <template #header>
-        <div class="content-title">任务详情 : {{ selectedTaskName }}</div>
+        <div class="content-title">{{ t('taskDetail') }} : {{ selectedTaskName }}</div>
       </template>
       <div class="this-card">
         <el-descriptions
@@ -101,7 +109,7 @@
             label-align="right"
             align="left"
             width="200px"
-            :label="'分配哨兵组'"
+            :label="t('assignSentryGroups')"
           >
             <div
               v-for="(node, index) in robotGroupInfoNodes"
@@ -143,6 +151,7 @@ import {
   useRoute
 } from 'vue-router';
 import {
+  backtopEmits,
   ElMessage
 } from 'element-plus';
 import {
@@ -154,6 +163,9 @@ import {
   postRobotGroupsByTaskName,
   getCheckRobotGroupInfoByTaskName
 } from '@/api';
+import {
+  promptYesOrNo
+} from '@/utils/dialog-inputs';
 import type {
   PlugInfo,
   TemplateField
@@ -236,7 +248,7 @@ const robotGroupInfoNodes = ref<CheckRobotGroupInfo[]>([]);
 
 const confirmRobotGroupsSubmit = async () => {
   if (!selectedTaskInfo.value) {
-    ElMessage.error('请选择任务');
+    ElMessage.error(t('pleaseSelectTask'));
     return;
   }
   const taskName = selectedTaskInfo.value.taskName;
@@ -258,7 +270,9 @@ const confirmRobotGroupsSubmit = async () => {
 
 const loadTaskInfos = async () => {
   const resData: TaskInfo[] = await getTaskInfos(null);
-
+  if (resData.length <= 0) {
+    ElMessage.primary(t('loadTaskInfosMsg'));
+  }
   const indexTaskInfoMap: Record<string, TaskInfo> = {};
   resData.forEach(item => {
     indexTaskInfoMap[item.taskName] = item;
@@ -278,10 +292,36 @@ const loadTaskInfos = async () => {
   selectedTaskName.value = indexTaskInfo.taskName;
 };
 
+const handleBatchDelete = async () => {
+  const deleteTasks: string[] = [];
+  taskInfos.value.forEach(task => {
+    if (task.isSelect) {
+      deleteTasks.push(task.taskName);
+    }
+  });
+  if (deleteTasks.length <= 0) {
+    return;
+  }
+  const confirmed = await promptYesOrNo(t, t('deleteTask') + ' : ' +  deleteTasks.join(', '));
+  if (confirmed) {
+    for (const taskName of deleteTasks) {
+      try {
+        await deleteAddTask(taskName);
+      } catch (error) {
+        ElMessage.warning('delete error:' + taskName);
+      }
+    }
+    selectedTaskName.value = null;
+    await loadTaskInfos();
+  }
+};
 const handleDelete = async (row: TaskInfo) => {
-  await deleteAddTask(row.taskName);
-  selectedTaskName.value = null;
-  await loadTaskInfos();
+  const confirmed = await promptYesOrNo(t, t('deleteTask') + ' : ' + row.taskName);
+  if (confirmed) {
+    await deleteAddTask(row.taskName);
+    selectedTaskName.value = null;
+    await loadTaskInfos();
+  }
 };
 
 onMounted(async () => {

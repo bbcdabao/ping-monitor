@@ -18,7 +18,7 @@
   <div>
     <el-card class="custom-shadow mgb6" shadow="hover">
       <template #header>
-        <div class="content-title">任务模板</div>
+        <div class="content-title">{{ t('template') }}</div>
       </template>
       <div class="this-card">
         <el-descriptions
@@ -27,14 +27,14 @@
           border
         >
           <el-descriptions-item
-            :label="'选择创建'"
+            :label="t('selectCreate')"
             label-align="right"
             align="left"
             width="200px"
           >
             <el-select
               v-model="selectedPlugName"
-              placeholder="选择插件可创建任务"
+              :placeholder="t('selectPlugForCreateTask')"
               clearable
               filterable
             >
@@ -72,7 +72,7 @@
               <div
                 class="template-item-inner-name"
               >
-                {{ '模板名称' }} : {{ plugInfo.plugName }}
+                {{ t('plugName') }} : {{ plugInfo.plugName }}
               </div>
               <div
                 class="template-node-container"
@@ -91,12 +91,12 @@
                     <div
                       class="template-node-sub0"
                     >
-                      {{ '参数' }}:{{ fieldKey }}
+                      {{ t('params') }}:{{ fieldKey }}
                     </div>
                     <div
                       class="template-node-sub1"
                     >
-                      {{ '类型' }}:{{ field.type }}
+                      {{ t('types') }}:{{ field.type }}
                     </div>
                     <el-tooltip
                       v-if="selectedPlugInfo != null"
@@ -129,7 +129,7 @@
     <transition name="fade-slide" appear>
     <el-card class="custom-shadow mgb20" shadow="hover" v-if="selectedPlugInfo != null">
       <template #header>
-        <div class="content-title">创建任务</div>
+        <div class="content-title">{{ t('createTask') }}</div>
       </template>
       <div class="this-card">
         <el-descriptions
@@ -141,10 +141,10 @@
             label-align="right"
             align="left"
             width="200px"
-            :label="'任务名称:'"
+            :label="t('taskName') + ':'"
           >
             <el-input
-              placeholder="请输入任务名称"
+              :placeholder="t('taskNameRequired')"
               v-model="addTaskName"
             />
           </el-descriptions-item>
@@ -167,10 +167,10 @@
             />
             <el-input
               v-else-if="field.type === 'STRING'"
-              placeholder="请输入"
+              :placeholder="t('enterPlease')"
               v-model="addTaskData[key]"
             />
-            <span v-else>不支持的类型：{{ field.type }}</span>
+            <span v-else>{{t('unSuportly')}} : {{ field.type }}</span>
           </el-descriptions-item>
           <el-descriptions-item
             label-align="right"
@@ -232,7 +232,7 @@ const { t, locale } = useI18n();
 const router = useRouter();
 
 const getDescs = (field: TemplateField) => {
-  return '说明: ' + (locale.value === 'zh' ? field.desCn : field.desEn);
+  return `${t('illustrate')}:  ` + (locale.value === 'zh' ? field.desCn : field.desEn);
 };
 
 const getTitle = (field: TemplateField) => {
@@ -306,7 +306,10 @@ const createTaskSubmit = async () => {
 
 const loadPlugInfos = async () => {
   const resData: PlugInfo[] = await getPlugInfos(null);
-
+  if (resData.length <= 0) {
+    ElMessage.primary(t('loadPlugInfosMsg'));
+    return;
+  }
   const indexPlugInfoMap: Record<string, PlugInfo> = {};
   resData.forEach(item => {
     indexPlugInfoMap[item.plugName] = item;

@@ -18,10 +18,14 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.zookeeper.KeeperException.NoNodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,6 +48,8 @@ import bbcdabao.pingmonitor.manager.app.services.ITaskManager;
 @Controller
 @RequestMapping("/api/tasks")
 public class TaskManagerController {
+
+    private final Logger logger = LoggerFactory.getLogger(TaskManagerController.class);
 
     @Autowired
     private ITaskManager taskManager;
@@ -86,17 +92,29 @@ public class TaskManagerController {
     @ResponseBody
     public ResponseEntity<ApiResponse<Collection<TaskInfo>>> tasksForGet(
             @PathVariable("taskName") String taskName) throws Exception {
+        Collection<TaskInfo> taskInfos = new ArrayList<>();
+        try {
+            taskInfos = taskManager.getTasks(taskName);
+        } catch (NoNodeException e) {
+            logger.info("tasksForGet: no task! please create!");
+        }
         return ResponseEntity
         		.ok()
-        		.body(ApiResponse.ok(taskManager.getTasks(taskName)));
+        		.body(ApiResponse.ok(taskInfos));
     }
 
     @GetMapping(value = "")
     @ResponseBody
     public ResponseEntity<ApiResponse<Collection<TaskInfo>>> tasksForGet() throws Exception {
+        Collection<TaskInfo> taskInfos = new ArrayList<>();
+        try {
+            taskInfos = taskManager.getTasks(null);
+        } catch (NoNodeException e) {
+            logger.info("tasksForGet: no task! please create!");
+        }
         return ResponseEntity
-        		.ok()
-        		.body(ApiResponse.ok(taskManager.getTasks(null)));
+                .ok()
+                .body(ApiResponse.ok(taskInfos));
     }
 
     @GetMapping(value = "/{taskName}/robot-groups")

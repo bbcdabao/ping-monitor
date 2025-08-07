@@ -18,8 +18,10 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,18 +55,30 @@ public class RobotManagerController {
     @GetMapping(value = "/groups")
     @ResponseBody
     public ResponseEntity<ApiResponse<Collection<RobotGroupInfo>>> robotGroupsForGet() throws Exception {
+        Collection<RobotGroupInfo> robotGroupInfos = new ArrayList<>();
+        try {
+            robotGroupInfos = robotManager.getRobotGroupInfos(null);
+        } catch (NoNodeException e) {
+            logger.info("robotGroupsForGet: no robotGroups");
+        }
         return ResponseEntity
         		.ok()
-        		.body(ApiResponse.ok(robotManager.getRobotGroupInfos(null)));
+        		.body(ApiResponse.ok(robotGroupInfos));
     }
     
     @GetMapping(value = "/groups/{robotGroupName}")
     @ResponseBody
     public ResponseEntity<ApiResponse<Collection<RobotGroupInfo>>> robotGroupsForGet(
             @PathVariable("robotGroupName") String robotGroupName) throws Exception {
+        Collection<RobotGroupInfo> robotGroupInfos = new ArrayList<>();
+        try {
+            robotGroupInfos = robotManager.getRobotGroupInfos(robotGroupName);
+        } catch (NoNodeException e) {
+            logger.info("robotGroupsForGet: no robotGroups");
+        }
         return ResponseEntity
         		.ok()
-        		.body(ApiResponse.ok(robotManager.getRobotGroupInfos(robotGroupName)));
+        		.body(ApiResponse.ok(robotGroupInfos));
     }
 
     

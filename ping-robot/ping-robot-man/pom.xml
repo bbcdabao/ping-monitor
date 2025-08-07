@@ -38,6 +38,11 @@
       <groupId>bbcdabao.pingmonitor</groupId>
       <artifactId>ping-robot-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>dnsjava</groupId>
+      <artifactId>dnsjava</artifactId>
+      <version>3.5.2</version>
+    </dependency>
   </dependencies>
   
   <build>

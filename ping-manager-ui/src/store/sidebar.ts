@@ -24,9 +24,9 @@ export const useSidebarStore = defineStore('sidebar', {
       collapse: false,
       menuIndx: [
         {
-          itemname: 'pingallview',
+          itemname: 'pingmonitor',
           itemicon: 'lucide-airplay',
-          route: '/manager',
+          route: '/pingmonitor-page',
         },
    
         {
