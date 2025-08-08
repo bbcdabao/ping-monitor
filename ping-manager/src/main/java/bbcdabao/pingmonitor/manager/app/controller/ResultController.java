@@ -27,11 +27,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
-import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.ResultDetailInfo;
 import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.sessions.PingresultinfosSession;
@@ -46,7 +45,8 @@ public class ResultController {
 
     @GetMapping(value = "/{taskName}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public void getTaskNamePingresultinfosForSse(@PathVariable("taskName") String taskName,
+    public void getTaskNamePingresultinfosForSse(
+            @PathVariable("taskName") String taskName,
             HttpServletResponse response) throws Exception {
         BaseSseSession.startProcess(() -> {
             return new PingresultinfosSession(response);
@@ -55,7 +55,8 @@ public class ResultController {
 
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public void pingresultinfosForSse(HttpServletResponse response) throws Exception {
+    public void pingresultinfosForSse(
+            HttpServletResponse response) throws Exception {
         BaseSseSession.startProcess(() -> {
             return new PingresultinfosSession(response);
         });
@@ -63,21 +64,19 @@ public class ResultController {
 
     @GetMapping(value = "/{taskName}")
     @ResponseBody
-    ResponseEntity<ApiResponse<Collection<PingresultInfo>>> getTaskNamePingresultinfos(
-            @PathVariable("taskName") String taskName,
-            @RequestParam(name = "durationTime") long durationTime)
-            throws Exception {
+    ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getTaskNamePingresultinfos(
+            @PathVariable("taskName") String taskName) throws Exception {
         return ResponseEntity
                 .ok()
-                .body(ApiResponse.ok(resultManager.getResults(taskName, durationTime)));
+                .body(ApiResponse.ok(resultManager.getResults(taskName)));
     }
 
     @GetMapping(value = "")
     @ResponseBody
-    ResponseEntity<ApiResponse<Collection<PingresultInfo>>> getPingresultinfos(
-            @RequestParam(name = "durationTime") long durationTime) throws Exception {
+    ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getPingresultinfos(
+            ) throws Exception {
         return ResponseEntity
                 .ok()
-                .body(ApiResponse.ok(resultManager.getResults(null, durationTime)));
+                .body(ApiResponse.ok(resultManager.getResults(null)));
     }
 }

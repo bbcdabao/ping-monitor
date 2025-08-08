@@ -29,7 +29,12 @@ import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
+import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
+import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
+import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.ResultDetailInfo;
 import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 
 @Service
@@ -37,7 +42,7 @@ public class ResultManager implements IResultManager {
 
     private final Logger logger = LoggerFactory.getLogger(ResultManager.class);
 
-    private PingresultInfo getOnePingresultInfo(String taskName, long durationTime) throws Exception {
+    private ResultDetailInfo getOnePingresultInfo(String taskName) throws Exception {
 
         CoordinationManager cm = CoordinationManager.getInstance();
         IPath taskPath = IPath.taskPath(taskName);
@@ -46,42 +51,37 @@ public class ResultManager implements IResultManager {
 
         long currentTimeMs = System.currentTimeMillis();
         boolean success = true;
-        if (data != null && data.length > 0) {
-            long elapsedMillis = currentTimeMs - stat.getMtime();
-            if (elapsedMillis < durationTime) {
-                success = false;
-            }
-        }
+
         PingresultInfo pingresultInfo = new PingresultInfo();
-        pingresultInfo.setTaskName(taskName);
-        pingresultInfo.setSuccess(success);
-        return pingresultInfo;
+        //pingresultInfo.setTaskName(taskName);
+        //pingresultInfo.setSuccess(success);
+        return null;
     }
 
     @Override
-    public Collection<PingresultInfo> getResults(String taskName, long durationTime) throws Exception {
-        logger.info("ResultManager.getResults:enter:{}:{}", taskName, durationTime);
-        Collection<PingresultInfo> pingresultInfos = new ArrayList<>();
+    public Collection<ResultDetailInfo> getResults(String taskName) throws Exception {
+        logger.info("ResultManager.getResults:enter:{}", taskName);
+        Collection<ResultDetailInfo> resultDetailInfos = new ArrayList<>();
         if (!ObjectUtils.isEmpty(taskName)) {
-            pingresultInfos.add(getOnePingresultInfo(taskName, durationTime));
-            return pingresultInfos;
+            //resultDetailInfos.add(getOnePingresultInfo(taskName));
+            return resultDetailInfos;
         }
-        long currentTimeMs = System.currentTimeMillis();
+        IConvertFromByte<String> convertFromByteForString = ByteDataConver.getInstance().getConvertFromByteForString();
         CoordinationManager cm = CoordinationManager.getInstance();
-        IPath taskPath = IPath.taskPath();
-        cm.getChildren(taskPath, (IPath childPath, String child, byte[] data, Stat stat) -> {
-            boolean success = true;
-            if (data != null && data.length > 0) {
-                long elapsedMillis = currentTimeMs - stat.getMtime();
-                if (elapsedMillis < durationTime) {
-                    success = false;
-                }
-            }
-            PingresultInfo pingresultInfo = new PingresultInfo();
-            pingresultInfo.setTaskName(child);
-            pingresultInfo.setSuccess(success);
-            pingresultInfos.add(pingresultInfo);
+        cm.getChildren(IPath.resultPath(), (IPath resultPathInfo, String taskNameInfo) -> {
+            ResultDetailInfo resultDetailInfo = new ResultDetailInfo();
+            resultDetailInfo.setTaskName(taskNameInfo);
+            Collection<PingresultInfo> pingresultInfos = resultDetailInfo.getPingresultInfos();
+            cm.getChildren(resultPathInfo, (IPath robotGroupPathInfo, String robotGroupNameInfo, byte[] robotGroupDataInfo, Stat robotGroupStatInfo) -> {
+                PingresultInfo pingresultInfo = new PingresultInfo();
+                pingresultInfo.setRobotGroupName(robotGroupNameInfo);
+                pingresultInfo.setTimestamp(robotGroupStatInfo.getMtime());
+                Pingresult pingresult = JsonConvert.getInstance().fromJson(convertFromByteForString.getValue(robotGroupDataInfo), Pingresult.class);
+                pingresultInfo.setPingresult(pingresult);
+                pingresultInfos.add(pingresultInfo);
+            });
+            resultDetailInfos.add(resultDetailInfo);
         });
-        return pingresultInfos;
+        return resultDetailInfos;
     }
 }

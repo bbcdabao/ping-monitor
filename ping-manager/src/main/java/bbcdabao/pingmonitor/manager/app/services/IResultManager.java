@@ -20,12 +20,12 @@ package bbcdabao.pingmonitor.manager.app.services;
 
 import java.util.Collection;
 
-import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.ResultDetailInfo;
 
 /**
  * Result Opt Interface
  * 拨测结果操作接口相关
  */
 public interface IResultManager {
-    Collection<PingresultInfo> getResults(String taskName, long durationTime) throws Exception;
+    Collection<ResultDetailInfo> getResults(String taskName) throws Exception;
 }

@@ -16,7 +16,7 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.module.sse;
+package bbcdabao.pingmonitor.manager.app.module.responses;
 
 import lombok.Data;
 

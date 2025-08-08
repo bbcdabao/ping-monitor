@@ -54,7 +54,8 @@ public class RobotManagerController {
     
     @GetMapping(value = "/groups")
     @ResponseBody
-    public ResponseEntity<ApiResponse<Collection<RobotGroupInfo>>> robotGroupsForGet() throws Exception {
+    public ResponseEntity<ApiResponse<Collection<RobotGroupInfo>>> robotGroupsForGet(
+            ) throws Exception {
         Collection<RobotGroupInfo> robotGroupInfos = new ArrayList<>();
         try {
             robotGroupInfos = robotManager.getRobotGroupInfos(null);
@@ -98,7 +99,9 @@ public class RobotManagerController {
     
     
     
-    
+    /**
+     * 下面接口会修改
+     */
     
     @GetMapping(value = "/{robotGroupName}/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody

@@ -16,14 +16,15 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.module.sse;
+package bbcdabao.pingmonitor.manager.app.module.responses;
 
-import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import lombok.Data;
 
 @Data
-public class PingresultInfo {
-    private String robotGroupName;
-    private long timestamp;
-    private Pingresult pingresult;
+public class ResultDetailInfo {
+    private String taskName;
+    private Collection<PingresultInfo> pingresultInfos = new ArrayList<>();
 }

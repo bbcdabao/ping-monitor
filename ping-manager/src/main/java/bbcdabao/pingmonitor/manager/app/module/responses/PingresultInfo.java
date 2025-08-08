@@ -18,10 +18,12 @@
 
 package bbcdabao.pingmonitor.manager.app.module.responses;
 
+import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
 import lombok.Data;
 
 @Data
 public class PingresultInfo {
-    private String taskName;
-    private boolean success;
+    private String robotGroupName;
+    private long timestamp;
+    private Pingresult pingresult;
 }

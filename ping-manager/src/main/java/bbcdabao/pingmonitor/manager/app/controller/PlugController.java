@@ -63,8 +63,8 @@ public class PlugController {
 
     @GetMapping(value = "")
     @ResponseBody
-    public ResponseEntity<ApiResponse<Collection<PlugInfo>>> plugsForGet()
-            throws Exception {
+    public ResponseEntity<ApiResponse<Collection<PlugInfo>>> plugsForGet(
+            ) throws Exception {
         Collection<PlugInfo> plugInfos = new ArrayList<>();
         try {
             plugInfos = plugOpt.getPlugInfos(null);
@@ -79,8 +79,7 @@ public class PlugController {
     @DeleteMapping(value = "/{plugName}")
     @ResponseBody
     public ResponseEntity<ApiResponse<String>> plugsForDelete(   
-            @PathVariable("plugName") String plugName)
-                    throws Exception {
+            @PathVariable("plugName") String plugName) throws Exception {
         plugOpt.deletePlug(plugName);
         return ResponseEntity
                 .ok()

@@ -40,7 +40,8 @@ public class SysconfigController {
 
     @GetMapping(value = "")
     @ResponseBody
-    public ResponseEntity<Sysconfig> getConfig () throws Exception {
+    public ResponseEntity<Sysconfig> getConfig (
+            ) throws Exception {
         Sysconfig sysconfig = sysconfigOpt.getConfig();
         ResponseEntity<Sysconfig> response = ResponseEntity.ok(sysconfig);
         return response;
@@ -48,7 +49,8 @@ public class SysconfigController {
 
     @PostMapping(value = "")
     @ResponseBody
-    public ResponseEntity<String> updateConfig(@RequestBody Sysconfig sysconfig) throws Exception {
+    public ResponseEntity<String> updateConfig(
+            @RequestBody Sysconfig sysconfig) throws Exception {
         sysconfigOpt.setConfig(sysconfig);
         return ResponseEntity.ok("success");
     }

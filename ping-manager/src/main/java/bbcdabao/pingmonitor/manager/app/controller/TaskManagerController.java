@@ -105,7 +105,8 @@ public class TaskManagerController {
 
     @GetMapping(value = "")
     @ResponseBody
-    public ResponseEntity<ApiResponse<Collection<TaskInfo>>> tasksForGet() throws Exception {
+    public ResponseEntity<ApiResponse<Collection<TaskInfo>>> tasksForGet(
+            ) throws Exception {
         Collection<TaskInfo> taskInfos = new ArrayList<>();
         try {
             taskInfos = taskManager.getTasks(null);
@@ -145,5 +146,4 @@ public class TaskManagerController {
         		.ok()
         		.body(ApiResponse.ok());
     }
-
 }

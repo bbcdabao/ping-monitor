@@ -52,7 +52,7 @@ public class OpenApiController {
 
     @PostMapping("/usernamelogin")
     public ResponseEntity<ApiResponse<LoginResponse>> usernameloginForPost(
-            @RequestBody UsernameLoginPayload payload) {
+            @RequestBody UsernameLoginPayload payload) throws Exception {
         String username = payload.getUsername();
         String password = userInfoMap.get(username);
         if (null == password) {
@@ -77,7 +77,8 @@ public class OpenApiController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logoutForPost() {
+    public ResponseEntity<ApiResponse<Void>> logoutForPost(
+            )throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Set-Cookie",
                 "ptToken=; Path=/api; HttpOnly; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT");
