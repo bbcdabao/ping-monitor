@@ -151,7 +151,6 @@ import {
   useRoute
 } from 'vue-router';
 import {
-  backtopEmits,
   ElMessage
 } from 'element-plus';
 import {
@@ -276,6 +275,7 @@ const loadTaskInfos = async () => {
   const indexTaskInfoMap: Record<string, TaskInfo> = {};
   resData.forEach(item => {
     indexTaskInfoMap[item.taskName] = item;
+    item.isSelect = false;
   });
   taskInfoMap = indexTaskInfoMap;
 

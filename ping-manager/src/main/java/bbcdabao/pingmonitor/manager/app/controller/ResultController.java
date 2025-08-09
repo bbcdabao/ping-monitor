@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,19 +38,19 @@ import bbcdabao.pingmonitor.manager.app.services.sse.sessions.PingresultinfosSes
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
-@RequestMapping("/api/results")
+@RequestMapping("/api/result")
 public class ResultController {
 
     @Autowired
     private IResultManager resultManager;
 
-    @GetMapping(value = "/{taskName}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/events/{taskName}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
     public void getTaskNamePingresultinfosForSse(
             @PathVariable("taskName") String taskName,
             HttpServletResponse response) throws Exception {
         BaseSseSession.startProcess(() -> {
-            return new PingresultinfosSession(response);
+            return new PingresultinfosSession(response, taskName);
         });
     }
 
@@ -58,11 +59,11 @@ public class ResultController {
     public void pingresultinfosForSse(
             HttpServletResponse response) throws Exception {
         BaseSseSession.startProcess(() -> {
-            return new PingresultinfosSession(response);
+            return new PingresultinfosSession(response, null);
         });
     }
 
-    @GetMapping(value = "/{taskName}")
+    @GetMapping(value = "/details/{taskName}")
     @ResponseBody
     ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getTaskNamePingresultinfos(
             @PathVariable("taskName") String taskName) throws Exception {
@@ -71,7 +72,17 @@ public class ResultController {
                 .body(ApiResponse.ok(resultManager.getResults(taskName)));
     }
 
-    @GetMapping(value = "")
+    @DeleteMapping(value = "/details/{taskName}")
+    @ResponseBody
+    ResponseEntity<ApiResponse<Void>> deleteTaskNamePingresultinfos(
+            @PathVariable("taskName") String taskName) throws Exception {
+        resultManager.deleteResults(taskName);
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok());
+    }
+
+    @GetMapping(value = "/details")
     @ResponseBody
     ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getPingresultinfos(
             ) throws Exception {

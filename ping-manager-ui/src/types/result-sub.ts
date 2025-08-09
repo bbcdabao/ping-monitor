@@ -42,6 +42,12 @@ export interface ResultInfo {
   pingresultInfo: PingresultInfo;
 }
 
+export interface ResultDetailInfo {
+  taskName: string;
+  isSelect: boolean;
+  pingresultInfos: PingresultInfo[]
+}
+
 export interface ResultInfoRecord {
   taskName: string;
   pingresults: Record<string, PingresultInfo>;

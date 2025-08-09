@@ -21,9 +21,12 @@ package bbcdabao.pingmonitor.manager.app.module.responses;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResultDetailInfo {
     private String taskName;
     private Collection<PingresultInfo> pingresultInfos = new ArrayList<>();

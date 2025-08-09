@@ -28,4 +28,5 @@ import bbcdabao.pingmonitor.manager.app.module.responses.ResultDetailInfo;
  */
 public interface IResultManager {
     Collection<ResultDetailInfo> getResults(String taskName) throws Exception;
+    void deleteResults(String taskName) throws Exception;
 }

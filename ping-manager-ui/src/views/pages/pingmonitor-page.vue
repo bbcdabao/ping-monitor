@@ -48,23 +48,41 @@
         </div>
       </template>
       <div class="this-card">
-        <resultinfo-scatter
-          v-if="showScatter"
-        />
         <el-descriptions
           v-if="showControl"
-          style="width: 100%;"
+          style="width: 100%; margin-bottom: 10px;"
           :column="1"
           border
         >
           <el-descriptions-item
-            :label="getControlTitle()"
             label-align="right"
             align="left"
             width="200px"
           >
+            <template #label>
+              <div style="display: flex; justify-content: flex-end; align-items: center; gap: 6px;">
+                 {{ getControlTitle() }}
+              </div>
+            </template>
+            <el-select
+              v-model="indexTaskName" 
+              style="width: 100%"
+              clearable
+              filterable
+            >
+              <el-option
+                v-for="item in resultDetails"
+                :key="item.taskName"
+                :label="item.taskName"
+                :value="item.taskName"
+              />
+            </el-select>
           </el-descriptions-item>
         </el-descriptions>
+        <div class="interval-line" />
+        <resultinfo-scatter
+          v-if="showScatter"
+        />
         <div
           v-if="initShow"
           :class="getResultinfoListClass()"
@@ -146,13 +164,16 @@ import {
 import {
   useRobotgroupinfoStore
 } from '@/store/robotgroupinfo';
+import {
+  getResultDetailInfos
+} from '@/api';
 import type {
-  PingresultInfo
+  PingresultInfo,
+  ResultDetailInfo
 } from '@/types/result-sub';
 import dayjs from 'dayjs';
 
 import ResultinfoScatter from '@/components/resultinfo-scatter.vue';
-import { StickerIcon } from 'lucide-vue-next';
 
 const { t, locale } = useI18n();
 const resultinfo = useResultinfoStore();
@@ -191,7 +212,7 @@ watch(showControl, (newVal) => {
   localStorage.setItem('showControl', String(newVal))
 })
 const getControlTitle = () => {
-  return `( ${t('total')}:${Object.keys(resultinfo.results).length} ) ${t('selectShow')}:`;
+  return `( ${t('total')} : ${Object.keys(resultinfo.results).length} ) ${t('selectShow')} :`;
 };
 
 const showScatter = ref(
@@ -200,6 +221,15 @@ const showScatter = ref(
 watch(showScatter, (newVal) => {
   localStorage.setItem('showScatter', String(newVal))
 })
+
+const indexTaskName = ref('');
+watch(indexTaskName, (newValue, oldValue) => {
+  resultinfo.beginSource(indexTaskName.value);
+})
+const resultDetails = ref<ResultDetailInfo[]>([]);
+const loadResultDetailInfos = async () => {
+  resultDetails.value = await getResultDetailInfos(null);
+};
 
 const getGroupDesc = (groupDesc: string) => {
   const groupInfo = robotgroupinfo.robotGroups[groupDesc];
@@ -221,8 +251,8 @@ const getResultinfoListClass = () => {
 const getResultinfoItem = () => {
   switch (resultStyle.value) {
     case 'MIN': return '';
-    case 'MID': return 'resultinfo-item-mid';
-    case 'MAX': return 'resultinfo-item-max';
+    case 'MID': return 'resultinfo-item';
+    case 'MAX': return 'resultinfo-item';
   }
   throw new Error('unknow resultStyle');
 };
@@ -252,7 +282,8 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
 
 onMounted(() => {
   robotgroupinfo.updateRobotgroups();
-  resultinfo.beginSource();
+  resultinfo.beginSource(indexTaskName.value);
+  loadResultDetailInfos();
   setTimeout(() => {
     initShow.value = true;
   }, 2000);
@@ -285,7 +316,6 @@ onBeforeUnmount(() => {
 }
 
 .resultinfo-list-min {
-  margin-top: 10PX;
   display: grid;
   width: 100%;
   row-gap: 16px;
@@ -294,7 +324,6 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 .resultinfo-list-mid {
-  margin-top: 10PX;
   display: grid;
   width: 100%;
   row-gap: 6px;
@@ -303,7 +332,6 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 .resultinfo-list-max {
-  margin-top: 10PX;
   display: grid;
   width: 100%;
   row-gap: 6px;
@@ -312,24 +340,7 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 
-.resultinfo-item-mid {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  border: 2px solid var(--el-color-success);
-  color: var(--el-text-color-primary);
-  background-color: var(--el-color-primary-light-9);
-  font-weight: bold;
-  height: calc(100% - 16px);
-  border-radius: 6px;
-  padding: 6px 6px;
-  text-align: center;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.resultinfo-item-max {
+.resultinfo-item {
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -354,7 +365,7 @@ onBeforeUnmount(() => {
   padding: 4px;
   border-radius: 6px;
   width: 180px;
-  height: 32px;
+  height: 34px;
   margin-bottom: 4px;
 }
 
@@ -386,7 +397,7 @@ onBeforeUnmount(() => {
   padding: 4px;
   border-radius: 6px;
   width: 172px;
-  height: 48px;
+  height: 50px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
@@ -394,17 +405,6 @@ onBeforeUnmount(() => {
   margin-bottom: 4px;
 }
 
-@keyframes borderPulse {
-  0% {
-    background-color: var(--el-color-danger-light-9);
-  }
-  50% {
-    background-color: var(--el-color-danger-light-7);
-  }
-  100% {
-    background-color: var(--el-color-danger-light-9);
-  }
-}
 .resultinfo-item-task-group-fail {
   border: 1px solid var(--el-color-danger);
   color: var(--el-text-color-primary);
@@ -412,7 +412,7 @@ onBeforeUnmount(() => {
   padding: 4px;
   border-radius: 6px;
   width: 172px;
-  height: 48px;
+  height: 50px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
@@ -449,5 +449,12 @@ onBeforeUnmount(() => {
   transform: scaleY(0.5);
   margin-top: 2px;
   margin-bottom: 2px;
+}
+.interval-line {
+  background-color: var(--el-color-info);
+  width: 100%;
+  height: 2px;
+  transform: scaleY(0.5);
+  margin-bottom: 10px;
 }
 </style>

@@ -22,6 +22,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
 import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
@@ -88,9 +89,13 @@ public class PingresultinfosSession extends BaseSseSession {
         logger.info("PingresultinfosSession.doEvent:{}:{}:{}", eventType.toString(), taskName, pingresultInfo.toString());
     }
 
-    public PingresultinfosSession(HttpServletResponse response) {
+    public PingresultinfosSession(HttpServletResponse response, String taskName) {
         super(response);
-        path = IPath.resultPath();
+        if (ObjectUtils.isEmpty(taskName)) {
+            path = IPath.resultPath();
+        } else {
+            path = IPath.resultPath(taskName);
+        }
     }
 
     @Override

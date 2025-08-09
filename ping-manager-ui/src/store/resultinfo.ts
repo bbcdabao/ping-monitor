@@ -45,11 +45,13 @@ export const useResultinfoStore = defineStore('resultinfo', {
       }
     },
 
-    beginSource() {
+    beginSource(taskName?: string | null) {
       this.closeSource();
-
-      this._source = new EventSource('/api/results/events');
-
+      if (taskName) {
+        this._source = new EventSource('/api/result/events/' + taskName);
+      } else {
+        this._source = new EventSource('/api/result/events');
+      }
       this._source.onopen = () => {
         console.log('resultinfo:connected:ok');
       };

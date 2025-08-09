@@ -27,6 +27,9 @@ import type {
   TaskInfo
 } from '@/types/task-sub';
 import type {
+  ResultDetailInfo
+} from '@/types/result-sub';
+import type {
   CheckRobotGroupInfo,
   RobotGroupInfo
 } from '@/types/robot-sub';
@@ -193,6 +196,32 @@ export const getRobotGroups = (robotGroupName: string | null) : Promise<RobotGro
     method: 'get',
   });
 };
+
+/**
+ * 获取结果
+ * @param taskName 
+ * @returns 
+ */
+export const getResultDetailInfos = (taskName: string | null) : Promise<ResultDetailInfo[]> => {
+  return request({
+    url: taskName ? `/api/result/details/${taskName}` : '/api/result/details',
+    method: 'get',
+  });
+};
+
+/**
+ * 删除结果
+ * @param taskName 
+ * @returns 
+ */
+export const deleteResultDetailInfos = (taskName: string | null) : Promise<ResultDetailInfo[]> => {
+  return request({
+    url: taskName ? `/api/result/details/${taskName}` : '/api/result/details',
+    method: 'delete',
+  });
+};
+
+
 
 /*
 export const robotGroupNames = () => {

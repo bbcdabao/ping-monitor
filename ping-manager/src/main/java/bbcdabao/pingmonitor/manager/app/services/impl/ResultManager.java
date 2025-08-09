@@ -41,47 +41,52 @@ import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 public class ResultManager implements IResultManager {
 
     private final Logger logger = LoggerFactory.getLogger(ResultManager.class);
+    
+    private final IConvertFromByte<String> convertFromByteForString = ByteDataConver.getInstance().getConvertFromByteForString();
 
-    private ResultDetailInfo getOnePingresultInfo(String taskName) throws Exception {
-
+    private final JsonConvert jsonConvert = JsonConvert.getInstance();
+    
+    private ResultDetailInfo getOneResultDetailInfo(String taskName) throws Exception {
+        ResultDetailInfo resultDetailInfo = new ResultDetailInfo();
+        Collection<PingresultInfo> resultDetailInfos = resultDetailInfo.getPingresultInfos();
         CoordinationManager cm = CoordinationManager.getInstance();
-        IPath taskPath = IPath.taskPath(taskName);
-        Stat stat = new Stat();
-        byte[] data = cm.getData(taskPath, stat);
-
-        long currentTimeMs = System.currentTimeMillis();
-        boolean success = true;
-
-        PingresultInfo pingresultInfo = new PingresultInfo();
-        //pingresultInfo.setTaskName(taskName);
-        //pingresultInfo.setSuccess(success);
-        return null;
+        IPath resultPath = IPath.resultPath(taskName);
+        cm.getChildren(resultPath, (IPath robotGroupPath, String robotGroupName, byte[] robotGroupData, Stat robotGroupStat) -> {
+            PingresultInfo pingresultInfo = new PingresultInfo();
+            pingresultInfo.setRobotGroupName(robotGroupName);
+            pingresultInfo.setTimestamp(robotGroupStat.getMtime());
+            Pingresult pingresult = jsonConvert.fromJson(convertFromByteForString.getValue(robotGroupData), Pingresult.class);
+            pingresultInfo.setPingresult(pingresult);
+            resultDetailInfos.add(pingresultInfo);
+        });
+        resultDetailInfo.setTaskName(taskName);
+        return resultDetailInfo;
     }
 
     @Override
-    public Collection<ResultDetailInfo> getResults(String taskName) throws Exception {
-        logger.info("ResultManager.getResults:enter:{}", taskName);
+    public Collection<ResultDetailInfo> getResults(String taskNameParam) throws Exception {
+        logger.info("ResultManager.getResults:enter:{}", taskNameParam);
         Collection<ResultDetailInfo> resultDetailInfos = new ArrayList<>();
-        if (!ObjectUtils.isEmpty(taskName)) {
-            //resultDetailInfos.add(getOnePingresultInfo(taskName));
+        if (!ObjectUtils.isEmpty(taskNameParam)) {
+            resultDetailInfos.add(getOneResultDetailInfo(taskNameParam));
             return resultDetailInfos;
         }
-        IConvertFromByte<String> convertFromByteForString = ByteDataConver.getInstance().getConvertFromByteForString();
         CoordinationManager cm = CoordinationManager.getInstance();
-        cm.getChildren(IPath.resultPath(), (IPath resultPathInfo, String taskNameInfo) -> {
+        cm.getChildren(IPath.resultPath(), (IPath resultPath, String taskName) -> {
             ResultDetailInfo resultDetailInfo = new ResultDetailInfo();
-            resultDetailInfo.setTaskName(taskNameInfo);
-            Collection<PingresultInfo> pingresultInfos = resultDetailInfo.getPingresultInfos();
-            cm.getChildren(resultPathInfo, (IPath robotGroupPathInfo, String robotGroupNameInfo, byte[] robotGroupDataInfo, Stat robotGroupStatInfo) -> {
-                PingresultInfo pingresultInfo = new PingresultInfo();
-                pingresultInfo.setRobotGroupName(robotGroupNameInfo);
-                pingresultInfo.setTimestamp(robotGroupStatInfo.getMtime());
-                Pingresult pingresult = JsonConvert.getInstance().fromJson(convertFromByteForString.getValue(robotGroupDataInfo), Pingresult.class);
-                pingresultInfo.setPingresult(pingresult);
-                pingresultInfos.add(pingresultInfo);
-            });
+            resultDetailInfo.setPingresultInfos(null);
+            resultDetailInfo.setTaskName(taskName);
             resultDetailInfos.add(resultDetailInfo);
         });
         return resultDetailInfos;
+    }
+
+    @Override
+    public void deleteResults(String taskName) throws Exception {
+        if (ObjectUtils.isEmpty(taskName)) {
+            throw new Exception("taskName is empty!");
+        }
+        CoordinationManager cm = CoordinationManager.getInstance();
+        cm.deleteData(IPath.resultPath(taskName));
     }
 }
