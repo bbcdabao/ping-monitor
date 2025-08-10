@@ -239,23 +239,19 @@ watch(
   () => resultinfo.resultInfo,
   (newVal, oldVal) => {
     const resultInfo = newVal;
-    const pingresultInfo = resultInfo.pingresultInfo;
+    const pingresultInfo = newVal.pingresultInfo;
     const pingresult = pingresultInfo.pingresult;
-    const groupInfo = robotgroupinfo.robotGroups[pingresultInfo.robotGroupName];
-    let groupDesc = pingresultInfo.robotGroupName;
-    if (groupInfo) {
-      groupDesc = locale.value === 'zh' ? groupInfo.descriptionCn : groupInfo.descriptionEn;
-    }
-    const nameSub = `${resultInfo.taskName} ( ${groupDesc} )`;
-    const nowTimestamp = pingresultInfo.timestamp;
+    const groupDesc = robotgroupinfo.getGroupDesc(pingresultInfo.robotGroupName);
+    const nodesName = `${resultInfo.taskName} \n ( ${groupDesc} )`;
+    const timestamp = pingresultInfo.timestamp;
     addPoint({
-      value: [nowTimestamp, pingresult.delay],
-      name: nameSub,
+      value: [timestamp, pingresult.delay],
+      name: nodesName,
       itemStyle: { color: pingresult.success ? 'green' : 'red' }
     });
   },
   {
-    deep: true
+    deep: false
   }
 );
 

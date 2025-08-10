@@ -26,7 +26,7 @@ import type {
 
 import i18n from '@/i18n';
 
-export const useRobotgroupinfoStore = defineStore('robotgroupinfo', {
+export const useRobotMetainfoStore = defineStore('robotmetainfo', {
   state: () => ({
     robotGroups: {} as Record<string, RobotGroupInfo>
   }),
@@ -36,9 +36,6 @@ export const useRobotgroupinfoStore = defineStore('robotgroupinfo', {
       if (!groupInfo) return robotGroupName;
       return i18n.global.locale.value === 'zh' ? 
       groupInfo.descriptionCn : groupInfo.descriptionEn;
-    },
-    getGroupinfo: (state) => (robotGroupName: string) => {
-      return state.robotGroups[robotGroupName];
     }
   },
   actions: {

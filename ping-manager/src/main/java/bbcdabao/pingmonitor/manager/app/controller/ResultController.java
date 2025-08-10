@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
 import bbcdabao.pingmonitor.manager.app.module.responses.ResultDetailInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.ResultInfo;
 import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.sessions.PingresultinfosSession;
@@ -62,19 +63,28 @@ public class ResultController {
             return new PingresultinfosSession(response, null);
         });
     }
-
+    
+    @GetMapping(value = "")
+    @ResponseBody
+    ResponseEntity<ApiResponse<Collection<ResultInfo>>> getResultInfos(
+            ) throws Exception {
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(resultManager.getResultInfos()));
+    }
+    
     @GetMapping(value = "/details/{taskName}")
     @ResponseBody
-    ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getTaskNamePingresultinfos(
+    ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getTaskNameResultDetailInfo(
             @PathVariable("taskName") String taskName) throws Exception {
         return ResponseEntity
                 .ok()
-                .body(ApiResponse.ok(resultManager.getResults(taskName)));
+                .body(ApiResponse.ok(resultManager.getResultDetailInfo(taskName)));
     }
 
     @DeleteMapping(value = "/details/{taskName}")
     @ResponseBody
-    ResponseEntity<ApiResponse<Void>> deleteTaskNamePingresultinfos(
+    ResponseEntity<ApiResponse<Void>> deleteTaskNameResultDetailInfo(
             @PathVariable("taskName") String taskName) throws Exception {
         resultManager.deleteResults(taskName);
         return ResponseEntity
@@ -84,10 +94,10 @@ public class ResultController {
 
     @GetMapping(value = "/details")
     @ResponseBody
-    ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getPingresultinfos(
+    ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getResultDetailInfo(
             ) throws Exception {
         return ResponseEntity
                 .ok()
-                .body(ApiResponse.ok(resultManager.getResults(null)));
+                .body(ApiResponse.ok(resultManager.getResultDetailInfo(null)));
     }
 }

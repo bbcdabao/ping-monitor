@@ -26,7 +26,7 @@
           border
         >
           <el-descriptions-item
-            :label="'过滤:'"
+            :label="'结果过滤'"
             label-align="right"
             align="left"
             width="200px"
@@ -38,7 +38,7 @@
             />
           </el-descriptions-item>
           <el-descriptions-item
-            :label="'总数:'"
+            :label="'结果总数'"
             label-align="right"
             align="left"
             width="200px"
@@ -53,7 +53,9 @@
           <el-table-column prop="taskName" :label="t('taskName')" sortable>
             <template #default="{ row }">
               <div class="resultinfo-item-taskname">
+                <div style="margin-left: 10px;">
                 {{ row.taskName }}
+                </div>
               </div>
             </template>
           </el-table-column>
@@ -73,7 +75,7 @@
             </template>
             <template #default="{ row }">
               <el-checkbox
-                v-model="row.isSelect"
+                v-model="row.ischeck"
                 size="small"
               />
             </template>
@@ -125,14 +127,14 @@ const loadResultDetailInfos = async () => {
   const resData = await getResultDetailInfos(null);
   resultDetails.value = resData.map(item => ({
     ...item,
-    isSelect: false
+    ischeck: false
   }));
 };
 
 const handleBatchDelete = async () => {
   const deleteTasks: string[] = [];
   resultDetails.value.forEach(task => {
-    if (task.isSelect) {
+    if (task.ischeck) {
       deleteTasks.push(task.taskName);
     }
   });

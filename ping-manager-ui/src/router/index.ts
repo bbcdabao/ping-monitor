@@ -61,6 +61,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/pages/resultinfo-page.vue'),
       },
       {
+        path: '/robotgroupinfo-page',
+        name: 'robotgroupinfo',
+        meta: {},
+        component: () => import('@/views/pages/robotgroupinfo-page.vue'),
+      },
+      {
         path: '/theme-page',
         name: 'theme',
         meta: {},

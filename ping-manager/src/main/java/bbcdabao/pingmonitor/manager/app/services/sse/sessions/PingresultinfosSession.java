@@ -26,8 +26,6 @@ import org.springframework.util.ObjectUtils;
 
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
 import bbcdabao.pingmonitor.common.infra.coordination.Pingresult;
-import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
 import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
@@ -63,18 +61,14 @@ public class PingresultinfosSession extends BaseSseSession {
         ResultInfo resultInfo = new ResultInfo();
         resultInfo.setTaskName(taskName);
         if (paths.length == 3) {
-            sendMessage(jsonConvert.tobeJson(resultInfo), eventType);
-            logger.info("PingresultinfosSession.doEvent:{}:{}", eventType.toString(), taskName);
+            //sendMessage(jsonConvert.tobeJson(resultInfo), eventType);
+            //logger.info("PingresultinfosSession.doEvent:{}:{}", eventType.toString(), taskName);
             return;
         }
 
         String robotGroupName = paths[3];
 
-        IConvertFromByte<String> convertFromByteForString =
-                ByteDataConver.getInstance().getConvertFromByteForString();
-
-        Pingresult pingresult = jsonConvert
-                .fromJson(convertFromByteForString.getValue(childData.getData()), Pingresult.class);
+        Pingresult pingresult = Pingresult.getPingresult(childData.getData());
         
         Stat stat = childData.getStat();
         long lastModifiedTime = stat.getMtime();

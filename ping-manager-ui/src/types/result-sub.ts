@@ -44,7 +44,7 @@ export interface ResultInfo {
 
 export interface ResultDetailInfo {
   taskName: string;
-  isSelect: boolean;
+  ischeck: boolean;
   pingresultInfos: PingresultInfo[]
 }
 

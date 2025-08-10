@@ -47,7 +47,7 @@ export const useSidebarStore = defineStore('sidebar', {
         {
           itemname: 'robotorganiza',
           itemicon: 'lucide-grid',
-          route: '/robotorganiza',
+          route: '/robotgroupinfo-page',
         },
         {
           itemname: 'robotinstance',

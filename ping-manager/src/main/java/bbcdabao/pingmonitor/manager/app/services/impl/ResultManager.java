@@ -35,6 +35,7 @@ import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
 import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.manager.app.module.responses.PingresultInfo;
 import bbcdabao.pingmonitor.manager.app.module.responses.ResultDetailInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.ResultInfo;
 import bbcdabao.pingmonitor.manager.app.services.IResultManager;
 
 @Service
@@ -64,8 +65,8 @@ public class ResultManager implements IResultManager {
     }
 
     @Override
-    public Collection<ResultDetailInfo> getResults(String taskNameParam) throws Exception {
-        logger.info("ResultManager.getResults:enter:{}", taskNameParam);
+    public Collection<ResultDetailInfo> getResultDetailInfo(String taskNameParam) throws Exception {
+        logger.info("ResultManager.getResultDetailInfo:enter:{}", taskNameParam);
         Collection<ResultDetailInfo> resultDetailInfos = new ArrayList<>();
         if (!ObjectUtils.isEmpty(taskNameParam)) {
             resultDetailInfos.add(getOneResultDetailInfo(taskNameParam));
@@ -79,6 +80,30 @@ public class ResultManager implements IResultManager {
             resultDetailInfos.add(resultDetailInfo);
         });
         return resultDetailInfos;
+    }
+
+    @Override
+    public Collection<ResultInfo> getResultInfos() throws Exception {
+        logger.info("ResultManager.getResultInfos:enter");
+        Collection<ResultInfo> pesultInfos = new ArrayList<>();
+        CoordinationManager cm = CoordinationManager.getInstance();
+        cm.getChildren(IPath.resultPath(), (IPath resultPath, String taskName) -> {
+            cm.getChildren(resultPath, (IPath pingresultPath, String robotGroupName, byte[] data, Stat stat) -> {
+                ResultInfo resultInfo = new ResultInfo();
+                resultInfo.setTaskName(taskName);
+
+                PingresultInfo pingresultInfo = new PingresultInfo();
+                pingresultInfo.setRobotGroupName(robotGroupName);
+                pingresultInfo.setTimestamp(stat.getMtime());
+                Pingresult pingresult = Pingresult.getPingresult(data);
+                pingresultInfo.setPingresult(pingresult);
+
+                resultInfo.setPingresultInfo(pingresultInfo);
+
+                pesultInfos.add(resultInfo);
+            });
+        });
+        return pesultInfos;
     }
 
     @Override

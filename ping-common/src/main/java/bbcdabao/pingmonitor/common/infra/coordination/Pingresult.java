@@ -18,10 +18,20 @@
 
 package bbcdabao.pingmonitor.common.infra.coordination;
 
+import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
+import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
+import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import lombok.Data;
 
 @Data
 public class Pingresult {
+    public static Pingresult getPingresult(byte[] data) throws Exception {
+        IConvertFromByte<String> convertFromByteForString =
+                ByteDataConver.getInstance().getConvertFromByteForString();
+        Pingresult pingresult = JsonConvert.getInstance()
+                .fromJson(convertFromByteForString.getValue(data), Pingresult.class);
+        return pingresult;
+    }
     /**
      * pint is success
      */

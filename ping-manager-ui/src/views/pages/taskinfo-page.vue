@@ -33,7 +33,7 @@
           >
             <el-select
               v-model="selectedTaskName"
-              :placeholder="t('selectPlugForCreateTask')"
+              :placeholder="'选择任务可分配哨兵组进行拨测'"
               clearable
               filterable
             >
@@ -76,7 +76,7 @@
             </template>
             <template #default="{ row }">
               <el-checkbox
-                v-model="row.isSelect"
+                v-model="row.ischeck"
                 size="small"
               />
             </template>
@@ -275,7 +275,7 @@ const loadTaskInfos = async () => {
   const indexTaskInfoMap: Record<string, TaskInfo> = {};
   resData.forEach(item => {
     indexTaskInfoMap[item.taskName] = item;
-    item.isSelect = false;
+    item.ischeck = false;
   });
   taskInfoMap = indexTaskInfoMap;
 
@@ -295,7 +295,7 @@ const loadTaskInfos = async () => {
 const handleBatchDelete = async () => {
   const deleteTasks: string[] = [];
   taskInfos.value.forEach(task => {
-    if (task.isSelect) {
+    if (task.ischeck) {
       deleteTasks.push(task.taskName);
     }
   });

@@ -44,7 +44,6 @@ export const useResultinfoStore = defineStore('resultinfo', {
         }
       }
     },
-
     beginSource(taskName?: string | null) {
       this.closeSource();
       if (taskName) {

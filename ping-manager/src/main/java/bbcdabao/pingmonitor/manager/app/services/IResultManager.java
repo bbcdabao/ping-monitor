@@ -21,12 +21,14 @@ package bbcdabao.pingmonitor.manager.app.services;
 import java.util.Collection;
 
 import bbcdabao.pingmonitor.manager.app.module.responses.ResultDetailInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.ResultInfo;
 
 /**
  * Result Opt Interface
  * 拨测结果操作接口相关
  */
 public interface IResultManager {
-    Collection<ResultDetailInfo> getResults(String taskName) throws Exception;
+    Collection<ResultDetailInfo> getResultDetailInfo(String taskName) throws Exception;
+    Collection<ResultInfo> getResultInfos() throws Exception;
     void deleteResults(String taskName) throws Exception;
 }
