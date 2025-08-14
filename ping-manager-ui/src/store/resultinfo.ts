@@ -28,11 +28,8 @@ export const useResultinfoStore = defineStore('resultinfo', {
     results: {} as Record<string, ResultInfoRecord>,
     resultInfo: {} as ResultInfo
   }),
-
   getters: {
-    // 可添加相关计算属性
   },
-
   actions: {
     closeSource() {
       if (this._source) {

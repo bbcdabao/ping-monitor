@@ -16,23 +16,13 @@
  *
  */
 
-package bbcdabao.pingmonitor.common.infra.coordination;
+package bbcdabao.pingmonitor.manager.app.module.responses;
 
-import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
-import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import lombok.Data;
 
 @Data
-public class MasterRobotInfo {
-    public static MasterRobotInfo getMasterRobotInfo(byte[] data) throws Exception {
-        IConvertFromByte<String> convertFromByteForString =
-                ByteDataConver.getInstance().getConvertFromByteForString();
-        MasterRobotInfo masterRobotInfo = JsonConvert.getInstance()
-                .fromJson(convertFromByteForString.getValue(data), MasterRobotInfo.class);
-        return masterRobotInfo;
-    }
-    private long latency;
-    private boolean act;
-    private String info;
+public class RobotInstanceInfo {
+    private String robotGroupName;
+    private String robotUUID;
+    private String robotInfo = "none";
 }

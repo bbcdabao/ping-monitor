@@ -44,4 +44,6 @@ public class Pingresult {
      * the reason for error
      */
     private String info;
+    
+    //private String robotUUID;
 }

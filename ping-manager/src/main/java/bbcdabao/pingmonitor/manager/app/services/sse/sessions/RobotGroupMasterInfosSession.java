@@ -19,27 +19,22 @@
 package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
 import org.apache.curator.framework.recipes.cache.ChildData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
-import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.dataconver.IConvertFromByte;
+import bbcdabao.pingmonitor.common.infra.coordination.MasterRobotInfo;
 import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
+import bbcdabao.pingmonitor.common.infra.zkclientframe.event.ChangedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.DeletedEvent;
-import bbcdabao.pingmonitor.manager.app.module.responses.RobotInstanceInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupMasterInfo;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.SSEvent;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class RobotInstancesSession extends BaseSseSession {
+public class RobotGroupMasterInfosSession extends BaseSseSession {
 
-    private final Logger logger = LoggerFactory.getLogger(RobotInstancesSession.class);
-
-    private final String robotGroupName;
     private final IPath path;
-    
+
     private void doEvent(ChildData childData, SSEvent eventType) throws Exception {
         if (childData == null) {
             return;
@@ -52,26 +47,17 @@ public class RobotInstancesSession extends BaseSseSession {
         if (paths.length != 7) {
             return;
         }
-        IConvertFromByte<String> convertFromByteForString =
-                ByteDataConver.getInstance().getConvertFromByteForString();
-        String robotInfo = convertFromByteForString.getValue(childData.getData());
-        
-        String robotUUID =  paths[6];
-        
-        RobotInstanceInfo robotInstanceInfo = new RobotInstanceInfo();
-        robotInstanceInfo.setRobotGroupName(robotGroupName);
-        robotInstanceInfo.setRobotUUID(robotUUID);
-        robotInstanceInfo.setRobotInfo(robotInfo);
-
+        String robotUUID = paths[6];
+        RobotGroupMasterInfo robotGroupMasterInfo = new RobotGroupMasterInfo();
+        robotGroupMasterInfo.setRobotUUID(robotUUID);
+        robotGroupMasterInfo.setMasterRobotInfo(MasterRobotInfo.getMasterRobotInfo(childData.getData()));
         JsonConvert jsonConvert = JsonConvert.getInstance();
-        sendMessage(jsonConvert.tobeJson(robotInstanceInfo), eventType);
-        logger.info("RobotInstancesSession.doEvent:{}:{}:{}", eventType.toString(), robotUUID, robotInfo);
+        sendMessage(jsonConvert.tobeJson(robotGroupMasterInfo), eventType);
     }
 
-    public RobotInstancesSession(String robotGroupName, HttpServletResponse response) {
+    public RobotGroupMasterInfosSession(String robotGroupName, HttpServletResponse response) {
         super(response);
-        this.robotGroupName = robotGroupName;
-        path = IPath.robotMetaInfoInstancePath(robotGroupName);
+        path = IPath.robotRunInfoMasterInstancePath(robotGroupName);
     }
 
     @Override
@@ -84,6 +70,12 @@ public class RobotInstancesSession extends BaseSseSession {
     public void onEvent(CreatedEvent data) throws Exception {
         ChildData childData = data.getData();
         doEvent(childData, SSEvent.CREATE);
+    }
+
+    @Override
+    public void onEvent(ChangedEvent data) throws Exception {
+        ChildData childData = data.getData();
+        doEvent(childData, SSEvent.UPDATE);
     }
 
     @Override

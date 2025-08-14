@@ -50,15 +50,7 @@
           :data="filterDetails"
           style="width: 100%; margin-top: 10px;"
         >
-          <el-table-column prop="taskName" :label="t('taskName')" sortable>
-            <template #default="{ row }">
-              <div class="resultinfo-item-taskname">
-                <div style="margin-left: 10px;">
-                {{ row.taskName }}
-                </div>
-              </div>
-            </template>
-          </el-table-column>
+          <el-table-column prop="taskName" :label="t('taskName')" sortable />
           <el-table-column width="150">
             <template #header>
               <span>{{ t('operation') }}:</span>
@@ -166,14 +158,5 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-}
-.resultinfo-item-taskname {
-  border: 1px solid var(--el-color-primary);
-  color: var(--el-text-color-primary);
-  background-color: var(--el-color-primary-light-7);
-  padding: 2px;
-  border-radius: 6px;
-  width: 100%;
-  height: 28px;
 }
 </style>

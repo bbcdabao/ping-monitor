@@ -18,27 +18,45 @@
 
 package bbcdabao.pingmonitor.manager.app.services.sse.sessions;
 
+import org.apache.curator.framework.recipes.cache.ChildData;
+
 import bbcdabao.pingmonitor.common.infra.coordination.IPath;
-import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.zkclientframe.event.ChangedEvent;
+import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.CreatedEvent;
 import bbcdabao.pingmonitor.common.infra.zkclientframe.event.DeletedEvent;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInstanceTaskInfo;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
+import bbcdabao.pingmonitor.manager.app.services.sse.SSEvent;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
 
-public class RobotMasterInstancesSession extends BaseSseSession {
+public class RobotGroupInstanceTaskInfosSession  extends BaseSseSession {
 
-    @Data
-    private static class RobotMasterInstanceInfoEvent {
-        private String masterRobotInfo;
+    private final IPath path;
+
+    private void doEvent(ChildData childData, SSEvent eventType) throws Exception {
+        if (childData == null) {
+            return;
+        }
+        String path = childData.getPath();
+        if (path == null) {
+            return;
+        }
+        String paths[] = path.split("/");
+        if (paths.length != 8) {
+            return;
+        }
+        String robotUUID = paths[6];
+        String taskName = paths[7];
+        RobotGroupInstanceTaskInfo robotGroupInstanceTaskInfo = new RobotGroupInstanceTaskInfo();
+        robotGroupInstanceTaskInfo.setRobotUUID(robotUUID);
+        robotGroupInstanceTaskInfo.setTaskName(taskName);
+        JsonConvert jsonConvert = JsonConvert.getInstance();
+        sendMessage(jsonConvert.tobeJson(robotGroupInstanceTaskInfo), eventType);
     }
 
-    private IPath path;
-
-    public RobotMasterInstancesSession(String robotGroupName, HttpServletResponse response) {
+    public RobotGroupInstanceTaskInfosSession(String robotGroupName, HttpServletResponse response) {
         super(response);
-        path = IPath.robotRunInfoMasterInstancePath(robotGroupName);
+        path = IPath.robotRunInfoTaskPath(robotGroupName);
     }
 
     @Override
@@ -49,25 +67,13 @@ public class RobotMasterInstancesSession extends BaseSseSession {
 
     @Override
     public void onEvent(CreatedEvent data) throws Exception {
-        String masterRobotInfo = ByteDataConver.getInstance()
-                .getConvertFromByteForString().getValue(data.getData().getData());
-        RobotMasterInstanceInfoEvent event = new RobotMasterInstanceInfoEvent();
-        event.setMasterRobotInfo(masterRobotInfo);
+        ChildData childData = data.getData();
+        doEvent(childData, SSEvent.CREATE);
     }
 
     @Override
     public void onEvent(DeletedEvent data) throws Exception {
-        String masterRobotInfo = ByteDataConver.getInstance()
-                .getConvertFromByteForString().getValue(data.getData().getData());
-        RobotMasterInstanceInfoEvent event = new RobotMasterInstanceInfoEvent();
-        event.setMasterRobotInfo(masterRobotInfo);
-    }
-
-    @Override
-    public void onEvent(ChangedEvent data) throws Exception {
-        String masterRobotInfo = ByteDataConver.getInstance()
-                .getConvertFromByteForString().getValue(data.getData().getData());
-        RobotMasterInstanceInfoEvent event = new RobotMasterInstanceInfoEvent();
-        event.setMasterRobotInfo(masterRobotInfo);
+        ChildData childData = data.getData();
+        doEvent(childData, SSEvent.DELETE);
     }
 }

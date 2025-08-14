@@ -51,6 +51,7 @@
             align="left"
             width="200px"
           >
+            {{ Object.keys(robotgroupinfo.robotGroups).length }}
           </el-descriptions-item>
         </el-descriptions>
         <el-table
@@ -59,10 +60,8 @@
         >
           <el-table-column prop="robotGroupName" :label="'组织名称'" sortable>
             <template #default="{ row }">
-              <div class="instance-item">
-                <div style="margin-left: 10px;">
-                  {{ row.robotGroupName }}
-                </div>
+              <div style="font-weight: bold;">
+                {{ row.robotGroupName }}
               </div>
             </template>
           </el-table-column>
@@ -72,6 +71,19 @@
             </template>
           </el-table-column>
         </el-table>
+        <div
+          style="width: 100%;"
+          v-if="selectedRobotGroupName"
+        >
+          <robotmetainfo-instances
+            style="margin-top: 10px;"
+            :robotGroupName="selectedRobotGroupName"
+          />
+          <robotmetainfo-instancetasks
+            style="margin-top: 10px;"
+            :robotGroupName="selectedRobotGroupName"
+          />
+        </div>
       </div>
     </el-card>
   </div>
@@ -99,6 +111,10 @@ import type {
 
 import dayjs from 'dayjs';
 
+import RobotmetainfoInstances from '@/components/robotmetainfo-instances.vue';
+import RobotmetainfoInstancetasks from '@/components/robotmetainfo-instancetasks.vue';
+
+
 const { t, locale } = useI18n();
 const robotgroupinfo = useRobotgroupinfoStore();
 
@@ -112,7 +128,6 @@ watch(
   },
   { deep: false, immediate: true }
 );
-
 
 /**
  * 当前显示的组织列表

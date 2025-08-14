@@ -21,6 +21,7 @@ package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.zookeeper.CreateMode;
@@ -148,8 +149,9 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         }
 
         int robotCount = robots.size();
+        AtomicInteger indexCount = new AtomicInteger(0); 
         ntasks.forEach(ntask -> {
-            int ntaskMod = (int)(ntask.czxid % robotCount);
+            int ntaskMod = indexCount.getAndIncrement() % robotCount;
             String robotUUID = robots.get(ntaskMod);
             try {
                 cm.createOrSetData(IPath.robotRunInfoTaskPath(robotConfig.getRobotGroupName(),

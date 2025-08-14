@@ -20,17 +20,35 @@ package bbcdabao.pingmonitor.manager.app.services;
 
 import java.util.Collection;
 
-import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
-import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
 import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotInstanceInfo;
 
+/**
+ * 哨兵相关接口
+ */
 public interface IRobotManager {
 
-	/**
-	 * 哨兵组相关
-	 */
+    /**
+     * 获取哨兵组
+     * @param robotGroupName
+     * @return
+     * @throws Exception
+     */
     Collection<RobotGroupInfo> getRobotGroupInfos(String robotGroupName) throws Exception;
 
-    Collection<RobotInstanceInfo> getInstances(String robotGroupName) throws Exception;
-    Collection<RobotTaskInfo> getTasks(String robotGroupName) throws Exception;
+    /**
+     * 获取哨兵组实例信息
+     * @param robotGroupName
+     * @return
+     * @throws Exception
+     */
+    Collection<RobotInstanceInfo> getRobotInstanceInfos(String robotGroupName) throws Exception;
+
+    /**
+     * 获取哨兵组任务列表
+     * @param robotGroupName
+     * @return
+     * @throws Exception
+     */
+    Collection<String> getRobotGroupTasks(String robotGroupName) throws Exception;
 }

@@ -33,7 +33,7 @@ import java.util.UUID;
 │   ├── /com_xxx_sss_XXXXCallTest
 │   │   └── (JSON format template) "{pingTimeout: {type: LONG, desCn: Timeout, desEn: timeout}, calres: http://a.com}"
 ├── /register (Robot registration directory)
-│   ├── /rebot-xxx (Robot group name)
+│   ├── /robot-xxx (Robot group name)
 │   │   ├── /meta-info (Robot and task inf)
 │   │   │   ├── /instance (Instance child nodes, all EPHEMERAL nodes)
 │   │   │   │   ├── /UUID01 ("ip@procid")

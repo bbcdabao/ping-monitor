@@ -34,13 +34,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
-import bbcdabao.pingmonitor.manager.app.module.RobotInstanceInfo;
-import bbcdabao.pingmonitor.manager.app.module.RobotTaskInfo;
 import bbcdabao.pingmonitor.manager.app.module.responses.RobotGroupInfo;
+import bbcdabao.pingmonitor.manager.app.module.responses.RobotInstanceInfo;
 import bbcdabao.pingmonitor.manager.app.services.IRobotManager;
 import bbcdabao.pingmonitor.manager.app.services.sse.BaseSseSession;
+import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotGroupInstanceTaskInfosSession;
+import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotGroupMasterInfosSession;
+import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotGroupTasksSession;
 import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotInstancesSession;
-import bbcdabao.pingmonitor.manager.app.services.sse.sessions.RobotMasterInstancesSession;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
@@ -82,30 +83,19 @@ public class RobotManagerController {
         		.body(ApiResponse.ok(robotGroupInfos));
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * 下面接口会修改
-     */
-    
-    @GetMapping(value = "/{robotGroupName}/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/groups/{robotGroupName}/instances")
     @ResponseBody
-    public void getRobotGroupNameInstancesForSse (
+    public ResponseEntity<ApiResponse<Collection<RobotInstanceInfo>>> robotInstanceInfoForGet(
+            @PathVariable("robotGroupName") String robotGroupName) throws Exception {
+        Collection<RobotInstanceInfo> robotInstanceInfos = robotManager.getRobotInstanceInfos(robotGroupName);
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(robotInstanceInfos));
+    }
+
+    @GetMapping(value = "/groups/{robotGroupName}/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @ResponseBody
+    public void robotInstanceInfoForSse (
             @PathVariable("robotGroupName") String robotGroupName,
             HttpServletResponse response) throws Exception {
         logger.info("enter:getinstances:{}", robotGroupName);
@@ -113,49 +103,47 @@ public class RobotManagerController {
             return new RobotInstancesSession(robotGroupName, response);
         });
     }
-
-    @GetMapping(value = "/{robotGroupName}/masterinstances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    
+    @GetMapping(value = "/groups/{robotGroupName}/tasks")
     @ResponseBody
-    public void getRobotGroupNameMasterInstancesForSse (
+    public ResponseEntity<ApiResponse<Collection<String>>> robotGroupTasksForGet(
+            @PathVariable("robotGroupName") String robotGroupName) throws Exception {
+        Collection<String> robotGroupTasks = robotManager.getRobotGroupTasks(robotGroupName);
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(robotGroupTasks));
+    }
+    
+    @GetMapping(value = "/groups/{robotGroupName}/tasks/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @ResponseBody
+    public void robotGroupTasksForSse (
             @PathVariable("robotGroupName") String robotGroupName,
             HttpServletResponse response) throws Exception {
         logger.info("enter:getinstances:{}", robotGroupName);
         BaseSseSession.startProcess(() -> {
-            return new RobotMasterInstancesSession(robotGroupName, response);
+            return new RobotGroupTasksSession(robotGroupName, response);
         });
     }
 
-    @GetMapping(value = "/{robotGroupName}/instances")
+    @GetMapping(value = "/groups/{robotGroupName}/master/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<Collection<RobotInstanceInfo>> getRobotGroupNameInstances (
-            @PathVariable("robotGroupName") String robotGroupName) throws Exception {
-        ResponseEntity<Collection<RobotInstanceInfo>> response = ResponseEntity.ok(
-                robotManager.getInstances(robotGroupName));
-        return response;
+    public void robotGroupMasterForSse (
+            @PathVariable("robotGroupName") String robotGroupName,
+            HttpServletResponse response) throws Exception {
+        logger.info("enter:getinstances:{}", robotGroupName);
+        BaseSseSession.startProcess(() -> {
+            return new RobotGroupMasterInfosSession(robotGroupName, response);
+        });
     }
-
-    @GetMapping(value = "/instances")
+    
+    @GetMapping(value = "/groups/{robotGroupName}/instancetasks/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<Collection<RobotInstanceInfo>> getInstances () throws Exception {
-        ResponseEntity<Collection<RobotInstanceInfo>> response = ResponseEntity.ok(
-                robotManager.getInstances(null));
-        return response;
-    }
-
-    @GetMapping(value = "/{robotGroupName}/tasks")
-    @ResponseBody
-    public ResponseEntity<Collection<RobotTaskInfo>> getRobotGroupNameTasks (
-            @PathVariable("robotGroupName") String robotGroupName) throws Exception {
-        ResponseEntity<Collection<RobotTaskInfo>> response = ResponseEntity.ok(
-                robotManager.getTasks(robotGroupName));
-        return response;
-    }
-
-    @GetMapping(value = "/tasks")
-    @ResponseBody
-    public ResponseEntity<Collection<RobotTaskInfo>> getTasks () throws Exception {
-        ResponseEntity<Collection<RobotTaskInfo>> response = ResponseEntity.ok(
-                robotManager.getTasks(null));
-        return response;
+    public void robotGroupInstanceTaskInfoForSse (
+            @PathVariable("robotGroupName") String robotGroupName,
+            HttpServletResponse response) throws Exception {
+        logger.info("enter:getinstances:{}", robotGroupName);
+        BaseSseSession.startProcess(() -> {
+            return new RobotGroupInstanceTaskInfosSession(robotGroupName, response);
+        });
     }
 }

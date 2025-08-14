@@ -24,3 +24,23 @@ export interface CheckRobotGroupInfo {
   robotGroupInfo: RobotGroupInfo;
   ischeck: boolean;
 }
+
+export interface RobotInstanceInfo {
+  robotGroupName: string;
+  robotUUID: string;
+  robotInfo: string;
+}
+
+export interface RobotGroupMasterInfo {
+  robotUUID: string;
+  masterRobotInfo: {
+    latency: number;
+    act: boolean;
+    info: string;
+  };
+}
+
+export interface RobotGroupInstanceTaskInfo {
+  robotUUID: string;
+  taskName: string;
+}

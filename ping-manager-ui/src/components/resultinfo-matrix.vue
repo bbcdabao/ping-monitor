@@ -15,7 +15,6 @@
 
 <template>
   <div
-    style="margin-top:20px;"
     :class="getResultinfoListClass()"
   >
     <div
@@ -27,7 +26,10 @@
         :class="getPieClass()"
         :style="getPieStyle(record.pingresults)"
       />
-      <div v-if="resultStyle === 'MID'">
+      <div
+        style="width: 100%;" 
+        v-if="resultStyle === 'MID'"
+      >
         <div class="resultinfo-item-taskname">
           <div style="font-size: 12px; font-weight: bold;">
             {{ t('taskPingName') }}
@@ -38,7 +40,10 @@
           </div> 
         </div>
       </div>
-      <div v-else-if="resultStyle === 'MAX'">
+      <div
+        style="width: 100%;"
+        v-else-if="resultStyle === 'MAX'"
+      >
         <div class="resultinfo-item-taskname">
           <div style="font-size: 12px; font-weight: bold;">
             {{ t('taskPingName') }}
@@ -169,16 +174,18 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
 }
 
 .resultinfo-item {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   flex-direction: column;
   border: 2px solid var(--el-color-success);
   color: var(--el-text-color-primary);
-  background-color: var(--el-color-primary-light-9);
+  background-color: var(--el-color-success-light-9);
   font-weight: bold;
-  height: calc(100% - 16px);
+  width: 100%;
+  height: 100%;
   border-radius: 6px;
-  padding: 6px 6px;
+  padding: 6px 2px;
   text-align: center;
 
   white-space: nowrap;
@@ -187,45 +194,37 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
 }
 
 .resultinfo-item-taskname {
+  box-sizing: border-box;
   border: 1px solid var(--el-color-primary);
   color: var(--el-text-color-primary);
   background-color: var(--el-color-primary-light-7);
   padding: 4px;
   border-radius: 6px;
-  width: 180px;
-  height: 34px;
-  margin-bottom: 4px;
-}
-
-.resultinfo-item-taskdelay {
-  border: 1px solid var(--el-color-warning);
-  color: var(--el-text-color-primary);
-  background-color: var(--el-color-warning-light-7);
-  padding: 4px;
-  border-radius: 6px;
-  width: 180px;
-  height: 32px;
+  width: 100%;
+  height: 44px;
   margin-bottom: 4px;
 }
 
 .resultinfo-item-task-group {
+  box-sizing: border-box;
   border: 1px solid var(--el-color-info);
   color: var(--el-text-color-primary);
   background-color: var(--el-color-info-light-7);
   padding: 4px;
   border-radius: 6px;
-  width: 180px;
-  height: calc(100% - 56px);
+  width: 100%;
+  height: calc(100% - 44px);
 }
 
 .resultinfo-item-task-group-success {
+  box-sizing: border-box;
   border: 1px solid var(--el-color-success);
   color: var(--el-text-color-primary);
   background-color: var(--el-color-success-light-7);
   padding: 4px;
   border-radius: 6px;
-  width: 172px;
-  height: 50px;
+  width: 100%;
+  height: 60px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
@@ -233,13 +232,14 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
   margin-bottom: 4px;
 }
 .resultinfo-item-task-group-fail {
+  box-sizing: border-box;
   border: 1px solid var(--el-color-danger);
   color: var(--el-text-color-primary);
   background-color: var(--el-color-danger-light-7);
   padding: 4px;
   border-radius: 6px;
-  width: 172px;
-  height: 50px;
+  width: 100%;
+  height: 60px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
@@ -248,6 +248,7 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
 }
 
 .pie-chart {
+  box-sizing: border-box;
   margin-bottom: 10px;
   width: 60px;
   height: 60px;

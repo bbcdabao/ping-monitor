@@ -65,8 +65,9 @@ const sidebar = useSidebarStore();
   width: 0;
 }
 .content-page {
+  box-sizing: border-box;
   width: auto;
-  height: calc(100% - 10px);
+  height: 100%;
   overflow-y: scroll;
   background: var(--body-bg-color);
   scrollbar-width: auto;

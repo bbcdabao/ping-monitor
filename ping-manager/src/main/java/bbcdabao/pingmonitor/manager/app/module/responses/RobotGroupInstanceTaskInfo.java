@@ -16,13 +16,12 @@
  *
  */
 
-package bbcdabao.pingmonitor.manager.app.module;
+package bbcdabao.pingmonitor.manager.app.module.responses;
 
 import lombok.Data;
 
 @Data
-public class RobotInstanceInfo {
-    private String robotGroupName;
+public class RobotGroupInstanceTaskInfo {
     private String robotUUID;
-    private String robotInfo = "none";
+    private String taskName;
 }
