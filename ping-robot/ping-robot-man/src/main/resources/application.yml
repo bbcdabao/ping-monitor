@@ -22,6 +22,6 @@ executor-config:
   enable: true
 
 robot:
-  robot-group-name: sentinel-northchina
-  description-cn: 华北地区
-  description-en: North china
+  robot-group-name: sentinel-failtest
+  description-cn: 仿造失败
+  description-en: Fail zone

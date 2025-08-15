@@ -27,6 +27,12 @@ export const useRobotRuninfoInstanceTasksStore = defineStore('robotRuninfoInstan
     instanceTasks: {} as Record<string, RobotGroupInstanceTaskInfo>
   }),
   getters: {
+    instanceTasksCount(state): number {
+      return Object.keys(state.instanceTasks).length;
+    },
+    instanceTasksEmpty(state): boolean {
+      return Object.keys(state.instanceTasks).length === 0;
+    }
   },
   actions: {
     closeSource() {

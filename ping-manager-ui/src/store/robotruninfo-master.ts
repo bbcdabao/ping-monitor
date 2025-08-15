@@ -27,6 +27,12 @@ export const useRobotRuninfoMasterStore = defineStore('robotRuninfoMaster', {
     masters: {} as Record<string, RobotGroupMasterInfo>
   }),
   getters: {
+    mastersCount(state): number {
+      return Object.keys(state.masters).length;
+    },
+    isMastersEmpty(state): boolean {
+      return Object.keys(state.masters).length === 0;
+    }
   },
   actions: {
     closeSource() {

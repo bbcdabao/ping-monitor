@@ -32,7 +32,6 @@
       <div
         v-for="(record, robotUUID) in robotMetainfoInstances.instances"
         :key="robotUUID"
-  
       >
         <div :class="getInstanceClass(robotUUID)">
           <lucide-bot style="width: 38px; height: 38px; flex-shrink: 0;"/> 
@@ -49,6 +48,11 @@
       </div>
     </div>
   </div>
+  <robotmetainfo-instancetasks
+    v-if="!robotRuninfoMaster.isMastersEmpty"
+    style="margin-top: 6px;"
+    :robotGroupName="props.robotGroupName"
+  />
 </template>
 <script setup lang="ts">
 import {
@@ -72,6 +76,11 @@ import {
 import type {
   RobotGroupMasterInfo
 } from '@/types/robot-sub';
+import type {
+  RobotGroupInfo
+} from '@/types/robot-sub';
+
+import RobotmetainfoInstancetasks from '@/components/robotmetainfo-instancetasks.vue';
 
 const props = defineProps<{
   robotGroupName: string;
@@ -82,7 +91,7 @@ const getInstanceClass = (robotUUID: string) => {
   if (!robotGroupMasterInfo) {
     return 'instance-item';
   }
-  return 'instance-item-master'
+  return 'instance-item-master';
 };
 
 const { t } = useI18n();
@@ -167,8 +176,8 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 2px;
   transform: scaleY(0.5);
-  margin-top: 6px;
-  margin-bottom: 6px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 .interval-line-success {
   background-color: var(--el-color-success);

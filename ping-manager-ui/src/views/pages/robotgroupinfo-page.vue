@@ -72,15 +72,10 @@
           </el-table-column>
         </el-table>
         <div
-          style="width: 100%;"
+          style="width: 100%; margin-top: 6px;"
           v-if="selectedRobotGroupName"
         >
           <robotmetainfo-instances
-            style="margin-top: 10px;"
-            :robotGroupName="selectedRobotGroupName"
-          />
-          <robotmetainfo-instancetasks
-            style="margin-top: 10px;"
             :robotGroupName="selectedRobotGroupName"
           />
         </div>

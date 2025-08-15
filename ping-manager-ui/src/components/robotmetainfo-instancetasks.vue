@@ -15,12 +15,12 @@
 
 <template>
 <div class="instancetasks-info">
-    <div style="font-size: 12px; font-weight: bold;">
-      {{ '哨兵任务分配:' }}
-    </div>
-    <div class="interval-line-primary" />
+  <div style="font-size: 12px; font-weight: bold;">
+    {{ '哨兵任务分配:' }}
+  </div>
+  <div class="interval-line-primary" />
   <div
-    style="height: 300px; width: 100%;"
+    :style="{ height: robotRuninfoInstanceTasks.instanceTasksCount * 70 + 'px', width: '100%' }"
     ref="chartRef"
   >
   </div>
@@ -49,12 +49,36 @@ import type {
 import * as echarts from 'echarts';
 import dayjs from 'dayjs';
 
+import pingTask from '@/assets/img/pingTask.svg';
+import pingRobot from '@/assets/img/pingRobot.svg';
+import pingGroup from '@/assets/img/pingGroup.svg';
+
+const preloadImages = (...urls: string[]) => {
+  urls.forEach(url => {
+    const img = new Image();
+    img.src = url;
+  });
+};
+preloadImages(pingTask, pingRobot, pingGroup);
+
 const props = defineProps<{
   robotGroupName: string;
 }>();
 
 const { t } = useI18n();
 const robotRuninfoInstanceTasks = useRobotRuninfoInstanceTasksStore();
+
+const elColorSuccessLight9 = getComputedStyle(document.documentElement).getPropertyValue('--el-color-success-light-9').trim();
+const elColorSuccess = getComputedStyle(document.documentElement).getPropertyValue('--el-color-success').trim();
+const elTextColorSuccess = getComputedStyle(document.documentElement).getPropertyValue('--el-text-color-success').trim();
+
+const elColorPrimaryLight9 = getComputedStyle(document.documentElement).getPropertyValue('--el-color-primary-light-9').trim();
+const elColorPrimary = getComputedStyle(document.documentElement).getPropertyValue('--el-color-primary').trim();
+const elTextPrimarySuccess = getComputedStyle(document.documentElement).getPropertyValue('--el-text-color-primary').trim();
+
+const elColorInfoLight9 = getComputedStyle(document.documentElement).getPropertyValue('--el-color-info-light-9').trim();
+const elColorInfo = getComputedStyle(document.documentElement).getPropertyValue('--el-color-info').trim();
+const elTextInfoSuccess = getComputedStyle(document.documentElement).getPropertyValue('--el-text-color-info').trim();
 
 const chartOption = {
   tooltip: {
@@ -69,10 +93,40 @@ const chartOption = {
   },
   series: [{
     type: 'tree',
+    top: 0,
     data: [
     ],
-    symbolSize: 12,
+    symbolSize: 32,
     label: {
+    formatter: (params: any) => {
+      return `{${params.data.type}|${params.data.name}}`;
+    },
+    rich: {
+      robotStyle: {
+        backgroundColor: elColorSuccessLight9,
+        borderColor: elColorSuccess,
+        borderWidth: 2,
+        color: elTextColorSuccess,
+        padding: [8, 8],
+        borderRadius: 4
+      },
+      taskStyle: {
+        backgroundColor: elColorPrimaryLight9,
+        borderColor: elColorPrimary,
+        borderWidth: 2,
+        color: elTextPrimarySuccess,
+        padding: [8, 8],
+        borderRadius: 4
+      },
+      robotgroupStyle: {
+        backgroundColor: elColorInfoLight9,
+        borderColor: elColorInfo,
+        borderWidth: 2,
+        color: elTextInfoSuccess,
+        padding: [8, 8],
+        borderRadius: 4
+      }
+    },
       position: 'left',
       verticalAlign: 'middle',
       align: 'right',
@@ -120,37 +174,35 @@ const clseChart = async () => {
   window.removeEventListener('resize', resizeHandler);
 };
 
-const setNodeIcons = (node: any, depth = 0) => {
-  const icons = [
-    'image://root.png',
-    'image://folder.png',
-    'image://task.png'
-  ];
-  node.symbol = icons[depth] || 'circle';
 
-  if (node.children) {
-    node.children.forEach(child => setNodeIcons(child, depth + 1));
-  }
-};
 
 const getChartData = () => {
   const taskDatas: Record<
     string,
-    { name: string; children: { name: string; children: any[] }[] }
+    { name: string; symbol:string; type: string; children: { name: string; symbol:string; type: string; children: any[] }[] }
   > = {};
   Object.values(robotRuninfoInstanceTasks.instanceTasks).forEach(instanceTask => {
     let taskData = taskDatas[instanceTask.robotUUID];
     if (!taskData) {
-      taskData = { name: instanceTask.robotUUID, children: [] };
+      taskData = {
+        name: instanceTask.robotUUID,
+        symbol: `image://${pingRobot}`,
+        type: 'robotStyle',
+        children: []
+      };
       taskDatas[instanceTask.robotUUID] = taskData;
     }
     taskData.children.push({
       name: instanceTask.taskName,
+      symbol: `image://${pingTask}`,
+      type: 'taskStyle',
       children: []
     });
   });
   return {
     name: props.robotGroupName,
+    symbol: `image://${pingGroup}`,
+    type: 'robotgroupStyle',
     children: Object.values(taskDatas)
   };
 };
@@ -253,8 +305,8 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 2px;
   transform: scaleY(0.5);
-  margin-top: 6px;
-  margin-bottom: 6px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 .interval-line-success {
   background-color: var(--el-color-success);

@@ -27,6 +27,12 @@ export const useRobotMetainfoInstancesStore = defineStore('robotMetainfoInstance
     instances: {} as Record<string, RobotInstanceInfo>
   }),
   getters: {
+    isInstancesEmpty(state): boolean {
+      return Object.keys(state.instances).length === 0;
+    },
+    instancesCount(state): number {
+      return Object.keys(state.instances).length;
+    }
   },
   actions: {
     closeSource() {
