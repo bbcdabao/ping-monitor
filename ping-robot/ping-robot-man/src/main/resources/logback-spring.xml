@@ -18,7 +18,7 @@
   -->
 <configuration>
 
-    <property name="APPNAME" value="pingrobotman"/>
+    <property name="APPNAME" value="${APPNAME:-pingrobotman}"/>
     <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="LOGPATH" value="${LOG_PATH:-.}"/>
 
@@ -35,7 +35,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/${APPNAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+            <maxHistory>2</maxHistory>
         </rollingPolicy>y>
     </appender>
 
