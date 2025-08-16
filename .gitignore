@@ -35,3 +35,5 @@ package-lock.json
 auto-imports.d.ts
 components.d.ts
 
+ping-robot-version.tar.gz
+ping-robot-version
