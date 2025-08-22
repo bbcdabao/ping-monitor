@@ -61,6 +61,7 @@ public class PingresultinfosSession extends BaseSseSession {
         ResultInfo resultInfo = new ResultInfo();
         resultInfo.setTaskName(taskName);
         if (paths.length == 3) {
+            sendMessage(jsonConvert.tobeJson(resultInfo), eventType);
             return;
         }
 

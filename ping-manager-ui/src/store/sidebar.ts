@@ -50,14 +50,9 @@ export const useSidebarStore = defineStore('sidebar', {
           route: '/robotgroupinfo-page',
         },
         {
-          itemname: 'robotinstance',
-          itemicon: 'lucide-land-plot',
-          route: '/robotinstance',
-        },
-        {
           itemname: 'systemConfig',
           itemicon: 'lucide-settings',
-          route: '/system-config-page',
+          route: '/systemconfig-page',
         },
         {
           itemname: 'thememanager',

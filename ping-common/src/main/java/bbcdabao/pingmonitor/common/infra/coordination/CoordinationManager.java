@@ -25,9 +25,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.api.transaction.CuratorOp;
-import org.apache.curator.framework.api.transaction.CuratorTransactionResult;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -336,6 +333,30 @@ public class CoordinationManager {
      * @throws Exception
      */
     public void regRobotInstance(String robotGroupName) throws Exception {
+        IPath path = IPath.robotMetaInfoInstanceIdPath(robotGroupName);
+        CoordinationManager cm = CoordinationManager.getInstance();
+        cm.checkExists(path, null, () -> {
+            String ipAddr = "none";
+            try {
+                InetAddress ip = InetAddress.getLocalHost();
+                ipAddr = ip.getHostAddress();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            String instanceValue = new StringBuilder()
+                    .append(ipAddr)
+                    .append("@")
+                    .append(ProcessHandle.current().pid())
+                    .toString();
+            createOrSetData(path,
+                    CreateMode.EPHEMERAL,
+                    ByteDataConver
+                    .getInstance()
+                    .getConvertToByteForString()
+                    .getData(instanceValue));
+        });
+    }
+    public byte[] getInstanceValueData(String robotGroupName) throws Exception {
         String ipAddr = "none";
         try {
             InetAddress ip = InetAddress.getLocalHost();
@@ -348,12 +369,10 @@ public class CoordinationManager {
                 .append("@")
                 .append(ProcessHandle.current().pid())
                 .toString();
-        createOrSetData(IPath.robotMetaInfoInstanceIdPath(robotGroupName),
-                CreateMode.EPHEMERAL,
-                ByteDataConver
+        return ByteDataConver
                 .getInstance()
                 .getConvertToByteForString()
-                .getData(instanceValue));
+                .getData(instanceValue);
     }
 
     /**

@@ -24,7 +24,7 @@
   "sentinelGroup": "Sentinel group",
   "taskPingName": "Task ping name",
   "style": "Style",
-  "scatter": "Scatter",
+  "chart": "Chart",
   "control": "Control",
   "resultMonitor": "Result monitor",
   "delayLine": "Delay (ms)",

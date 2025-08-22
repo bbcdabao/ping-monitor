@@ -25,6 +25,7 @@ import type {
 export const useResultinfoStore = defineStore('resultinfo', {
   state: () => ({
     _source: null as EventSource | null,
+    taskNameIndex: null as string | null,
     results: {} as Record<string, ResultInfoRecord>,
     resultInfo: {} as ResultInfo
   }),
@@ -43,7 +44,8 @@ export const useResultinfoStore = defineStore('resultinfo', {
     },
     beginSource(taskName?: string | null) {
       this.closeSource();
-      if (taskName) {
+      this.taskNameIndex = taskName;
+      if (this.taskNameIndex) {
         this._source = new EventSource('/api/result/events/' + taskName);
       } else {
         this._source = new EventSource('/api/result/events');

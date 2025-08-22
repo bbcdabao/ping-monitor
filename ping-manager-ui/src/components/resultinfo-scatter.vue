@@ -14,19 +14,21 @@
 -->
 
 <template>
-  <div
-    style="height: 200px; width: 100%;"
-    ref="chartRef"
-  />
-  <el-slider
-    style="width: 100%; margin-bottom: 0px;"
-    v-model="winSize"
-    :min="1"
-    :max="20"
-    :step="1"
-    show-stops
-    :format-tooltip="sliderTooltip"
-  />
+  <div class="chart-container">
+    <div
+      style="height: 200px; width: 100%;"
+      ref="chartRef"
+    />
+    <el-slider
+      style="width: 100%; margin-bottom: 0px;"
+      v-model="winSize"
+      :min="1"
+      :max="20"
+      :step="1"
+      show-stops
+      :format-tooltip="sliderTooltip"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 import {
@@ -174,7 +176,7 @@ const clseChart = async () => {
   window.removeEventListener('resize', resizeHandler);
 };
 
-const MAX_POINTS = 3000;
+const MAX_POINTS = 500;
 const resultInfos: Array<any> = [];
 let firstTimestamp: number = Date.now();
 let lastTimestamp: number = Date.now();
@@ -235,6 +237,7 @@ const setUpdateTimer = async () => {
   }, 1000);
 };
 
+const elColorSuccess = getComputedStyle(document.documentElement).getPropertyValue('--el-color-success').trim();
 watch(
   () => resultinfo.resultInfo,
   (newVal, oldVal) => {
@@ -247,7 +250,7 @@ watch(
     addPoint({
       value: [timestamp, pingresult.delay],
       name: nodesName,
-      itemStyle: { color: pingresult.success ? 'green' : 'red' }
+      itemStyle: { color: pingresult.success ? elColorSuccess : 'red' }
     });
   },
   {
@@ -266,5 +269,10 @@ onBeforeUnmount(() => {
 
 </script>
 <style scoped>
-
+.chart-container {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+}
 </style>

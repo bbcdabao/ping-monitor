@@ -18,12 +18,8 @@
 
 package bbcdabao.pingmonitor.pingrobotapi.app.services.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.state.ConnectionState;
-import org.apache.curator.framework.state.ConnectionStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,20 +29,23 @@ import org.springframework.boot.ApplicationRunner;
 import bbcdabao.pingmonitor.common.domain.extraction.ExtractionField;
 import bbcdabao.pingmonitor.common.domain.extraction.TemplateField;
 import bbcdabao.pingmonitor.common.infra.coordination.CoordinationManager;
-import bbcdabao.pingmonitor.common.infra.coordination.IPath;
-import bbcdabao.pingmonitor.common.infra.dataconver.ByteDataConver;
-import bbcdabao.pingmonitor.common.infra.dataconver.IConvertToByte;
-import bbcdabao.pingmonitor.common.infra.json.JsonConvert;
+import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
 import bbcdabao.pingmonitor.pingrobotapi.IPingMoniterPlug;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfig;
+import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfigNotify;
 import bbcdabao.pingmonitor.pingrobotapi.infra.RobotConfig;
 import bbcdabao.pingmonitor.pingrobotapi.infra.templates.TemplatesManager;
+import jakarta.annotation.PostConstruct;
 
 /**
- * 
+ * Robot startup, registration plug-in template, registration instance id.
  */
-public class StartUpService implements ApplicationRunner, ConnectionStateListener {
+public class StartUpService extends TimeWorkerBase implements ApplicationRunner, ISysconfigNotify {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartUpService.class);
+
+    @Autowired
+    private ISysconfig regSysconfigNotify;
 
     @Autowired
     private RobotConfig robotConfig;
@@ -64,34 +63,24 @@ public class StartUpService implements ApplicationRunner, ConnectionStateListene
         });
     }
 
+    @PostConstruct
+    public void init() {
+        regSysconfigNotify.reg(this);
+    }
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         regTemplatesInfo();
     }
 
     @Override
-    public void stateChanged(CuratorFramework client, ConnectionState newState) {
-        String robotGroupName = robotConfig.getRobotGroupName();
-        switch (newState) {
-        case CONNECTED:
-        case RECONNECTED:
-            try {
-	            	CoordinationManager cm = CoordinationManager.getInstance();
-	            	cm.regRobotInstance(robotGroupName);
-            	
-                Map<String, String> descriptionMap = new HashMap<>(3);
-                descriptionMap.put("descriptionCn", robotConfig.getDescriptionCn());
-                descriptionMap.put("descriptionEn", robotConfig.getDescriptionEn());
-                IPath robotRegisterPathGroup = IPath.robotRegisterPathGroup(robotGroupName);
-	            	IConvertToByte<String> convertToByte = ByteDataConver.getInstance().getConvertToByteForString();
-	            	JsonConvert jc = JsonConvert.getInstance();
-                cm.setData(robotRegisterPathGroup, convertToByte.getData(jc.tobeJson(descriptionMap)));
-            } catch (Exception e) {
-                LOGGER.info("StartUpService Exception:{}", robotConfig.getDescriptionCn());
-            }
-            break;
-        default:
-            break;
-        }
+    public void onChange(Sysconfig config) throws Exception {
+        beginCron(config.getCronInst());
+    }
+
+    @Override
+    public void onExecute() throws Exception {
+        CoordinationManager cm = CoordinationManager.getInstance();
+        cm.regRobotInstance(robotConfig.getRobotGroupName());
     }
 }

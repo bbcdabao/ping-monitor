@@ -107,6 +107,9 @@ const resultinfo = useResultinfoStore();
 const robotgroupinfo = useRobotgroupinfoStore();
 
 const getResultinfoListClass = () => {
+  if (resultinfo.taskNameIndex) {
+    return 'resultinfo-list-one'
+  }
   switch (props.resultStyle) {
     case 'MIN': return 'resultinfo-list-min';
     case 'MID': return 'resultinfo-list-mid';
@@ -170,6 +173,15 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
   row-gap: 6px;
   column-gap: 6px;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  justify-content: center;
+}
+
+.resultinfo-list-one {
+  display: grid;
+  width: 100%;
+  row-gap: 6px;
+  column-gap: 6px;
+  grid-template-columns: 1fr;
   justify-content: center;
 }
 

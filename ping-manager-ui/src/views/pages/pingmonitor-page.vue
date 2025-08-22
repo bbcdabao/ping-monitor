@@ -25,7 +25,7 @@
               v-model="showControl"
               size="small"
             />
-            {{ t('scatter') }} :
+            {{ t('chart') }} :
             <el-switch
               v-model="showScatter"
               size="small"
@@ -80,12 +80,23 @@
           </el-descriptions-item>
         </el-descriptions>
         <div class="interval-line" />
-        <resultinfo-scatter
+        <vid
           v-if="showScatter"
-        />
+          style="width: 100%;"
+        >
+          <resultinfo-scatter
+            v-if="indexTaskName"
+          />
+          <resultinfo-canvas-smoothie
+            v-else
+          />
+          <div class="interval-line" />
+        </vid>
         <resultinfo-matrix
           v-if="initShow"
-          :resultStyle="resultStyle" />
+          style="margin-top: 10px;"
+          :resultStyle="resultStyle"
+        />
         <div
           v-else
           style="width: 100%; margin-top: 20px">
@@ -123,6 +134,7 @@ import type {
 } from '@/types/result-sub';
 import dayjs from 'dayjs';
 
+import ResultinfoCanvasSmoothie from '@/components/resultinfo-canvas-smoothie.vue';
 import ResultinfoScatter from '@/components/resultinfo-scatter.vue';
 import ResultinfoMatrix from '@/components/resultinfo-matrix.vue';
 
@@ -222,6 +234,5 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 2px;
   transform: scaleY(0.5);
-  margin-bottom: 10px;
 }
 </style>

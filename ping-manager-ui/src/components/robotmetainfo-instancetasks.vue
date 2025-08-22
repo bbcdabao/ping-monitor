@@ -49,9 +49,9 @@ import type {
 import * as echarts from 'echarts';
 import dayjs from 'dayjs';
 
-import pingTask from '@/assets/img/pingTask.svg';
-import pingRobot from '@/assets/img/pingRobot.svg';
-import pingGroup from '@/assets/img/pingGroup.svg';
+import pingTask from '@/assets/img/pingTask.png';
+import pingRobot from '@/assets/img/pingRobot.png';
+import pingGroup from '@/assets/img/pingGroup.png';
 
 const preloadImages = (...urls: string[]) => {
   urls.forEach(url => {
@@ -59,7 +59,7 @@ const preloadImages = (...urls: string[]) => {
     img.src = url;
   });
 };
-preloadImages(pingTask, pingRobot, pingGroup);
+preloadImages(pingRobot, pingGroup, pingTask);
 
 const props = defineProps<{
   robotGroupName: string;

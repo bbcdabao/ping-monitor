@@ -96,6 +96,12 @@ public class Sysconfig {
     private String cronMain;
 
     /**
+     * Instance check cycle
+     * 实例检测周期
+     */
+    private String cronInst;
+
+    /**
      * Ping time out
      * 拨测超时
      */

@@ -49,6 +49,9 @@ import bbcdabao.pingmonitor.pingrobotapi.app.services.ISysconfigNotify;
 import bbcdabao.pingmonitor.pingrobotapi.infra.RobotConfig;
 import jakarta.annotation.PostConstruct;
 
+/**
+ * Master node worker
+ */
 public class MasterService extends TimeWorkerBase implements ApplicationRunner, ISysconfigNotify {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MasterService.class);
@@ -95,10 +98,8 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
 
     private class NtaskInfo {
         private String nod;
-        private long czxid;
         public NtaskInfo(String nod, long czxid) {
             this.nod = nod;
-            this.czxid = czxid;
         }
     }
 
@@ -257,8 +258,9 @@ public class MasterService extends TimeWorkerBase implements ApplicationRunner, 
         } else {
             final CoordinationManager cm = CoordinationManager.getInstance();
             onSlave(() -> {
-                cm.checkExists(robotRunInfoMasterInstanceIdPath,
+                cm.checkExists(robotRunInfoMasterInstanceIdPath, 
                         (Stat stat) -> {
+                            LOGGER.info("onExecute deleteData:{}", robotRunInfoMasterInstanceIdPath.get());
                             cm.deleteData(robotRunInfoMasterInstanceIdPath);
                         }, null);
             });

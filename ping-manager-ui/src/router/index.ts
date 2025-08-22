@@ -67,6 +67,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/pages/robotgroupinfo-page.vue'),
       },
       {
+        path: '/systemconfig-page',
+        name: 'systemconfig',
+        meta: {},
+        component: () => import('@/views/pages/systemconfig-page.vue'),
+      },
+      {
         path: '/theme-page',
         name: 'theme',
         meta: {},

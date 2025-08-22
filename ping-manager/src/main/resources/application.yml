@@ -53,6 +53,7 @@ sysconfig:
   rs-type: inner
   cron-task: 0/10 * * * * ?
   cron-main: 5/10 * * * * ?
+  cron-inst: 0/2 * * * * ?
   time-out-ms: 10000
   overwrite: true
 

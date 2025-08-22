@@ -22,6 +22,6 @@ executor-config:
   enable: true
 
 robot:
-  robot-group-name: sentinel-failtest
-  description-cn: 仿造失败
-  description-en: Fail zone
+  robot-group-name: overseas-japan
+  description-cn: 海外日本
+  description-en: Japan

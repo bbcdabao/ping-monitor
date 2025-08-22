@@ -56,89 +56,89 @@ public class MasterKeeperTaskManager {
 
     public void selectMasterRun(String path, Runnable runnable, Consumer<Exception> errorHandler) throws Exception {
         PingmonitorExecutor.getInstance().execute(() -> {
-            LeaderLatch leaderLatch = new LeaderLatch(CuratorFrameworkInstance.getInstance(), path);
             while (!Thread.currentThread().isInterrupted()) {
+
+                LeaderLatch leaderLatch = new LeaderLatch(CuratorFrameworkInstance.getInstance(), path);
                 try {
                     leaderLatch.start();
-                    break;
-                } catch (Exception e) {
-                    if (null != errorHandler) {
-                        errorHandler.accept(e);
-                    } else {
-                        LOGGER.info("selectMasterRun.Exception:{}", e.getMessage());
-                    }
-                    sleepStep();
-                }
-            }
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    if (leaderLatch.hasLeadership()) {
-                        runnable.run();
-                    } else {
-                        leaderLatch.await(5, TimeUnit.SECONDS);
+
+                    while (!Thread.currentThread().isInterrupted()) {
+                        if (leaderLatch.hasLeadership()) {
+                            try {
+                                runnable.run();
+                            } catch (Exception e) {
+                                LOGGER.error("run callback error", e);
+                            }
+                        } else {
+                            leaderLatch.await(5, TimeUnit.SECONDS);
+                        }
                     }
                 } catch (Exception e) {
-                    if (null != errorHandler) {
+                    if (errorHandler != null) {
                         errorHandler.accept(e);
                     } else {
-                        LOGGER.info("selectMasterRun.Exception:{}", e.getMessage());
+                        LOGGER.warn("leaderLatch error: {}", e.getMessage());
                     }
-                    sleepStep();
+                } finally {
+                    try {
+                        leaderLatch.close();
+                    } catch (Exception e) {
+                        LOGGER.warn("close leaderLatch error", e);
+                    }
                 }
-            }
-            try {
-                leaderLatch.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                sleepStep();
             }
         });
     }
 
     public void selectMasterNotify(String path, IMasterNotify set, IMasterNotify cancel, Consumer<Exception> errorHandler) throws Exception {
         PingmonitorExecutor.getInstance().execute(() -> {
-            boolean isMaster = false;
-            LeaderLatch leaderLatch = new LeaderLatch(CuratorFrameworkInstance.getInstance(), path);
             while (!Thread.currentThread().isInterrupted()) {
+ 
+                boolean isMaster = false;
+                LeaderLatch leaderLatch = new LeaderLatch(CuratorFrameworkInstance.getInstance(), path);
                 try {
                     leaderLatch.start();
-                    break;
+
+                    while (!Thread.currentThread().isInterrupted()) {
+                        if (leaderLatch.hasLeadership()) {
+                            if (!isMaster) {
+                                try {
+                                    set.onChangeNotify();
+                                } catch (Exception bizEx) {
+                                    LOGGER.error("set callback error", bizEx);
+                                }
+                                isMaster = true;
+                            }
+                            Thread.sleep(1000);
+                        } else {
+                            if (isMaster) {
+                                try {
+                                    cancel.onChangeNotify();
+                                } catch (Exception bizEx) {
+                                    LOGGER.error("cancel callback error", bizEx);
+                                }
+                                isMaster = false;
+                            }
+                            leaderLatch.await(10, TimeUnit.SECONDS);
+                        }
+                    }
                 } catch (Exception e) {
-                    if (null != errorHandler) {
+                    if (errorHandler != null) {
                         errorHandler.accept(e);
                     } else {
-                        LOGGER.info("selectMasterNotify.Exception:{}", e.getMessage());
+                        LOGGER.warn("leaderLatch error: {}", e.getMessage());
                     }
-                    sleepStep();
+                } finally {
+                    try {
+                        leaderLatch.close();
+                    } catch (Exception e) {
+                        LOGGER.warn("close leaderLatch error", e);
+                    }
                 }
-            }
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    if (leaderLatch.hasLeadership()) {
-                        if (!isMaster) {
-                            set.onChangeNotify();
-                            isMaster = true; 
-                        }
-                        Thread.sleep(1000);
-                    } else {
-                        if (isMaster) {
-                            cancel.onChangeNotify();
-                            isMaster = false;
-                        }
-                        leaderLatch.await(10, TimeUnit.SECONDS);
-                    }
-                } catch (Exception e) {
-                    if (null != errorHandler) {
-                        errorHandler.accept(e);
-                    } else {
-                        LOGGER.info("selectMasterNotify.Exception:{}", e.getMessage());
-                    }
-                    sleepStep();
-                }
-            }
-            try {
-                leaderLatch.close();
-            } catch (Exception e) {
-                LOGGER.info("selectMasterNotify.Exception:{}", e.getMessage());
+
+                sleepStep();
             }
         });
     }
