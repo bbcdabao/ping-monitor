@@ -80,7 +80,7 @@
           </el-descriptions-item>
         </el-descriptions>
         <div class="interval-line" />
-        <vid
+        <div
           v-if="showScatter"
           style="width: 100%;"
         >
@@ -91,7 +91,7 @@
             v-else
           />
           <div class="interval-line" />
-        </vid>
+        </div>
         <resultinfo-matrix
           v-if="initShow"
           style="margin-top: 10px;"

@@ -95,6 +95,9 @@ const isValidCronLite = (expr: string) => {
 }
 
 onMounted(() => {
+
+  const istaaa = isValidCronLite('asdfsafdsadf');
+  debugger
 });
 onBeforeUnmount(() => {
 });
