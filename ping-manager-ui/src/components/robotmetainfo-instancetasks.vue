@@ -16,7 +16,7 @@
 <template>
 <div class="instancetasks-info">
   <div style="font-size: 12px; font-weight: bold;">
-    {{ '哨兵任务分配:' }}
+    {{ t('sentinelTask') }}
   </div>
   <div class="interval-line-primary" />
   <div

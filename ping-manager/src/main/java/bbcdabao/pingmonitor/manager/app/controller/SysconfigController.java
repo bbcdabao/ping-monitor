@@ -29,10 +29,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import bbcdabao.pingmonitor.common.infra.coordination.Sysconfig;
+import bbcdabao.pingmonitor.manager.app.module.ApiResponse;
+import bbcdabao.pingmonitor.manager.app.module.payloads.SysconfigPayload;
+import bbcdabao.pingmonitor.manager.app.module.responses.SysconfigInfo;
 import bbcdabao.pingmonitor.manager.app.services.ISysconfig;
 
 @Controller
-@RequestMapping("/sysconfig")
+@RequestMapping("/api/sysconfig")
 public class SysconfigController {
 
     @Autowired
@@ -40,18 +43,32 @@ public class SysconfigController {
 
     @GetMapping(value = "")
     @ResponseBody
-    public ResponseEntity<Sysconfig> getConfig (
+    public ResponseEntity<ApiResponse<SysconfigInfo>> getConfig (
             ) throws Exception {
+        SysconfigInfo sysconfigInfo = new SysconfigInfo();
         Sysconfig sysconfig = sysconfigOpt.getConfig();
-        ResponseEntity<Sysconfig> response = ResponseEntity.ok(sysconfig);
-        return response;
+        sysconfigInfo.setCronTask(sysconfig.getCronTask());
+        sysconfigInfo.setCronInst(sysconfig.getCronInst());
+        sysconfigInfo.setCronMain(sysconfig.getCronMain());
+        sysconfigInfo.setTimeOutMs(sysconfig.getTimeOutMs());
+        sysconfigInfo.setRsType(sysconfig.getRsType().getValue());
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok(sysconfigInfo));
     }
 
     @PostMapping(value = "")
     @ResponseBody
-    public ResponseEntity<String> updateConfig(
-            @RequestBody Sysconfig sysconfig) throws Exception {
+    public ResponseEntity<ApiResponse<Void>> updateConfig(
+            @RequestBody SysconfigPayload sysconfigPayload) throws Exception {
+        Sysconfig sysconfig = sysconfigOpt.getConfig();
+        sysconfig.setCronInst(sysconfigPayload.getCronInst());
+        sysconfig.setCronMain(sysconfigPayload.getCronMain());
+        sysconfig.setCronTask(sysconfigPayload.getCronTask());
+        sysconfig.setTimeOutMs(sysconfigPayload.getTimeOutMs());
         sysconfigOpt.setConfig(sysconfig);
-        return ResponseEntity.ok("success");
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.ok());
     }
 }

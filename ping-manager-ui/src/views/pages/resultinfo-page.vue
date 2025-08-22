@@ -17,7 +17,7 @@
   <div>
     <el-card class="custom-shadow mgb6" shadow="hover">
       <template #header>
-        <div class="content-title">{{ '任务结果管理' }}</div>
+        <div class="content-title">{{ t('resultManager') }}</div>
       </template>
       <div class="this-card">
         <el-descriptions
@@ -26,7 +26,7 @@
           border
         >
           <el-descriptions-item
-            :label="'结果过滤'"
+            :label="t('resultFilter')"
             label-align="right"
             align="left"
             width="200px"
@@ -34,11 +34,11 @@
             <el-input
               v-model="filterTextInf"
               clearable
-              placeholder="请输入部分任务名"
+              :placeholder="$t('enterSubTaskName')"
             />
           </el-descriptions-item>
           <el-descriptions-item
-            :label="'结果总数'"
+            :label="t('resultCount')"
             label-align="right"
             align="left"
             width="200px"

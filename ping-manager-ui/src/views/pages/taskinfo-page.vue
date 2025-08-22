@@ -33,7 +33,7 @@
           >
             <el-select
               v-model="selectedTaskName"
-              :placeholder="'选择任务可分配哨兵组进行拨测'"
+              :placeholder="t('selectAvailableRobot')"
               clearable
               filterable
             >

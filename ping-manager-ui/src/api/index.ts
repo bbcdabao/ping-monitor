@@ -33,6 +33,10 @@ import type {
   CheckRobotGroupInfo,
   RobotGroupInfo
 } from '@/types/robot-sub';
+import type {
+  SysconfigPayload,
+  SysconfigInfo
+} from '@/types/sysconfig-sub';
 
 import request from '@/utils/request';
 
@@ -221,14 +225,21 @@ export const deleteResultDetailInfos = (taskName: string | null) : Promise<Resul
   });
 };
 
-
-
-/*
-export const robotGroupNames = () => {
+/**
+ * 获取配置信息
+ * @returns 
+ */
+export const getSysconfigInfo = () : Promise<SysconfigInfo> => {
   return request({
-      url: '/manager/robot/robotGroupNames',
-      method: 'get'
+    url: '/api/sysconfig',
+    method: 'get',
   });
 };
-*/
 
+export const postSysconfigInfo = (body: SysconfigPayload) : Promise<any> => {
+  return request({
+    url: '/api/sysconfig',
+    method: 'post',
+    data: body
+  });
+};

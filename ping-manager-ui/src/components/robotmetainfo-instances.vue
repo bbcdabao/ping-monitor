@@ -16,7 +16,7 @@
 <template>
   <div class="instance-info">
     <div style="font-size: 12px; font-weight: bold;">
-      {{ '注册实例信息:' }}
+      {{ t('registerInstance') }}
       <span
         v-for="(record, robotUUID) in robotRuninfoMaster.masters"
         :key="robotUUID"

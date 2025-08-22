@@ -233,6 +233,21 @@ body {
 }
 
 /**
+.el-card__header::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url('@/assets/img/pingGroup.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-right: 2px;
+  vertical-align: middle;
+}
+*/
+
+/**
 .el-card:hover .el-card__header {
   animation: moveleftact 0.3s linear;
   animation-iteration-count: 1;

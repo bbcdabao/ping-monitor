@@ -14,4 +14,52 @@
  * limitations under the License.
  */
 
-export {};
+export interface SysconfigPayload {
+  /**
+   * Sentry dial test cycle
+   * 哨兵拨测周期
+   */
+  cronTask: string;
+  /**
+   * Sentinel master node detection cycle
+   * 哨兵主节点检测周期
+   */
+  cronMain: string;
+  /**
+   * Sentinel node detection period
+   * 哨兵节点检测周期
+   */
+  cronInst: string;
+  /**
+   * Ping time out
+   * 拨测超时
+   */
+  timeOutMs: number;
+}
+
+export interface SysconfigInfo {
+  /**
+   * Sentry dial test cycle
+   * 哨兵拨测周期
+   */
+  cronTask: string;
+  /**
+   * Sentinel master node detection cycle
+   * 哨兵主节点检测周期
+   */
+  cronMain: string;
+  /**
+   * Sentinel node detection period
+   * 哨兵节点检测周期
+   */
+  cronInst: string;
+  /**
+   * Ping time out
+   * 拨测超时
+   */
+  timeOutMs: number;
+  /**
+   * Result store type
+   */
+  rsType: string;
+}

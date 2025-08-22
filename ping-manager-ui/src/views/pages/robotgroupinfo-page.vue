@@ -17,7 +17,7 @@
   <div>
     <el-card class="custom-shadow mgb6" shadow="hover">
       <template #header>
-        <div class="content-title">{{ '哨兵组织管理' }}</div>
+        <div class="content-title">{{ t('sentinelOrganization') }}</div>
       </template>
       <div class="this-card">
         <el-descriptions
@@ -26,14 +26,14 @@
           border
         >
           <el-descriptions-item
-            :label="'选择查看'"
+            :label="t('selectSee')"
             label-align="right"
             align="left"
             width="200px"
           >
             <el-select
               v-model="selectedRobotGroupName"
-              :placeholder="'选择哨兵组织可监控查看哨兵实例'"
+              :placeholder="t('selectSeeForPlaceholder')"
               clearable
               filterable
             >
@@ -46,7 +46,7 @@
             </el-select>
           </el-descriptions-item>
           <el-descriptions-item
-            :label="'组织总数'"
+            :label="t('groupCount')"
             label-align="right"
             align="left"
             width="200px"
@@ -58,14 +58,14 @@
           :data="nowRobotgroupinfos"
           style="width: 100%; margin-top: 10px;"
         >
-          <el-table-column prop="robotGroupName" :label="'组织名称'" sortable>
+          <el-table-column prop="robotGroupName" :label="t('groupName')" sortable>
             <template #default="{ row }">
               <div style="font-weight: bold;">
                 {{ row.robotGroupName }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column :label="'组织描述'">
+          <el-table-column :label="t('groupDesc')">
             <template #default="{ row }">
               {{ locale === 'zh' ? row.descriptionCn : row.descriptionEn }}
             </template>
