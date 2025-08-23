@@ -54,7 +54,7 @@ sysconfig:
   cron-task: 0/10 * * * * ?
   cron-main: 5/10 * * * * ?
   cron-inst: 0/2 * * * * ?
-  time-out-ms: 10000
+  time-out-ms: 5000
   overwrite: true
 
 user-infos:
