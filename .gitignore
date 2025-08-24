@@ -35,8 +35,8 @@ package-lock.json
 auto-imports.d.ts
 components.d.ts
 
-ping-robot-version.tar.gz
+robot.tar.gz
 ping-robot-version
-ping-manager-version.tar.gz
+manager.tar.gz
 ping-manager-version
 

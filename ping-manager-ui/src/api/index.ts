@@ -236,6 +236,11 @@ export const getSysconfigInfo = () : Promise<SysconfigInfo> => {
   });
 };
 
+/**
+ * 更新配置信息
+ * @param body 
+ * @returns 
+ */
 export const postSysconfigInfo = (body: SysconfigPayload) : Promise<any> => {
   return request({
     url: '/api/sysconfig',
