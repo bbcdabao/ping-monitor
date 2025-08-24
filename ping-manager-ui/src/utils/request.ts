@@ -43,12 +43,12 @@ service.interceptors.request.use(
 
 const errorHandlerMap = new Map<number, () => void>([
   [401, () => {
-    ElMessage.error('401 error');
     emitter.emit('go-login');
+    console.log('401 go login');
   }],
   [403, () => {
-    ElMessage.error('403 error');
     emitter.emit('go-login');
+    console.log('403 go login');
   }],
   /*
   [500, () => {

@@ -46,6 +46,7 @@ authorize:
     - "/"
     - "/index.html"
     - "/favicon.ico"
+    - "/img/**"
     - "/mock/**"
     - "/assets/**"
     - "/openapi/**"

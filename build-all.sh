@@ -65,7 +65,7 @@ cd "$BASE_DIR"
 
 # run build
 # 执行构建
-# mvn_build
+mvn_build
 
 ###################
 # manager version #

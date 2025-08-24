@@ -21,13 +21,16 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useThemeWatcher } from '@/store/theme';
 import emitter from '@/event-bus';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const router = useRouter();
 
 emitter.on('go-login', () => {
+  router.replace('/login');
 });
 
 onMounted(() => {
