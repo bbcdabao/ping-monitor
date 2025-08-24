@@ -146,22 +146,26 @@ import type {
   SysconfigInfo
 } from '@/types/sysconfig-sub';
 
-import { CronExpressionParser } from 'cron-parser';
+import { Cron } from 'croner';
+
+const isValidCronLite = (expr: string) => {
+  try {
+    const cron = new Cron(expr.trim(), {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    });
+    const next = cron.nextRun();
+    if (!next) throw new Error('该表达式没有下一次运行时间');
+    return { valid: true, errors: [], next: next.toLocaleString() };
+  } catch (e: any) {
+    return { valid: false, errors: [e?.message || '非法的 cron 表达式'] };
+  }
+};
 
 const { t } = useI18n();
 
 const rsType = ref('');
 
 const timeOutS = ref<number>(10);
-
-const isValidCronLite = (expr: string) => {
-  try {
-    const interval = CronExpressionParser.parse(expr.trim(), { currentDate: new Date() });
-    return { valid: true, errors: [], next: interval.next().toString() };
-  } catch (e: any) {
-    return { valid: false, errors: [e?.message || '非法的 cron 表达式'] };
-  }
-};
 
 const cronTask = ref('');
 const cronTaskError = ref('');
@@ -264,5 +268,4 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   justify-content: center;
 }
-
 </style>

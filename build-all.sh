@@ -18,7 +18,7 @@ mvn_build() {
 # 创建版本包目录
 create_version_dir() {
   local version_name=$1
-  local version_dir="$BASE_DIR/${version_name}-version"
+  local version_dir="$BASE_DIR/${version_name}"
 
   if [ -d "$version_dir" ]; then
     log "Removing old $version_dir"
@@ -70,7 +70,7 @@ mvn_build
 ###################
 # manager version #
 ###################
-VERSION_MANAGER_DIR=$(create_version_dir "ping-manager")
+VERSION_MANAGER_DIR=$(create_version_dir "ping-manager-version")
 copy_files "$VERSION_MANAGER_DIR" \
   "$BASE_DIR/ping-manager/target/ping-manager-1.0.0.jar:ping-manager.jar" \
   "$BASE_DIR/ping-manager-web/target/ping-manager-web.jar:ping-manager-web.jar" \
@@ -79,19 +79,19 @@ copy_files "$VERSION_MANAGER_DIR" \
   "$BASE_DIR/version-package-related/ctl.sh:ctl.sh"
 
 chmod +x "$VERSION_MANAGER_DIR/ctl.sh"
-tar -czvf ping-manager-version.tar.gz "$(basename "$VERSION_MANAGER_DIR")"
+tar -czvf manager.tar.gz "$(basename "$VERSION_MANAGER_DIR")"
 
 #################
 # robot version #
 #################
-VERSION_ROBOT_DIR=$(create_version_dir "ping-robot")
+VERSION_ROBOT_DIR=$(create_version_dir "ping-robot-version")
 copy_files "$VERSION_ROBOT_DIR" \
   "$BASE_DIR/ping-robot/ping-robot-man/target/ping-robot-man-1.0.0.jar:ping-robot-man.jar" \
   "$BASE_DIR/version-package-related/robot-sample-configs/:configs/" \
   "$BASE_DIR/version-package-related/man.sh:man.sh"
 
 chmod +x "$VERSION_ROBOT_DIR/man.sh"
-tar -czvf ping-robot-version.tar.gz "$(basename "$VERSION_ROBOT_DIR")"
+tar -czvf robot.tar.gz "$(basename "$VERSION_ROBOT_DIR")"
 
 # overd--------------------
 
