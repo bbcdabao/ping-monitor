@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class App {
     public static void main(String[] args) {
-        String name = System.getProperty("APPNAME");
+        String name = System.getProperty("APPNAME", "dev-robot");
         long pid = ProcessHandle.current().pid();
         System.setProperty("APPNAME", name + "_" + pid);
         SpringApplication.run(App.class, args);

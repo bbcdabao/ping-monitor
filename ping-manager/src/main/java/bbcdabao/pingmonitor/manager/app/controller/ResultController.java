@@ -18,8 +18,11 @@
 
 package bbcdabao.pingmonitor.manager.app.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +44,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/api/result")
 public class ResultController {
+
+    private final Logger logger = LoggerFactory.getLogger(ResultController.class);
 
     @Autowired
     private IResultManager resultManager;
@@ -96,8 +101,14 @@ public class ResultController {
     @ResponseBody
     ResponseEntity<ApiResponse<Collection<ResultDetailInfo>>> getResultDetailInfo(
             ) throws Exception {
+        Collection<ResultDetailInfo> resultDetailInfos = new ArrayList<>();
+        try {
+            resultDetailInfos = resultManager.getResultDetailInfo(null);
+        } catch (Exception e) {
+            logger.info("ResultController.getResultDetailInfo error");
+        }
         return ResponseEntity
                 .ok()
-                .body(ApiResponse.ok(resultManager.getResultDetailInfo(null)));
+                .body(ApiResponse.ok(resultDetailInfos));
     }
 }

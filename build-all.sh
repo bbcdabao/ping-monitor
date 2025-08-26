@@ -81,13 +81,13 @@ copy_files "$VERSION_MANAGER_DIR" \
 chmod +x "$VERSION_MANAGER_DIR/ctl.sh"
 tar -czvf manager.tar.gz "$(basename "$VERSION_MANAGER_DIR")"
 
-#################
-# robot version #
-#################
+###################
+# robot version   #
+###################
 VERSION_ROBOT_DIR=$(create_version_dir "ping-robot-version")
 copy_files "$VERSION_ROBOT_DIR" \
   "$BASE_DIR/ping-robot/ping-robot-man/target/ping-robot-man-1.0.0.jar:ping-robot-man.jar" \
-  "$BASE_DIR/version-package-related/robot-sample-configs/:configs/" \
+  "$BASE_DIR/version-package-related/configs/:/" \
   "$BASE_DIR/version-package-related/man.sh:man.sh"
 
 chmod +x "$VERSION_ROBOT_DIR/man.sh"

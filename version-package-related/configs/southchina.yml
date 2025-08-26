@@ -16,12 +16,12 @@
 zkclientframe:
   enable: true
   connect-string: 127.0.0.1:2181
-  name-space: baominghui
+  name-space: baobaobao
 
 executor-config:
   enable: true
 
 robot:
-  robot-group-name: sentinel-northchina
-  description-cn: 华北地区
-  description-en: North china
+  robot-group-name: sentinel-southchina
+  description-cn: 华南地区
+  description-en: South china

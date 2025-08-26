@@ -16,7 +16,7 @@
 zkclientframe:
   enable: true
   connect-string: 127.0.0.1:2181
-  name-space: baominghui
+  name-space: baobaobao
 
 executor-config:
   enable: true
