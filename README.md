@@ -8,13 +8,17 @@
   
   _提供标准化模板机制，支持自定义扩展拨测插件（如 Ping、HTTP、TCP、redis、kafka 等，有专门的注解用户可自行开发查询快速接入系统）。_
 - **配置中心:**
-> 系统运行周期、任务配置、插件参数均存储在 ZooKeeper，集中管理，实时生效。
+  
+  _系统运行周期、任务配置、插件参数均存储在 ZooKeeper，集中管理，实时生效。_
 - **多级存储结果:**
-> 小规模拨测结果可存储于 ZooKeeper，大规模场景下可写入 Redis，提升性能与可扩展性。
+  
+  _小规模拨测结果可存储于 ZooKeeper，大规模场景下可写入 Redis，提升性能与可扩展性。_
 - **可观测性支持:**
-> 通过 ping-metric-exporter 模块对接 Prometheus，实现指标采集与告警。 
+  
+  _通过 ping-metric-exporter 模块对接 Prometheus，实现指标采集与告警。_ 
 - **前后端分离:**
-> 后端基于 Java，前端基于 Vue3 + TypeScript，提供统一的 Web 管理平台与 API 网关。
+  
+  _后端基于 Java，前端基于 Vue3 + TypeScript，提供统一的 Web 管理平台与 API 网关。_
 
 # 📌 系统架构
 
