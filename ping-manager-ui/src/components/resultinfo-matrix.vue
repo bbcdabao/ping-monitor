@@ -236,7 +236,7 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
   padding: 4px;
   border-radius: 6px;
   width: 100%;
-  height: 60px;
+  height: 64px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
@@ -251,7 +251,7 @@ const getPieStyle = (pingresults: Record<string, PingresultInfo>) => {
   padding: 4px;
   border-radius: 6px;
   width: 100%;
-  height: 60px;
+  height: 64px;
   font-size: 10px;
   font-weight: normal;
   text-align: left;
