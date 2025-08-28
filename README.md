@@ -158,10 +158,24 @@ ping-monitor
 
 
 📌 项目简介
+本项目是一个基于 ZooKeeper 的分布式拨测系统，用于对多种网络目标（如 主机、服务、API、端口 等 还有各种中间件如 redis、kafka等）进行可用性探测与监控。系统采用 插件化架构，支持灵活扩展拨测方式，并结合 Prometheus 输出指标，实现可观测性与告警。
+✨ 核心特性
+分布式调度：依托 ZooKeeper，支持机器人实例动态注册、任务分配、主从选举，保证任务在集群中可靠运行。
+插件化拨测：提供标准化模板机制，支持自定义扩展拨测插件（如 Ping、HTTP、TCP、redis、kafka 等，有专门的注解用户可自行开发查询快速接入系统）。
+配置中心：系统运行周期、任务配置、插件参数均存储在 ZooKeeper，集中管理，实时生效。
+多级存储结果：小规模拨测结果可存储于 ZooKeeper，大规模场景下可写入 Redis，提升性能与可扩展性。
+可观测性支持：通过 ping-metric-exporter 模块对接 Prometheus，实现指标采集与告警。
+前后端分离：后端基于 Java，前端基于 Vue3 + TypeScript，提供统一的 Web 管理平台与 API 网关。
 
-✨ 功能特性
-
-🏗️ 系统架构/模块说明
+🏗️ 核心模块
+ping-common：公共封装模块，定义基础工具类与通用模型。
+ping-manager：后端服务，负责任务管理、调度控制、结果处理。
+ping-manager-ui：前端管理控制台（Vue3 + TS），支持任务配置、结果展示。
+ping-manager-web：API 网关，负责统一鉴权与前端 UI 打包分发。
+ping-metric-exporter：Prometheus Exporter，对接监控系统。
+ping-robot：拨测机器人集群
+ping-robot-api：机器人公共模块，定义机器人运行协议与接口。
+ping-robot-man：插件实现模块，提供具体拨测插件（如 Ping、HTTP）。
 
 🚀 快速开始（安装、运行、构建）
 
