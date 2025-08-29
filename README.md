@@ -21,7 +21,9 @@
   _后端基于 Java，前端基于 Vue3 + TypeScript，提供统一的 Web 管理平台与 API 网关。_
 
 # 📌 系统架构
-
+  <div style="display: flex; justify-content: space-between;">
+    <img src="https://github.com/bbcdabao/componentsbrz/blob/develop/docs/images/chatroom-act.gif" alt="" width="99%"/>
+  </div>
 
 🏗️ 核心模块
 ping-common：公共封装模块，定义基础工具类与通用模型。
