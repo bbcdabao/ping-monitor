@@ -22,7 +22,7 @@
 
 # 📌 系统架构
   <div style="display: flex; justify-content: space-between;">
-    <img src="[https://github.com/bbcdabao/componentsbrz/blob/develop/docs/images/chatroom-act.gif](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/ping-monito-frame.svg)" alt="" width="100%"/>
+    <img src="https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/ping-monito-frame.svg" alt="" width="100%"/>
   </div>
 
 🏗️ 核心模块
