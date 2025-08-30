@@ -23,7 +23,7 @@
 # 📌 系统架构
   _系统核心，就是基于zookeeper分布式协调与数据感知，所有数据都保存在zookeeper上面，然后通过感知拨测数据变化  manager 后台通过 SSE 推动到 前端WEB实时展示。_
   <div style="display: flex; justify-content: space-between;">
-    <img src="https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/ping-monito-frame.png" alt="" width="100%"/>
+    <img src="https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/ping-monitor-frame.png" alt="" width="100%"/>
   </div>
 
 🏗️ 核心模块
