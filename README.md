@@ -45,8 +45,12 @@
 - **ping-robot：**
 
   _拨测机器人集群。_
-ping-robot-api：机器人公共模块，定义机器人运行协议与接口。
-ping-robot-man：插件实现模块，提供具体拨测插件（如 Ping、HTTP）。
+- **ping-robot-api：**
+
+  _机器人公共模块，定义机器人运行协议与接口。_
+- **ping-robot-man：**
+
+  _插件实现模块，提供具体拨测插件（如 Ping、HTTP）。_
 
 🚀 快速开始（安装、运行、构建）
 
