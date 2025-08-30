@@ -53,6 +53,21 @@
   _插件实现模块，提供具体拨测插件（如 Ping、HTTP...）_
   
   _实现拨测插件方式很简单，继承一个接口IPingMoniterPlug，加上字段提取注解即可，它会自动模板化注入系统，例如:_
+  ```java
+  public class MyPingPlug implements IPingMoniterPlug {
+    @ExtractionFieldMark(descriptionCn = "字段模板中文说明", descriptionEn = "Field template English description")
+    private String xxxx01;
+
+    @ExtractionFieldMark(descriptionCn = "字段模板中文说明", descriptionEn = "Field template English description")
+    private Integer xxxx02;
+
+    @Override
+    public String doPingExecute(int timeOutMs) throws Exception {
+      // TODO: Implementing dial test logic / 实现拨测逻辑
+      return "OK";
+    }
+  }
+  ```
 
 # 🚀 快速开始（安装、运行、构建）
 
