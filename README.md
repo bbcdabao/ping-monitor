@@ -1,4 +1,4 @@
-[![GitHub license](https://img.shields.io/github/license/ping-monitor/componentsbrz.svg)](https://github.com/bbcdabao/componentsbrz/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/ping-monitor/componentsbrz.svg)](https://github.com/bbcdabao/ping-monitor/blob/main/LICENSE)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/bbcdabao/componentsbrz.svg)](https://github.com/bbcdabao/componentsbrz)
 [![GitHub release](https://img.shields.io/github/release/bbcdabao/componentsbrz.svg)](https://github.com/bbcdabao/componentsbrz/releases)
 
