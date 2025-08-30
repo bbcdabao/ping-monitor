@@ -26,7 +26,7 @@
     <img src="https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/ping-monitor-frame.png" alt="" width="100%"/>
   </div>
 
-🏗️ 核心模块
+# 🏗️ 核心模块
 - **ping-common：**
 
   _公共封装模块，定义基础工具类与通用模型。_
