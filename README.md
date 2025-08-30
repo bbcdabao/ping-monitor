@@ -74,6 +74,10 @@
   ```
 
 # 🚀 快速开始（安装、运行、构建）
+- __Compile:__<br>
+  - Useing jdk 17 or above version.
+  - Useing node 22.4.0.
+  - run "mvn install" in the root directory "ping-monitor".
 
 # ⚙️ 配置说明
 
