@@ -27,8 +27,12 @@
   </div>
 
 🏗️ 核心模块
-ping-common：公共封装模块，定义基础工具类与通用模型。
-ping-manager：后端服务，负责任务管理、调度控制、结果处理。
+- **ping-common：**
+
+  _公共封装模块，定义基础工具类与通用模型。_
+- **ping-manager：**
+
+  _后端服务，负责任务管理、调度控制、结果处理。_
 ping-manager-ui：前端管理控制台（Vue3 + TS），支持任务配置、结果展示。
 ping-manager-web：API 网关，负责统一鉴权与前端 UI 打包分发。
 ping-metric-exporter：Prometheus Exporter，对接监控系统。
