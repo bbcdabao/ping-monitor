@@ -33,10 +33,18 @@
 - **ping-manager：**
 
   _后端服务，负责任务管理、调度控制、结果处理。_
-ping-manager-ui：前端管理控制台（Vue3 + TS），支持任务配置、结果展示。
-ping-manager-web：API 网关，负责统一鉴权与前端 UI 打包分发。
-ping-metric-exporter：Prometheus Exporter，对接监控系统。
-ping-robot：拨测机器人集群
+- **ping-manager-ui：**
+
+  _前端管理控制台（Vue3 + TS），支持任务配置、结果展示。_
+- **ping-manager-web：**
+
+  _API 网关，负责统一鉴权与前端 UI 打包分发。_
+- **ping-metric-exporter：**
+
+  _Prometheus Exporter，对接监控系统。_
+- **ping-robot：**
+
+  _拨测机器人集群。_
 ping-robot-api：机器人公共模块，定义机器人运行协议与接口。
 ping-robot-man：插件实现模块，提供具体拨测插件（如 Ping、HTTP）。
 
