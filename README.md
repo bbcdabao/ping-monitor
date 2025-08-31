@@ -108,11 +108,14 @@
   _请查看configs目录下的配置文件，里面有注解说明，注意robot哨兵模块的configs里面可以增加或删除配置文件_
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager-config.png)
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-config.png)
+
 # 📊 示例效果（如截图或接口示例）
 
 # 🤝 贡献指南
-
+  _目前是我个人的开源项目，也随时欢迎感兴趣的小伙伴加入_
 # 📄 License
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 
 
 # Text description of the dial test system idea：
