@@ -81,13 +81,13 @@
   - run "build-all.sh" in the root directory "ping-monitor".
 - __构建结果:__<br>
   - manager.tar.gz
-  - 上面为平台部署包，包括前后端和配套脚本和配置。
-  - robot.tar.gz
-  - 上面为哨兵或机器人部署包，包括前后端和配套脚本和配置。
-  -
+  - 上面为平台部署包，包括前后端和配套脚本和配置，如下图内容...
   <div style="display: flex; justify-content: space-between;">
     <img src="https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager.png" alt="" width="100%"/>
   </div>
+  - 上面内容：configs为配置文件目录，里面是前后端的配置，logs是系统运行日志输出目录，pids为保存启动的pid目录，ctl.sh是运行启动脚本，ping-manager.jar和ping-manager-web.jar 为后端 和 网关里面打包了前端UI。
+  - robot.tar.gz
+  - 上面为哨兵或机器人部署包，包括前后端和配套脚本和配置。
 - __运行:__<br>
   - manager.tar.gz 为平台，可以弹性部署，可以使用manager 内置的zookeeper，或者外部单独部署，首先解压 tar -zxvf manager.tar.gz 解压后的目录为 ping-manager-version。
   - xxx/ctl.sh start manager，启动 manager 后端。
