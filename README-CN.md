@@ -114,6 +114,7 @@
 
 # 📊 示例效果（如截图或接口示例）
 - __登录页面:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/login.png)
 
 # 🤝 贡献指南
   _目前是我个人的开源项目，也随时欢迎感兴趣的小伙伴加入_
