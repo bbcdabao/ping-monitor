@@ -72,13 +72,18 @@
   _上面的代码示例展示了一个插件的实现方式。您只需在 ping-robot-man 工程中新增自己的拨测插件，并启动 robot 拨测哨兵，系统即可自动完成插件的接入与运行，无需额外配置和处理_
 
 # 🚀 快速开始（安装、运行、构建）
-- __构建:__<br>
+- __构建环境:__<br>
   - Useing jdk 17 or above version.
   - Useing node 22.4.0.
+- __构建方法:__<br>
   - run "build-all.sh" in the root directory "ping-monitor".
 - __构建结果:__<br>
-  - manager.tar.gz 为平台部署包，包括前后端和配套脚本和配置。
-  - robot.tar.gz 为哨兵或机器人部署包，包括前后端和配套脚本和配置。
+  - manager.tar.gz
+  - 上面为平台部署包，包括前后端和配套脚本和配置。
+  - robot.tar.gz
+  - 为哨兵或机器人部署包，包括前后端和配套脚本和配置。
+  - 
+  - 
 - __运行:__<br>
   - manager.tar.gz 为平台，可以弹性部署，可以使用manager 内置的zookeeper，或者外部单独部署，首先解压 tar -zxvf manager.tar.gz 解压后的目录为 ping-manager-version。
   - xxx/ctl.sh start manager，启动 manager 后端。
