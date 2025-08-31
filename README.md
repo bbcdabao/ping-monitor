@@ -118,6 +118,31 @@
   ![robot-config](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-config.png)  
 
 # 📊 Example Screenshots (UI / API Samples)
+- __Login Page:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/login.png)
+- __Observation Results Page, Global View, providing average SLA and smooth rolling RTT:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m1.png)
+- __Observation Results Page, Focused View, providing scatter plots:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m2.png)
+- __Sentinel Template Page, when a sentinel instance starts, it automatically registers the supported component templates here:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m3.png)
+- __Sentinel Template Page, select a template to create a probe task:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m12.png)
+- __Sentinel Group Page, shows the groups corresponding to registered sentinels, also collected automatically:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m7.png)
+- __Sentinel Group Page, select a sentinel to view task assignment:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m8.png)
+- __System Configuration Page, changes take effect immediately and validity is automatically checked:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m9.png)
+- __Theme Selection Page:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m10.png)
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m11.png)
+- __Task Information Page, lists all current probe tasks:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m4.png)
+- __Task Information Page, select a probe task to assign sentinel groups:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m5.png)
+- __Task Results Page, lists current probe results, mainly used to temporarily delete results if needed:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m6.png)
 
 # 🤝 Contribution
   _This is currently a personal open-source project, but contributors and collaborators are always welcome!_  
