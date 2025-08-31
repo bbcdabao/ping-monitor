@@ -36,22 +36,22 @@
   _后端服务，负责任务管理、调度控制、前端各种接口实现，和SSE推送，并且内部集成内置zookeeper，可以选择使用内部集成的zookeeper或者自己另行部署，单独部署zookeeper就增强稳定性_
 - **ping-manager-ui：**
 
-  _前端管理控制台（Vue3 + TS），支持任务配置、结果展示。_
+  _前端管理控制台（Vue3 + TS），任务配置、结果展示 等等..._
 - **ping-manager-web：**
 
   _API 网关，负责统一鉴权与前端 UI 打包分发。_
 - **ping-metric-exporter：**
 
-  _Prometheus Exporter，对接监控系统。_
+  _Prometheus Exporter，对接监控系统 promeseus 等，将监控指标导出，该模块目前正在开发中，未实现。_
 - **ping-robot：**
 
   _拨测机器人集群。_
 - **ping-robot-api：**
 
-  _机器人公共模块，定义机器人运行协议与接口。_
+  _机器人公共模块，定义机器人运行协议与接口，提供拨测插件化技术封装等..._
 - **ping-robot-man：**
 
-  _插件实现模块，提供具体拨测插件（如 Ping、HTTP...）_
+  _基于ping-robot-api插件实现模块，提供具体拨测插件（如 Ping、HTTP...）_
   
   _实现拨测插件方式很简单，继承一个接口IPingMoniterPlug，加上字段提取注解即可，它会自动模板化注入系统，例如:_
   ```java
