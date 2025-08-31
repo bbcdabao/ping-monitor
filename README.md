@@ -72,3 +72,48 @@
       return "OK";
     }
   }
+  ```
+  _The example above shows how to implement a plugin. Simply add your custom probe plugin to the ping-robot-man project and start the robot agent; the system will automatically register and run it without any extra configuration._
+# 🚀 Quick Start (Build, Run, Deploy)
+- __Build Environment:__  
+  - Using JDK 17 or above.  
+  - Using Node.js 22.4.0.  
+- __Build Command:__  
+  - Run `build-all.sh` in the root directory of `ping-monitor`.  
+- __Build Output:__  
+  - **manager.tar.gz**  
+    This is the platform deployment package, including frontend, backend, scripts, and configs, as shown below:  
+    ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager.png)  
+    Contents: `configs` (frontend & backend configs), `logs` (runtime logs), `pids` (PID directory), `ctl.sh` (startup script), `ping-manager.jar` and `ping-manager-web.jar` (backend service and gateway packaged with frontend UI).  
+  - **robot.tar.gz**  
+    This is the monitoring agent (robot) deployment package, including scripts, configs, and binaries, as shown below:  
+    ![robot](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot.png)  
+    Contents: `configs` (multiple robot configurations), `logs` (robot logs), `pids` (PID directory), `man.sh` (startup script), `ping-robot-man.jar` (robot implementation).  
+- __Run Instructions:__  
+  - First deploy `manager.tar.gz`, then start `robot.tar.gz` instances to register them with the platform.  
+    Note: The manager includes an embedded ZooKeeper for convenience, but you may deploy a standalone ZooKeeper cluster for higher stability.  
+  - Deployment Steps:  
+    1. Extract both `manager.tar.gz` and `robot.tar.gz` →  
+       ![allinfo](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/allinfo.png)  
+    2. Start the manager platform (frontend + backend) →  
+       ![start-manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/start-manager.png)  
+       ![start-manager-web](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/start-manager-web.png)  
+    3. Verify that the manager platform is running correctly →  
+       ![manager-check](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager-check.png)  
+    4. Start robot instances (you may start multiple robots). Example: list available configs →  
+       ![robot-list](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-list.png)  
+    5. Select a config to start (you may start multiple instances of the same config) →  
+       ![robot-start-instance](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-start-instance.png)  
+    6. Confirm running robot instances →  
+       ![robot-check](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-check.png)  
+
+# ⚙️ Configuration
+  _Check the `configs` directory for details. Config files contain comments.  
+  In the robot module, you can add or remove config files as needed._  
+  ![manager-config](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager-config.png)  
+  ![robot-config](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-config.png)  
+
+# 📊 Example Screenshots (UI / API Samples)
+
+# 🤝 Contribution
+  _This is currently a personal open-source project, but contributors and collaborators are always welcome!_  
