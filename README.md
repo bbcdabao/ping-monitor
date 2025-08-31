@@ -105,7 +105,9 @@
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-check.png)
      
 # ⚙️ 配置说明
-
+  _请查看configs目录下的配置文件，里面有注解说明，注意robot哨兵模块的configs里面可以增加或删除配置文件_
+  ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager-config.png)
+  ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-config.png)
 # 📊 示例效果（如截图或接口示例）
 
 # 🤝 贡献指南
