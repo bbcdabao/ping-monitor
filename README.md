@@ -7,6 +7,8 @@
 - **This project is a ZooKeeper-based distributed monitoring system designed to probe the availability of various network targets (e.g., hosts, services, APIs, ports, and middleware such as Redis, Kafka, etc.). The system adopts a plugin-based architecture to support flexible extension of monitoring methods and integrates with Prometheus to expose metrics, enabling full observability and alerting capabilities.**
 - **Demo URL:**  
 - **http://bbcdabao.com**
+- **user:admin**
+- **pass:123456**
 
 # ✨ Key Features
 - **Distributed Scheduling:**
