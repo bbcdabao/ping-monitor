@@ -85,7 +85,9 @@
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager.png)
   - 上面内容：configs为配置文件目录，里面是前后端的配置，logs是系统运行日志输出目录，pids为保存启动的pid目录，ctl.sh是运行启动脚本，ping-manager.jar和ping-manager-web.jar 为后端 和 网关里面打包了前端UI。
   - robot.tar.gz
-  - 上面为哨兵或机器人部署包，包括前后端和配套脚本和配置。
+  - 上面为哨兵或机器人部署包，包括前后端和配套脚本和配置，如下图内容...
+  ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot.png)
+  - 上面内容：configs为配置文件目录，里面是多个可用去拨测哨兵或则机器人配置文件，logs是哨兵或机器人运行日志，pids为保存启动的pid目录，man.sh 是启动拨测哨兵或机器人脚本，ping-robot-man.jar是拨测机器人。
 - __运行:__<br>
   - manager.tar.gz 为平台，可以弹性部署，可以使用manager 内置的zookeeper，或者外部单独部署，首先解压 tar -zxvf manager.tar.gz 解压后的目录为 ping-manager-version。
   - xxx/ctl.sh start manager，启动 manager 后端。
