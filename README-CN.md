@@ -124,7 +124,7 @@
 - __哨兵模板页面，哨兵实例启动会把自己支持的组件信息模板自动注册到上面:__<br>
 ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m3.png)
 - __哨兵模板页面，选择一个模板，可以创建拨测任务:__<br>
-
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m12.png)
 - __哨兵组页面，目前注册的哨兵对应的组，也是自动收集的信息:__<br>
 ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m7.png)
 - __哨兵组页面，选择一个哨兵查看任务分配情况:__<br>
@@ -134,7 +134,12 @@
 - __主题选择页面:__<br>
 ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m10.png)
 ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m11.png)
-
+- __任务信息页面，列出当前所有拨测任务:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m4.png)
+- __任务信息页面，选择一个拨测任务，可以分配哨兵组:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m5.png)
+- __任务结果页面，列出当前拨测结果列表，主要作用是可以临时删除一下结果:__<br>
+![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/m6.png)
 
 # 🤝 贡献指南
   _目前是我个人的开源项目，也随时欢迎感兴趣的小伙伴加入_
