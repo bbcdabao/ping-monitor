@@ -56,7 +56,9 @@
   _机器人公共模块，定义机器人运行协议与接口，提供拨测插件化技术封装等..._
 - **ping-robot-man：**
 
-  _基于ping-robot-api插件实现模块，提供具体拨测插件（如 Ping、HTTP...） <span style="color:red;font-weight:bold">注意：拨测组件仅仅自测了ping,nds解析，tcp链接测试，等这3个组件</span>_
+  _基于 ping-robot-api 插件实现模块，提供具体拨测插件（如 Ping、HTTP...）_
+
+  **⚠️ 注意：拨测组件仅仅自测了 Ping、DNS 解析、TCP 链接测试 等这 3 个组件**
   
   _实现拨测插件方式很简单，继承一个接口IPingMoniterPlug，加上字段提取注解即可，它会自动模板化注入系统，例如:_
   ```java
