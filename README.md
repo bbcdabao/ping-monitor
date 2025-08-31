@@ -59,6 +59,8 @@
 
   _Implementation module providing actual monitoring plugins (e.g., Ping, HTTP, etc.)._
 
+  **⚠️ Note: The probe components have only been self-tested for Ping, DNS resolution, and TCP connection tests — these 3 components.**
+
   _Creating a custom monitoring plugin is simple: just implement the `IPingMoniterPlug` interface and annotate fields. The system will automatically template and inject it. Example:_
   ```java
   public class MyPingPlug implements IPingMoniterPlug {
