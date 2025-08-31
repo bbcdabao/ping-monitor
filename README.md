@@ -82,9 +82,7 @@
 - __构建结果:__<br>
   - manager.tar.gz
   - 上面为平台部署包，包括前后端和配套脚本和配置，如下图内容...
-  <div style="display: flex; justify-content: space-between;">
-    <img src="https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager.png" alt="" width="100%"/>
-  </div>
+  ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/manager.png)
   - 上面内容：configs为配置文件目录，里面是前后端的配置，logs是系统运行日志输出目录，pids为保存启动的pid目录，ctl.sh是运行启动脚本，ping-manager.jar和ping-manager-web.jar 为后端 和 网关里面打包了前端UI。
   - robot.tar.gz
   - 上面为哨兵或机器人部署包，包括前后端和配套脚本和配置。
