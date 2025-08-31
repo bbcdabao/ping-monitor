@@ -89,8 +89,12 @@
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot.png)
   - 上面内容：configs为配置文件目录，里面是多个可用去拨测哨兵或则机器人配置文件，logs是哨兵或机器人运行日志，pids为保存启动的pid目录，man.sh 是启动拨测哨兵或机器人脚本，ping-robot-man.jar是拨测机器人。
 - __运行:__<br>
-  - manager.tar.gz 为平台，可以弹性部署，可以使用manager 内置的zookeeper，或者外部单独部署，首先解压 tar -zxvf manager.tar.gz 解压后的目录为 ping-manager-version。
-  - xxx/ctl.sh start manager，启动 manager 后端。
+  - 首先部署平台 manager.tar.gz 然后启动 robot.tar.gz 实例注册到平台上，注意 manager 平台内置了zookeeper部署比较快捷，您也可以自己部署专门的zookeeper服务。
+  - 部署步骤1：先解压 manager.tar.gz 和 robot.tar.gz 解压后如下图...
+  ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/allinfo.png)
+  - 部署步骤2：启动 manager 平台前端和后端
+  ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/start-manager.png)
+  ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/start-manager-web.png)
 
 # ⚙️ 配置说明
 
