@@ -101,7 +101,7 @@
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-list.png)
   - 部署步骤5：选择一个配置启动，可以start 多个配置，并且一个配置可以启动多次
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-start-instance.png)
-  - 部署步骤7：确认或查看启动的哨兵或机器人
+  - 部署步骤6：确认或查看启动的哨兵或机器人
   ![manager](https://github.com/bbcdabao/ping-monitor/blob/main/docs/images/robot-check.png)
      
 # ⚙️ 配置说明
