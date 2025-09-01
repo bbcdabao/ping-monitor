@@ -1,7 +1,6 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub license](https://img.shields.io/github/license/bbcdabao/ping-monitor.svg)](https://github.com/bbcdabao/ping-monitor/blob/main/LICENSE)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/bbcdabao/ping-monitor.svg)](https://github.com/bbcdabao/ping-monitor)
-[![GitHub release](https://img.shields.io/github/release/bbcdabao/ping-monitor.svg)](https://github.com/bbcdabao/ping-monitor/releases)
 
 # 📖 Project Overview - ping-monitor
 - **This project is a ZooKeeper-based distributed monitoring system designed to probe the availability of various network targets (e.g., hosts, services, APIs, ports, and middleware such as Redis, Kafka, etc.). The system adopts a plugin-based architecture to support flexible extension of monitoring methods and integrates with Prometheus to expose metrics, enabling full observability and alerting capabilities.**
