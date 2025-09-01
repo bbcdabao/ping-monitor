@@ -1,7 +1,6 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub license](https://img.shields.io/github/license/bbcdabao/ping-monitor.svg)](https://github.com/bbcdabao/ping-monitor/blob/main/LICENSE)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/bbcdabao/ping-monitor.svg)](https://github.com/bbcdabao/ping-monitor)
-[![GitHub release](https://img.shields.io/github/release/bbcdabao/ping-monitor.svg)](https://github.com/bbcdabao/ping-monitor/releases)
 
 # 📖 项目简介 ping-monitor
 - **本项目是一个基于 ZooKeeper 的分布式拨测系统，能够对多种网络目标（如 主机、服务、API、端口，以及各类中间件如 Redis、Kafka 等）进行可用性探测与监控。系统采用 插件化架构，支持灵活扩展拨测方式，并通过与 Prometheus 集成输出指标，实现全链路的可观测性与告警能力。**
